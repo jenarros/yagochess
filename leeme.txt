@@ -1,0 +1,2 @@
+Para acceder a la documentación abrir el fichero:
+./doc/index.html

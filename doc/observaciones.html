@@ -1,0 +1,24 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <link name="estilo" href="estiloDoc.css" rel="stylesheet" type="text/css">
+    <title>FIA 2002/2003 - Práctica 1</title>
+  </head>
+  <body>
+  	<h2 >Observaciones</h2><br/>
+    <p>Durante las pruebas realizadas he podido comprobar que cuando los contrincantes son ambos controlados por la máquina solían llegar muchas veces a la situacion de tablas, en algunos casos incluso era obvio un jaque mate pero la máquina no lo realizaba. En muchos casos esta situación ha sido debida a lo siguiente (intentaré explicarlo lo mejor posible):
+    Supongamos una situación en la que juegan negras, con un momiviento de reina se puede conseguir un jaque mate, también es posible reailzar el jaque mate al mover primero cualquier otra ficha y sea cual sea el movimiento de blancas luego realizar el movimiento de la reina que provoca el jaque mate.<br/>
+    Lo que quiero indicar aquí es las negras pueden realizar un jaque mate en 1 y en 3 movimientos, debido al orden en que se generan los movimientos puede darse el caso de que siempre se encuentre el de 3 antes que el de 1 y al ser un jaque mate igualmente válido hace que MAX pode el resto de jugadas no llegando a ver nunca que existe un jaque mate en 1 y por lo tanto acabando la partida en tablas. El problema es que el algoritmo de ramificación y poda no pondera el riesgo que supone el pensar que el contrario va a mover de cierta manera y por esto un jaque mate en 3 lo da igual de bueno que uno jaque mate en 1, para solucionar esto he introducido el la siguiente mejora en al algoritmo:<br/>
+    <pre>
+      //MEJORA DEL ALGORITMO EN MIN
+      si( JugadasPosibles == 0){
+        devolver = infinito - (nivel - n + 1);
+      }
+     </pre><br/>
+    Lo que hace esto es ponderar el valor de infinito con el nivel en el que está, por ejemplo si
+    el jugador tiene un nivel 4 y gana max en 1, min devolverá infinito-(nivel - n + 1) = infinito - 2, en cambio si gana max en 3 min devolverá infinito-(nivel - n +1 ) = infinito - 4, por lo que se eligirá la jugada de jaque mate en 1.
+    </p>
+    <p>He comprobado que esto hace que los jugadores controlados por la máquina encuentren y realicen el jaque mate con más facilidad que sin la mejora. 
+    </p>
+  </body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <link name="estilo" href="estiloDoc.css" rel="stylesheet" type="text/css">
+    <title>FIA 2002/2003 - Práctica 1</title>
+  </head>
+  <body>
+  	<h2 >Detalles de implementación</h2><br/>
+    <p>En este apartado pretendo enumerar las funciones básicas empleadas en la implementacion de las reglas del juego sobre el tablero. Esto puede ser muy útil en caso de querer modificar el código o variar algo. Todas las funciones que aparecen a continuación están implementadas en el fichero Tablero.java. He incluido separadores para señalar los bloques más relacionados.
+    </p>
+    <h3>Funciones y procedimientos</h3>
+    <p>/***************************************************************************************</p>
+    <p><cite>void moverJugador1()</cite>*</p>
+    <p><cite>void moverJugador2()</cite>*</p>
+    <p><cite>void moverFicha(Point origen, Point destino)</cite></p>
+    <p><cite>Movimiento realizarJugada(Jugada j)</cite>**</p>
+    <p><cite>void realizarEroque(Movimiento m, Point origen, Point destino)</cite></p>
+    <p><cite>void deshacerJugada(Movimiento m)</cite></p>
+    <p>*Las funciones moverJugador() mueven si el jugador es controlado por la máquina.</p>
+    <p>**Movimiento es una clase que guarda las variables necesarias para deshacer una jugada.</p>
+    <p>/**************************************************************************************/</p>
+    <p><cite>boolean jugadaCorrecta(Point origen, Point destino)</cite></p>
+    <p><cite>boolean jugadaCorrectaPeon(Point origen, Point destino)</cite></p>
+    <p><cite>boolean jugadaCorrectaCaballo(Point origen, Point destino)</cite></p>
+    <p><cite>boolean jugadaCorrectaAlfil(Point origen, Point destino)</cite></p>
+    <p><cite>boolean jugadaCorrectaTorre(Point origen, Point destino)</cite></p>
+    <p><cite>boolean jugadaCorrectaReina(Point origen, Point destino)</cite></p>
+    <p><cite>boolean jugadaCorrectaRey(Point origen, Point destino)</cite></p>
+    <p><cite>boolean jugadaCorrectaEnroque(Point origen, Point destino)</cite></p>
+    <p><cite>boolean jugadaProvocaJaque(Point origen, Point destino)</cite></p>
+    <p>/**************************************************************************************/</p>
+    <p><cite>boolean finPartida()</cite></p>
+    <p><cite>boolean jaque()</cite></p>
+    <p><cite>boolean esPosibleMover()</cite></p>
+    <p><cite>boolean jaqueMate()</cite></p>
+    <p><cite>boolean tablas()</cite></p>
+    <p>/**************************************************************************************/</p>
+    <p><cite>void generarJugadas(LinkedList l)</cite></p>
+    <p><cite>void generarJugadasPeon(int x, int y, LinkedList l)</cite></p>
+    <p><cite>void generarJugadasCaballo(int x, int y, LinkedList l)</cite></p>
+    <p><cite>void generarJugadasAlfil(int x, int y, LinkedList l)</cite></p>
+    <p><cite>void generarJugadasTorre(int x, int y, LinkedList l)</cite></p>
+    <p><cite>void generarJugadasReina(int x, int y, LinkedList l)</cite></p>
+    <p><cite>void generarJugadasRey(int x, int y, LinkedList l)</cite></p>
+    <p>Generan todos las pobibles jugadas y las introducen en la lista enlazada</p>
+    <p>/**************************************************************************************/</p>
+    <p><cite>int Movimientos(int x, int y)</cite></p>
+    <p><cite>int MovimientosAlfil(int x, int y)</cite></p>
+    <p><cite>int MovimientosTorre(int x, int y)</cite></p>
+    <p> Las funciones anteriores cuentas los posibles movimientos que puede realizar una ficha.</p>
+    <p>/**************************************************************************************/</p>
+    <h3>Estructuras y variables</h3>
+    <p>int[ ][ ] tab;<br/>
+    int[ ] cap;//para la captura al paso<br/>
+    int turno;//-1:negras, 1:blancas<br/>
+    boolean movTorreI_b, movTorreD_b, movRey_b;<br/>
+    boolean movTorreI_n, movTorreD_n, movRey_n;<br/>
+    boolean acabada;<br/>
+    int contador_tablas;<br/>
+    int contador_movimientos;<br/>
+    Jenm jugador1, jugador2;<br/>
+    boolean enroqueL, enroqueC;<br/>
+    </p>
+  </body>
+</html>

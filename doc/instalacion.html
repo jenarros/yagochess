@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <link name="estilo" href="estiloDoc.css" rel="stylesheet" type="text/css">
+    <title>FIA 2002/2003 - Práctica 1</title>
+  </head>
+  <body>
+  	<h2 >Instalacion y funcionamiento</h2><br/>
+    <h3 >Instalación</h3>
+    <p> La práctica se encuentra empaquetada en un fichero llamado fia_p1.zip que al descomprimir genera una carpeta llamada 'fia_p1' con dos carpetas más en su interior, 'img' contiene las imágenes utilizadas para dibujar el tablero y 'doc' contiene la documentación que se está leyendo y el enunciado de la práctica.
+    </p>
+    <p> Para compilar la práctica basta con situarse dentro del directorio 'fia_p1' y ejecutar la orden:<br/>
+    <code >javac -O *.java</code><br/>
+    esto generará todos los ficheros '.class' desde el código fuente.
+    </p>
+    <p>La ejecución es muy simple, basta con lanzar desde el mismo directorio la orden:<br/>
+    <code >java Ajedrez</code><br/>
+    esto hará que se inicie la aplicación.
+    </p>
+    <h3 >Funcionamiento</h3>
+    <p> Una vez iniciada la aplicación vemos que en la parte derecha de la pantalla aparecen seis botones, a continuación se describe el uso de cada uno de ellos:</p>
+    <p>- <cite>Crear</cite>. Crea una partida nueva en la que por defecto se enfrenta la máquina con negras empleando nivel 3 contra el usuario. Esta es la forma más rápida de comenzar a jugar una partida desde el principio.</p>
+    <p>- <cite>Configurar</cite>. Permite variar la configuración de la partida por defecto, antes de configurar una partida es necesario crearla o cargarla desde un fichero. Tras pulsar el botón Configurar en la consola aparecerá un menú de opciones donde se muestran los 4 tipos de partida que admite la práctica. Se puede configurar cambiar la configuración de la partida en cualquier momento (ver botones Empezar y Cargar).</p>
+    <p> Los tipos 1 y 2 permiten jugar contra la máquina con blancas o negras, al elegirlos se pedirá el nivel de la máquina. En función de la velocidad del ordenador la máquina tardará más o menos en mover. Sobre un PII a 300MHz el nivel 4 tarda entre 20 y 50 segundos aproximadamente en función de la posición de las fichas.
+    <p>El tipo 4 permite que dos usuario juegen en contra, este modo tambíen es muy útil para probar jugadas o situaciones.
+    </p>
+    <p>El modo 3 permite enfrentar a la máquina contra sí misma, se preguntará por el nivel de ambos jugadores por lo que se puede probar la efectividad de emplear un nivel más elevado contra uno menor, el problea de este modo es que una vez iniciada la partida se debe esperar a que acabe para seguir interactuando con la aplicación o forzar la terminación de la misma desde la consola pulsando la combinación de teclas Control+C. En las pruebas que he realizado, si se emplea un nivel 3 la partida es muy rápida y si se emplea un nivel 4 es algo más lenta pero no dura más de unos pocos minutos.
+    </p>
+    <p>En caso de el jugador que maneja las fichas blancas sea la máquina la partida no comenzará hasta que se pulse sobre el boton empezar, la utilidad de este botón se describe aquí abajo.
+    </p>
+    <p>- <cite>Empezar</cite>. Como se indica en el caso anterior la función de este botón es permitir que la máquina inicie la partida, esto es necesario en dos situaciones, al iniciar una partida en la que se configura el jugador de blancas como máquina y cuando se carga una partida (ver apartado siguiente) y el jugador al que le toca mover es controlado por la máquina.</p>
+    <p>- <cite>Cargar</cite>. Cargar permire reanudar una partida guardada anteriormente, como se ha dicho anteriormente tras cargar la partida si el usuario al que le toca mover es controlado por la máquina se debe pulsar el botón Empezar.</p>
+    <p>Es importante resaltar aquí que tras cargar una partida se puede pulsar el botón configurar para cambiar el tipo de jugadores que de la partida cargada, permitiendo así cambiar de bando o dejar que los jugadores controlados por la máquina acaben la partida.
+    </p>
+    <p>- <cite>Grabar</cite>. Graba la partida actual para poder cargarla cuando se desee.</p>
+    <p>- <cite>Salir</cite>. Sale de la aplicación.
+  </body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <link name="especifica" href="estiloDoc.css" rel="stylesheet" type="text/css">
+    <title>FIA 2002/2003 - Práctica 1</title>
+  </head>
+  <body>
+  	<h2>Características</h2>
+    <p> Aquí pretendo explicar las características que he implementado en la práctica, practicamente he implementado el juego completo pero una de las reglas por su complejidad no me ha dado tiempo a implementar (en realidad no me ha dado tiempo a optimizar su implementación).
+    </p>
+    <p> En primer lugar respecto a movimiento de las fichas, han sido implementados todos los mivimientos comunes, incluído el posible avance de dos casillas por parte de un peón en su primera tirada.
+    </p>
+    <p> Ya en relación a las jugadas menos comunes, también han sido implementadas las jugadas de <cite>enroque</cite> tanto largo como corto, <cite>captura al paso</cite> y <cite>promoción</cite>, esta última es el cambio por un caballo, alfil, torre o dama de un peón que alcanza la fila más alejada de su posición inicial).
+    </p>
+    <p> La jugada de enroque se considera jugada de rey y por lo tanto para efectuarla basta con situar el rey en la posición que quedará tras efectuar el enroque.
+    </p>
+    <p> Sobre la finalización de la partida, por supuesto el <cite>jaque</cite> y el <cite>jaque mate</cite> están implementados, en cambio la terminacion por <cite>tablas</cite> no ha sido completamente implementada. Para la terminación de la se puede decir que es necesario que se den una de las siguientes condiciones:<br/>
+    - Ahogado. Un jugador no puede mover y tampoco está en jaque.<br/>
+    - En 50 movimientos no se ha matado una ficha ni movido un peón.<br/>
+    - El dibujo del tablero (mismas fichas en mismas posiciones) se repite 3 veces.<br/>
+    Las dos primeras condiciones han sido implementadas, en cambio la tercera no lo ha sido por que suponía un incremeno en el tiempo de realización de cada jugada considerable y es una jugada muy poco probable de forma involuntaria, si la jugada se realiza de forma voluntaria es más sencillo acordar con el contrario el abandonar la partida.
+    </p>
+  </body>
+</html>
