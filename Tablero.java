@@ -1,7 +1,7 @@
 // FUNDAMENTOS DE INTELIGENCIA ARTIFICIAL
 // CURSO 2002-03
 // INGNENIERIA EN INFORMATICA
-//Funciones desarrolladas para la práctica 1 de FIA 2002/2003
+//Funciones desarrolladas para la prÃ¡ctica 1 de FIA 2002/2003
 //*********************************************************************
 //void moverJugador1()
 //void moverJugador2()
@@ -34,16 +34,16 @@
 //int MovimientosAlfil(int x, int y)
 //int MovimientosTorre(int x, int y)
 //*********************************************************************
-//¡¡¡¡¡¡¡¡¡¡SIN IMPLEMETAR¡¡¡¡¡¡¡¡¡¡
-//TABLAS: REPETIR 3 VECES LA CONFIGURACIÓN DE LA PARTIDA
-//INFORMACIÓN POR LA CONSOLA
+//Â¡Â¡Â¡Â¡Â¡Â¡Â¡Â¡Â¡Â¡SIN IMPLEMETARÂ¡Â¡Â¡Â¡Â¡Â¡Â¡Â¡Â¡Â¡
+//TABLAS: REPETIR 3 VECES LA CONFIGURACIÃ“N DE LA PARTIDA
+//INFORMACIÃ“N POR LA CONSOLA
 //---- + PRUEBAS ----
 import java.io.*;
 import java.awt.*;
 import java.util.*;
 //Tablero de juego
-//Codificación de las fichas blancas
-// 1 Peón
+//CodificaciÃ³n de las fichas blancas
+// 1 PeÃ³n
 // 2 Caballo
 // 3 Alfil
 // 4 Torre
@@ -136,7 +136,7 @@ public class Tablero implements Serializable {
     }
 
     //----------------------------------------------------------------------------//
-    //Devuelve la casilla del tablero en función de las coordenadas físicas
+    //Devuelve la casilla del tablero en funciÃ³n de las coordenadas fÃ­sicas
     public Point devuelveCasilla ( Point p ) {
         Point p1 = new Point();
         p1.setLocation( Math.floor( ( p.getY() - 20 ) / 60 ), Math.floor( ( p.getX() - 20 ) / 60 ) );
@@ -144,7 +144,7 @@ public class Tablero implements Serializable {
     }
 
     //----------------------------------------------------------------------------//
-    //Devuelve las coordenadas físicas correspondientes a una casilla
+    //Devuelve las coordenadas fÃ­sicas correspondientes a una casilla
     public Point devuelveCoords ( int x, int y ) {
         Point p = new Point();
         p.setLocation( y * 60 + 20, x * 60 + 20 );
@@ -164,7 +164,7 @@ public class Tablero implements Serializable {
             j.MostrarJugada();
 
             realizarJugada( j );
-            //si el peón ha llegado al final lo cambio por una ficha
+            //si el peÃ³n ha llegado al final lo cambio por una ficha
             if ( ( j.ficha == -1 && j.destino.getX() == 7 ) ||
                  ( j.ficha == 1 && j.destino.getX() == 0 ) )
                 tab[ ( int ) j.destino.getX() ][ ( int ) j.destino.getY() ] = 5 * turno * ( -1 );
@@ -186,7 +186,7 @@ public class Tablero implements Serializable {
             j.MostrarJugada();
 
             realizarJugada( j );
-            //si el peón ha llegado al final lo cambio por una ficha
+            //si el peÃ³n ha llegado al final lo cambio por una ficha
             if ( ( j.ficha == -1 && j.destino.getX() == 7 ) ||
                  ( j.ficha == 1 && j.destino.getX() == 0 ) )
                 tab[ ( int ) j.destino.getX() ][ ( int ) j.destino.getY() ] = 5 * turno * ( -1 );
@@ -223,7 +223,7 @@ public class Tablero implements Serializable {
                             new BufferedReader( new InputStreamReader( System.in ) );
                         do {
                             System.out.println( "********************** CAMBIO DE FICHA *********************" );
-                            System.out.println( "Introduzca la ficha por la que desea cambiar el peón:" );
+                            System.out.println( "Introduzca la ficha por la que desea cambiar el peÃ³n:" );
                             System.out.print( "[2:caballo | 3:alfil | 4:torre | 5:reina ] " );
                             f = Integer.valueOf( entrada.readLine() ).intValue();
                             tab[ ( int ) destino.getX() ][ ( int ) destino.getY() ] = f * turno * ( -1 );
@@ -266,7 +266,7 @@ public class Tablero implements Serializable {
         m.contador_tablas = contador_tablas;
         m.contador_movimientos = contador_movimientos;
         m.captura = cap[(int)j.destino.getY()];
-        //comprobamos si están implicadas las fichas que pueden enrocar
+        //comprobamos si estÃ¡n implicadas las fichas que pueden enrocar
         //y las marcamos como movidas
         if ( j.ficha == 6 )
             movRey_b = true;
@@ -355,7 +355,7 @@ public class Tablero implements Serializable {
     }
 
     //---------------------------------------------------------------------------//
-    //Comprobación de jugada correcta para las blancas
+    //ComprobaciÃ³n de jugada correcta para las blancas
     boolean jugadaCorrecta( Point origen, Point destino ) {
         boolean r = false;
         int ficha = tab[ ( int ) origen.getX() ][ ( int ) origen.getY() ];
@@ -428,7 +428,7 @@ public class Tablero implements Serializable {
     }
 
     //-----------------------------------------------------------------------//
-    //Método que se encarga de dibujar el tablero
+    //MÃ©todo que se encarga de dibujar el tablero
     public void dibujar( Graphics g ) {
         int x, y;
         int ficha;
@@ -450,7 +450,7 @@ public class Tablero implements Serializable {
     }
 
     //-------------------------------------------------------------------------//
-    //Método que dibuja un cuadrado del tablero de ajedrez
+    //MÃ©todo que dibuja un cuadrado del tablero de ajedrez
     private void pintaCuadrado( Graphics g, int x, int y, Color colorin ) {
         int[ ] coordX = new int[ 4 ];
         int[ ] coordY = new int[ 4 ];
@@ -484,7 +484,7 @@ public class Tablero implements Serializable {
     }
 
     //-------------------------------------------------------------------------//
-    //Comprueba si nos han hecho jaque el turno actual está en jaque
+    //Comprueba si nos han hecho jaque el turno actual estÃ¡ en jaque
     boolean jaque() {
         //buscamos el rey
         int xRey = 0, yRey = 0;
@@ -549,12 +549,12 @@ public class Tablero implements Serializable {
     //-----------------------------------------------------------------------------//
     //Comprueba si la partida esta en tablas
     boolean tablas() {
-        //"ahogado" el rey no está en jaque pero no puedo mover ninguna ficha
+        //"ahogado" el rey no estÃ¡ en jaque pero no puedo mover ninguna ficha
         if ( !jaque() && !esPosibleMover() ) {
             return true;
         }
         //se repite 3 veces el dibujo del tablero
-        //en 50 movimientos no se movió un peón o mató una ficha
+        //en 50 movimientos no se moviÃ³ un peÃ³n o matÃ³ una ficha
         if ( contador_tablas == 50 ) {
             return true;
         }
@@ -636,7 +636,7 @@ public class Tablero implements Serializable {
         }
     }
 
-    //comprueba si la jugada es correcta para un peón
+    //comprueba si la jugada es correcta para un peÃ³n
     //-------------------------------------------------------------------------//
     boolean jugadaCorrectaPeon( Point origen, Point destino ) {
         //solo se puede avanzar una casilla o dos
@@ -651,7 +651,7 @@ public class Tablero implements Serializable {
         if ( ( int ) destino.getY() == ( int ) origen.getY() &&
              tab[ ( int ) destino.getX() ][ ( int ) destino.getY() ] == 0 ) {
             //si avanzamos dos casillas debemos partir de la posicion
-            //inicial y la casilla saltada debe estar vacía
+            //inicial y la casilla saltada debe estar vacÃ­a
             if ( ( ( int ) destino.getX() - ( int ) origen.getX() == ( -1 ) * turno * 2 ) &&
                  tab[( int ) destino.getX() + turno][(int) destino.getY()] == 0 &&
                  ( ( ( int ) origen.getX() == 6 && turno == 1 ) ||
@@ -672,7 +672,7 @@ public class Tablero implements Serializable {
             if ( tab[ ( int ) destino.getX() ][ ( int ) destino.getY() ] * turno < 0 ) {
                 return true; //captura diagonal
             }
-            //si el destino está vacio y se da la condición de captura al paso
+            //si el destino estÃ¡ vacio y se da la condiciÃ³n de captura al paso
             int c = (turno == 1) ? 3 : 4;
             if ( tab[ ( int ) destino.getX() ][ ( int ) destino.getY() ] == 0
                  && cap[(int)destino.getY()] == contador_movimientos - 1
@@ -780,7 +780,7 @@ public class Tablero implements Serializable {
     }
 
     //-------------------------------------------------------------------------------//
-    //Comprueba si la jugada se corresponde con un enroque correcto: 1 si así es
+    //Comprueba si la jugada se corresponde con un enroque correcto: 1 si asÃ­ es
     boolean jugadaCorrectaEnroque( Point origen, Point destino ) {
         int ficha = tab[ ( int ) origen.getX() ][ ( int ) origen.getY() ];
 
@@ -869,7 +869,7 @@ public class Tablero implements Serializable {
 
         //comprobamos izquierda-centro-derecha, t indica el turno{+1,-1}
         //-p-       -P-
-        //ppp   ó   ppp
+        //ppp   Ã³   ppp
         //-P-       -p-
         //izquierda
         if ( jugadaCorrecta( new Point( x, y ), new Point( x - turno, y - 1 ) ) &&
@@ -899,7 +899,7 @@ public class Tablero implements Serializable {
     //-----------------------------------------------------------------------------//
     //devuelve true si tras mover correctamente el caballo(x,y) no existe jaque
     public void generarJugadasCaballo( int x, int y, LinkedList l ) {
-        //comprueba para las 8 casillas si podemos mover allí y si deshacemos el jaque
+        //comprueba para las 8 casillas si podemos mover allÃ­ y si deshacemos el jaque
         //-c-c-
         //c---c
         //--C--
@@ -942,7 +942,7 @@ public class Tablero implements Serializable {
 
     //devuelve true si tras mover correctamente el alfil(x,y) no existe jaque
     public void generarJugadasAlfil( int x, int y, LinkedList l ) {
-        //comprueba las 4 diagonales posibles, como mucho podrá avanzar 7 casillas
+        //comprueba las 4 diagonales posibles, como mucho podrÃ¡ avanzar 7 casillas
         //a---a
         //-a-a-
         //--A--
@@ -970,7 +970,7 @@ public class Tablero implements Serializable {
 
     //devuelve true si tras mover correctamente la torre(x,y) no existe jaque
     public void generarJugadasTorre( int x, int y, LinkedList l ) {
-        //comprueba las 4 rectas posibles, como mucho podrá avanzar 7 casillas
+        //comprueba las 4 rectas posibles, como mucho podrÃ¡ avanzar 7 casillas
         //--t--
         //--t--
         //ttTtt
@@ -1010,7 +1010,7 @@ public class Tablero implements Serializable {
 
     //devuelve true si tras mover correctamente el rey(x,y) no existe jaque
     public void generarJugadasRey( int x, int y, LinkedList l ) {
-        //comprueba para las 8 casillas si podemos mover allí y si deshacemos el jaque
+        //comprueba para las 8 casillas si podemos mover allÃ­ y si deshacemos el jaque
         // rrr
         //rrRrr
         // rrr
@@ -1072,7 +1072,7 @@ public class Tablero implements Serializable {
         case 5:
             return MovimientosAlfil( x, y ) + MovimientosTorre( x, y );
         default:
-            System.out.println( "Cuidado: Movimientos no está implementada para peones, caballos y reyes" );
+            System.out.println( "Cuidado: Movimientos no estÃ¡ implementada para peones, caballos y reyes" );
         }
         return n;
     }
@@ -1088,7 +1088,7 @@ public class Tablero implements Serializable {
         else
             turno = 1;
 
-        //comprueba las 4 diagonales posibles, como mucho podrá avanzar 7 casillas
+        //comprueba las 4 diagonales posibles, como mucho podrÃ¡ avanzar 7 casillas
         //a---a
         //-a-a-
         //--A--
@@ -1124,7 +1124,7 @@ public class Tablero implements Serializable {
         else
             turno = 1;
 
-        //comprueba las 4 rectas posibles, como mucho podrá avanzar 7 casillas
+        //comprueba las 4 rectas posibles, como mucho podrÃ¡ avanzar 7 casillas
         //--t--
         //--t--
         //ttTtt

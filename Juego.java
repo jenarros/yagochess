@@ -7,7 +7,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
 
-// Interfaz gr·fico
+// Interfaz gr√°fico
 public class Juego extends JFrame {
 
   private Point posOrigen;
@@ -158,7 +158,7 @@ public class Juego extends JFrame {
   }
 
 
-  //MÈtodo encargado de recuperar una partida almacenada
+  //M√©todo encargado de recuperar una partida almacenada
   void cargar( ActionEvent e ) {
     String nombre;
 
@@ -185,7 +185,7 @@ public class Juego extends JFrame {
     }
   }
 
-  //MÈtodo encargado de grabar una configuraciÛn del tablero
+  //M√©todo encargado de grabar una configuraci√≥n del tablero
   void grabar( ActionEvent e ) {
     String nombre;
 
@@ -208,7 +208,7 @@ public class Juego extends JFrame {
     }
   }
 
-  //MÈtodo encargado de empezar una partida
+  //M√©todo encargado de empezar una partida
   void empezar( ActionEvent e ) {
     if (tabla == null){
       System.out.println("Primero debes crear el juego");
@@ -221,7 +221,7 @@ public class Juego extends JFrame {
     System.out.println("acabada = false");
     if(tabla.jugador1.tipo.equals("u") && tabla.jugador2.tipo.equals("m"))
       tabla.moverJugador2();
-    //si los dos jugadores son m·quinas dirigimos la partida desde aquÌ
+    //si los dos jugadores son m√°quinas dirigimos la partida desde aqu√≠
     else if(tabla.jugador2.tipo.equals("m") && tabla.jugador1.tipo.equals("m"))
     {
       while(tabla.acabada == false)
@@ -239,14 +239,14 @@ public class Juego extends JFrame {
     }
   }
   
-  //MÈtodo que crea un tablero nuevo
+  //M√©todo que crea un tablero nuevo
   void crear( ActionEvent e){
     tabla = new Tablero();
     p.ponTablero( tabla );
 
     p.repaint();
   }
-  //MÈtodo encargado de configurar los jugadores
+  //M√©todo encargado de configurar los jugadores
   void configurar( ActionEvent e ) {
     if (tabla == null){
       System.out.println("Primero debes crear el juego");
@@ -318,7 +318,7 @@ public class Juego extends JFrame {
   }
 
   //***************************************************************************
-  //Clase interna para manejar los eventos del ratÛn sobre el tablero de juego
+  //Clase interna para manejar los eventos del rat√≥n sobre el tablero de juego
   //****************************************************************************
 
   class AccionListener implements MouseListener {

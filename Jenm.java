@@ -1,4 +1,4 @@
-//CLASE PARA LA SEGUNDA PARTE DE LA PR¡CTICA 1
+//CLASE PARA LA SEGUNDA PARTE DE LA PR√ÅCTICA 1
 import java.lang.*;
 import java.util.*;
 import java.io.*;
@@ -18,17 +18,17 @@ class Jenm implements Jugador,Serializable {
         tipo = t;
     }
 
-    //permite especificar de quÈ lado juega la m·quina.
+    //permite especificar de qu√© lado juega la m√°quina.
     public void fijarLado( int l ) {
         lado = l;
     }
 
-    //permite fijar la profundidad m·xima en el ·rbol de b˙squeda
+    //permite fijar la profundidad m√°xima en el √°rbol de b√∫squeda
     public void fijarNivelMaximo( int n ) {
         nivel = n;
     }
 
-    //calcula la mejor jugada para la posiciÛn actual de las piezas mediante alfa-beta
+    //calcula la mejor jugada para la posici√≥n actual de las piezas mediante alfa-beta
     public Jugada hacerJugada( Tablero t ) {
         JugadaValor j = new JugadaValor();
 
@@ -46,7 +46,7 @@ class Jenm implements Jugador,Serializable {
     }
 
     //Algoritmo AlfaBeta
-    //El nodo est· compuesto por (nivel,Tablero)
+    //El nodo est√° compuesto por (nivel,Tablero)
     public JugadaValor AlfaBeta( int n, Tablero t, int alfa, int beta ) {
         LinkedList jugadas = new LinkedList();
         JugadaValor jv = new JugadaValor();
@@ -98,7 +98,7 @@ class Jenm implements Jugador,Serializable {
                 }
             }
 
-            //si pierde MAX en 2 o m·s movimientos dejamos que juegue hasta entonces
+            //si pierde MAX en 2 o m√°s movimientos dejamos que juegue hasta entonces
             if(jv.j == null && j != null) {
                 //camino.add(jv.j);
                 jv.j = j;
@@ -142,7 +142,7 @@ class Jenm implements Jugador,Serializable {
                 }
             }
 
-            //si pierde MIN en 2 o m·s movimientos dejamos que juegue hasta entonces
+            //si pierde MIN en 2 o m√°s movimientos dejamos que juegue hasta entonces
             if(jv.j == null && j != null) {
                 jv.j = j;
             }
@@ -152,7 +152,7 @@ class Jenm implements Jugador,Serializable {
         }
     }
 
-    //FunciÛn2 de evaluaciÛn del tablero
+    //Funci√≥n2 de evaluaci√≥n del tablero
     public int F1( Tablero t ) {
         int f1 = 0, f2 = 0;
 
@@ -160,19 +160,19 @@ class Jenm implements Jugador,Serializable {
             for ( int j = 0; j < 8; j++ ) {
                 if ( t.tab[ i ][ j ] * lado > 0 ) { //la ficha es mia
                     switch ( Math.abs( t.tab[ i ][ j ] ) ) {
-                    case 1://cuanto m·s adelante mejor
+                    case 1://cuanto m√°s adelante mejor
                         f1 += 100 ;
                         if(t.tab[i][j] < 0)
                             f1 += i * 20;
                         else
                             f1 += (7-i) * 20;
-                        //Un peÛn cubierto vale m·s
+                        //Un pe√≥n cubierto vale m√°s
                         if(i + t.turno < 8 && i + t.turno > 0 && j - 1 > 0 && j + 1 < 8 
                             && (t.tab[i+t.turno][j - 1 ] == t.tab[i][j] 
                                 || t.tab[i+t.turno][j + 1 ] == t.tab[i][j]))
                             f1 += 30;
                         break;
-                    case 2://cuanto m·s al centro del tablero mejor
+                    case 2://cuanto m√°s al centro del tablero mejor
                         f1 += 300 + (3.5 - Math.abs(3.5 - j)) * 20 ;
                         if(t.tab[i][j] < 0)
                             f1 += Math.abs(3.5 - i) * 10;
@@ -185,7 +185,7 @@ class Jenm implements Jugador,Serializable {
                     case 4:
                         f1 += 500;
                         break;
-                    case 5://cuanto m·s al centro mejor
+                    case 5://cuanto m√°s al centro mejor
                         f1 += 940 + (3.5 - Math.abs(3.5 - j)) * 20 ;
                         if(t.tab[i][j] < 0)
                             f1 += Math.abs(3.5 - i) * 10;
@@ -193,7 +193,7 @@ class Jenm implements Jugador,Serializable {
                             f1 += Math.abs(3.5 - i) * 10;
                         break;
                     case 6:
-                        //el rey siempre est· asÌ que no lo evaluamos
+                        //el rey siempre est√° as√≠ que no lo evaluamos
                         break;
                     default:
                         System.out.println( "ERROR GRAVE" );
@@ -201,7 +201,7 @@ class Jenm implements Jugador,Serializable {
                 }
                 if ( t.tab[ i ][ j ] * lado < 0 ) { //la ficha es del contrario
                     switch ( Math.abs( t.tab[ i ][ j ] ) ) {
-                    case 1://cuanto m·s alante mejor
+                    case 1://cuanto m√°s alante mejor
                         f2 += 100 ;
                         if(t.tab[i][j] < 0)
                             f2 += i * 30;
@@ -229,7 +229,7 @@ class Jenm implements Jugador,Serializable {
                             f2 += Math.abs(3.5 - i) * 10;
                         break;
                     case 6:
-                        //el rey siempre est· asÌ que no lo evaluamos
+                        //el rey siempre est√° as√≠ que no lo evaluamos
                         break;
                     default:
                         System.out.println( "ERROR GRAVE" );
@@ -240,7 +240,7 @@ class Jenm implements Jugador,Serializable {
         return f1 - f2;
     }
     
-    //FunciÛn3 de evaluaciÛn del tablero
+    //Funci√≥n3 de evaluaci√≥n del tablero
     public int F2( Tablero t ) {
         int f1 = 0, f2 = 0;
 
@@ -248,14 +248,14 @@ class Jenm implements Jugador,Serializable {
             for ( int j = 0; j < 8; j++ ) {
                 if ( t.tab[ i ][ j ] * lado > 0 ) { //la ficha es mia
                     switch ( Math.abs( t.tab[ i ][ j ] ) ) {
-                    case 1://cuanto m·s adelante mejor
+                    case 1://cuanto m√°s adelante mejor
                         f1 += 100 ;
                         if(t.tab[i][j] < 0)
                             f1 += i * 20;
                         else
                             f1 += (7-i) * 20;
                         break;
-                    case 2://cuanto m·s al centro del tablero mejor
+                    case 2://cuanto m√°s al centro del tablero mejor
                         f1 += 300 + (3.5 - Math.abs(3.5 - j)) * 20 ;
                         if(t.tab[i][j] < 0)
                             f1 += Math.abs(3.5 - i) * 10;
@@ -272,7 +272,7 @@ class Jenm implements Jugador,Serializable {
                         else
                             f1 += Math.abs(3.5 - i) * 15;
                         break;
-                    case 5://cuanto m·s al centro del tablero mejor
+                    case 5://cuanto m√°s al centro del tablero mejor
                         f1 += 940 + (3.5 - Math.abs(3.5 - j)) * 20;
                         if(t.tab[i][j] < 0)
                             f1 += Math.abs(3.5 - i) * 10;
@@ -280,7 +280,7 @@ class Jenm implements Jugador,Serializable {
                             f1 += Math.abs(3.5 - i) * 10;
                         break;
                     case 6:
-                        //el rey siempre est· asÌ que no lo evaluamos
+                        //el rey siempre est√° as√≠ que no lo evaluamos
                         break;
                     default:
                         System.out.println( "ERROR GRAVE" );
@@ -288,7 +288,7 @@ class Jenm implements Jugador,Serializable {
                 }
                 if ( t.tab[ i ][ j ] * lado < 0 ) { //la ficha es del contrario
                     switch ( Math.abs( t.tab[ i ][ j ] ) ) {
-                    case 1://cuanto m·s alante mejor
+                    case 1://cuanto m√°s alante mejor
                         f2 += 100 ;
                         if(t.tab[i][j] < 0)
                             f2 += i * 30;
@@ -316,7 +316,7 @@ class Jenm implements Jugador,Serializable {
                             f2 += Math.abs(3.5 - i) * 10;
                         break;
                     case 6:
-                        //el rey siempre est· asÌ que no lo evaluamos
+                        //el rey siempre est√° as√≠ que no lo evaluamos
                         break;
                     default:
                         System.out.println( "ERROR GRAVE" );

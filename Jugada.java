@@ -16,7 +16,7 @@ public class Jugada {
         System.out.print("FICHA " + ficha + " DESDE [ " + (int)origen.getX() + " , " + (int)origen.getY() + " ] ");
         System.out.println("HASTA [ " + (int)destino.getX() + " , " + (int)destino.getY() + " ] ");
     }
-	//código de ficha a mover (1: peón blanco,...)
+	//cÃ³digo de ficha a mover (1: peÃ³n blanco,...)
 	int ficha;
 	//coordenadas de origen en la matriz del tablero
 	Point origen;
