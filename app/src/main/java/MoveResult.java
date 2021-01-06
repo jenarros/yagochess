@@ -4,7 +4,7 @@ public class MoveResult {
 	MoveResult() {
 	}
 
-	int tipo = -1; //2=normal, 3=captura al paso, 4=enroque
+	int type = -1; //2=normal, 3=captura al paso, 4=enroque
 	Point squareA = new Point(0, 0);
 	Point squareB = new Point(0, 0);
 	Point squareC = new Point(0, 0);

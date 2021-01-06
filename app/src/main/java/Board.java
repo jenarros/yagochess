@@ -97,29 +97,19 @@ public class Board implements Serializable {
         return new Point(Double.valueOf(Math.floor((p.y - 20) / 60)).intValue(), Double.valueOf(Math.floor((p.x - 20) / 60)).intValue());
     }
 
-    //----------------------------------------------------------------------------//
-    //Devuelve las coordenadas físicas correspondientes a una casilla
-    public Point devuelveCoords(int x, int y) {
-        Point p = new Point();
-        p.setLocation(y * 60 + 20, x * 60 + 20);
-        return p;
-    }
-
     void movePlayer1() {
         if (player1.type.equals("m")) { //si es una maquina
             Move j = player1.move(this);
-
 
             System.out.print("Jugador 1: ");
             j.print();
 
             play(j);
             //si el peón ha llegado al final lo cambio por una ficha
-            if ((j.piece == -1 && j.to.x == 7) ||
-                    (j.piece == 1 && j.to.x == 0))
+            if ((j.piece == -1 && j.to.x == 7) || (j.piece == 1 && j.to.x == 0)) {
                 tab[j.to.x][j.to.y] = 5 * turn * (-1);
+            }
 
-            Game.boardPanel.update(Game.boardPanel.getGraphics());
             finished = isFinished();
         }
     }
@@ -137,7 +127,6 @@ public class Board implements Serializable {
                     (j.piece == 1 && j.to.x == 0))
                 tab[j.to.x][j.to.y] = 5 * turn * (-1);
 
-            Game.boardPanel.update(Game.boardPanel.getGraphics());
             finished = isFinished();
         }
     }
@@ -175,7 +164,6 @@ public class Board implements Serializable {
                         System.out.println("Error: " + e);
                     }
                 }
-                Game.boardPanel.update(Game.boardPanel.getGraphics());
 
                 finished = isFinished();
                 if (!finished) {
@@ -251,12 +239,12 @@ public class Board implements Serializable {
                     && Math.abs(move.from.x - move.to.x) == 1
                     && Math.abs(move.from.y - move.to.y) == 1
                     && cap[move.to.y] == moveCounter - 1) {
-                m.tipo = 3;
+                m.type = 3;
                 m.squareC = new Point(move.to.x + turn, move.to.y);
                 m.pieceC = tab[move.to.x + turn][move.to.y];
                 tab[move.to.x + turn][move.to.y] = 0;
             } else
-                m.tipo = 2;
+                m.type = 2;
             m.squareA = move.from;
             m.squareB = move.to;
             m.pieceA = tab[move.from.x][move.from.y];
@@ -272,10 +260,10 @@ public class Board implements Serializable {
     void undo(MoveResult moveResult) {
         tab[moveResult.squareA.x][moveResult.squareA.y] = moveResult.pieceA;
         tab[moveResult.squareB.x][moveResult.squareB.y] = moveResult.pieceB;
-        if (moveResult.tipo == 3) {
+        if (moveResult.type == 3) {
             tab[moveResult.squareC.x][moveResult.squareC.y] = moveResult.pieceC;
         }
-        if (moveResult.tipo == 4) {
+        if (moveResult.type == 4) {
             //System.out.println("Deshago enroque");
             tab[moveResult.squareC.x][moveResult.squareC.y] = moveResult.pieceC;
             tab[moveResult.squareD.x][moveResult.squareD.y] = moveResult.pieceD;
@@ -352,51 +340,6 @@ public class Board implements Serializable {
         return r;
     }
 
-    void drawPiece(Graphics g, int x, int y, int piece) {
-        Point position = devuelveCoords(x, y);
-        if (piece < 0)
-            piece = 6 - piece;
-        g.drawImage(Game.images[piece], position.x + 10, position.y + 10, 40, 40, Game.boardPanel);
-    }
-
-    //-----------------------------------------------------------------------//
-    //Método que se encarga de dibujar el tablero
-    public void draw(Graphics g) {
-        int x, y;
-        int ficha;
-
-        for (x = 20; x < 390; x += 121)
-            for (y = 20; y < 390; y += 121) {
-                drawSquare(g, x, y, Color.white);
-                drawSquare(g, x + 61, y, Color.blue);
-                drawSquare(g, x, y + 61, Color.blue);
-                drawSquare(g, x + 61, y + 61, Color.white);
-            }
-        for ( x = 0;x < 8;x++ )
-            for ( y = 0;y < 8;y++ ) {
-                ficha = tab[ x ][ y ];
-                if ( ficha != 0 ) {
-                    drawPiece(g, x, y, ficha);
-                }
-            }
-    }
-
-    private void drawSquare(Graphics g, int x, int y, Color colorin) {
-        int[] coordX = new int[4];
-        int[] coordY = new int[4];
-
-        g.setColor(colorin);
-        coordX[0] = x;
-        coordX[1] = x;
-        coordX[2] = x + 60;
-        coordX[3] = x + 60;
-        coordY[0] = y;
-        coordY[1] = y + 60;
-        coordY[2] = y + 60;
-        coordY[3] = y;
-        g.fillPolygon(coordX, coordY, 4);
-    }
-
     boolean isFinished() {
         if (isCheckmate()) {
             if (turn == -1)
@@ -404,7 +347,7 @@ public class Board implements Serializable {
             else
                 System.out.println("JAQUE MATE: GANA " + player1.name);
             return true;
-        } else if (isDraw()) {
+        } else if (isADraw()) {
             System.out.println("TABLAS");
             return true;
         } else
@@ -461,7 +404,7 @@ public class Board implements Serializable {
             return !canMoveWithoutBeingCheck();
     }
 
-    boolean isDraw() {
+    boolean isADraw() {
         if (!isInCheck() && !canMoveWithoutBeingCheck()) {
             return true;
         }
@@ -473,12 +416,12 @@ public class Board implements Serializable {
     //realiza el enroque
     //---------------------------------------------------------------------------//
     void realizarEnroque(MoveResult m, Point from, Point to) {
-        int ficha = tab[from.x][from.y];
-        m.tipo = 4;
+        int piece = tab[from.x][from.y];
+        m.type = 4;
 
         if (enroqueL && from.y - to.y > 0) //enroque largo
         {
-            if (ficha > 0) {
+            if (piece > 0) {
                 m.squareA = new Point(7, 0);
                 m.squareB = new Point(7, 4);
                 m.squareC = new Point(7, 2);
@@ -511,7 +454,7 @@ public class Board implements Serializable {
 
             enroqueL = false;
         } else if (enroqueC && from.y - to.y < 0) { //enroque corto
-            if (ficha > 0) {
+            if (piece > 0) {
                 m.squareA = new Point(7, 7);
                 m.squareB = new Point(7, 4);
                 m.squareC = new Point(7, 6);
@@ -548,16 +491,12 @@ public class Board implements Serializable {
     //-------------------------------------------------------------------------//
     boolean jugadaCorrectaPeon(Point from, Point to) {
         //solo se puede avanzar una casilla o dos
-        if (to.x - from.x != (-1) * turn * 1 &&
-                to.x - from.x != (-1) * turn * 2) {
-            //System.out.println("error: un peon no puede mover desde "
-            //     + from + " hasta " + to);
+        if (to.x - from.x != (-1) * turn * 1 && to.x - from.x != (-1) * turn * 2) {
             return false;
         }
 
         //si avanzamos en la misma columna el to debe esta vacio
-        if (to.y == from.y &&
-                tab[to.x][to.y] == 0) {
+        if (to.y == from.y && tab[to.x][to.y] == 0) {
             //si avanzamos dos casillas debemos partir de la posicion
             //inicial y la casilla saltada debe estar vacía
             if ((to.x - from.x == (-1) * turn * 2) &&
@@ -681,17 +620,17 @@ public class Board implements Serializable {
     //-------------------------------------------------------------------------------//
     //Comprueba si la jugada se corresponde con un enroque correcto: 1 si así es
     boolean jugadaCorrectaEnroque(Point from, Point to) {
-        int ficha = tab[from.x][from.y];
+        int piece = tab[from.x][from.y];
 
         //comprobamos si las fichas implicadas son el rey y una torre
-        if (((ficha == 6 && !movRey_b) || (ficha == -6 && !movRey_n)) &&
+        if (((piece == 6 && !movRey_b) || (piece == -6 && !movRey_n)) &&
                 from.x == to.x &&
                 (from.x == 0 || from.x == 7) &&
                 !moveCreatesCheck(from, from)) { //<-no debemos estar en jaque
 
             if (to.y == 2 && tab[from.x][0] == turn * 4) { //torre izquierda
                 //blancas
-                if (ficha > 0 && !movTorreI_b &&
+                if (piece > 0 && !movTorreI_b &&
                         tab[7][1] == 0 && tab[7][2] == 0 &&
                         tab[7][3] == 0 && tab[7][4] == 0 &&
                         !moveCreatesCheck(from, new Point(7, 3)) &&
@@ -700,7 +639,7 @@ public class Board implements Serializable {
                     return true;
                 }
                 //negras
-                if (ficha < 0 && !movTorreI_n &&
+                if (piece < 0 && !movTorreI_n &&
                         tab[0][1] == 0 && tab[0][2] == 0 &&
                         tab[0][3] == 0 && tab[0][4] == 0 &&
                         !moveCreatesCheck(from, new Point(0, 3)) &&
@@ -710,7 +649,7 @@ public class Board implements Serializable {
                 }
             } else if (to.y == 6 && tab[from.x][7] == turn * 4) { //torre derecha
                 //blancas
-                if (ficha > 0 && !movTorreD_b &&
+                if (piece > 0 && !movTorreD_b &&
                         tab[7][5] == 0 && tab[7][6] == 0 &&
                         !moveCreatesCheck(from, new Point(7, 6)) &&
                         !moveCreatesCheck(from, new Point(7, 5))) {
@@ -718,7 +657,7 @@ public class Board implements Serializable {
                     return true;
                 }
                 //negras
-                if (ficha < 0 && !movTorreD_n &&
+                if (piece < 0 && !movTorreD_n &&
                         tab[0][5] == 0 && tab[0][6] == 0 &&
                         !moveCreatesCheck(from, new Point(0, 6)) &&
                         !moveCreatesCheck(from, new Point(0, 5))) {
@@ -1045,5 +984,24 @@ public class Board implements Serializable {
 
         turn = t;
         return n;
+    }
+
+    public void resetWith(Board board) {
+        tab = board.tab;
+        cap = board.cap;
+        turn = board.turn;
+        movTorreI_b = board.movTorreI_b;
+        movTorreD_b = board.movTorreD_b;
+        movRey_b = board.movRey_b;
+        movTorreI_n = board.movTorreI_n;
+        movTorreD_n = board.movTorreD_n;
+        movRey_n = board.movRey_n;
+        finished = board.finished;
+        drawCounter = board.drawCounter;
+        moveCounter = board.moveCounter;
+        player1 = board.player1;
+        player2 = board.player2;
+        enroqueL = board.enroqueL;
+        enroqueC = board.enroqueC;
     }
 }

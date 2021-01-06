@@ -12,7 +12,7 @@ public class Move {
 	}
 
 	void print() {
-		System.out.print("FICHA " + piece + " DESDE [ " + (int) from.getX() + " , " + (int) from.getY() + " ] ");
-		System.out.println("HASTA [ " + (int) to.getX() + " , " + (int) to.getY() + " ] ");
+		System.out.print("Piece " + piece + " from [ " + from.x + " , " + from.y + " ] ");
+		System.out.println("to [ " + to.x + " , " + to.y + " ] ");
 	}
 }
