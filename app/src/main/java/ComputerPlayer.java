@@ -1,24 +1,25 @@
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.function.BiFunction;
 
 public class ComputerPlayer implements Player, Serializable {
     final protected Logger logger;
-    final private int set;
+    final protected int set;
     final private String name;
-    final private String type; //"m" (machine) | "u" (user)
     final private int level;
+    private final BiFunction<Board, Integer, Integer> strategy;
 
-    ComputerPlayer(String name, int set, String type, Logger logger, int level) {
+    ComputerPlayer(String name, int set, Logger logger, int level, BiFunction<Board, Integer, Integer> strategy) {
         this.name = name;
         this.set = set;
-        this.type = type;
         this.logger = logger;
         this.level = level;
+        this.strategy = strategy;
     }
 
     @Override
-    public String type() {
-        return type;
+    public PlayerType type() {
+        return PlayerType.computer;
     }
 
     @Override
@@ -33,8 +34,7 @@ public class ComputerPlayer implements Player, Serializable {
 
     public Move move(Board board) {
         MoveValue moveValue = alfaBeta(level, board, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        logger.info("/********************** Alfa-Beta *********************/");
-        logger.info("Moved processed = " + moveValue.processedMoves + "  minimax = " + moveValue.value);
+        logger.info("Alfa-Beta: Moves processed = " + moveValue.processedMoves + ",  minimax = " + moveValue.value);
 
         return moveValue.move;
     }
@@ -136,103 +136,9 @@ public class ComputerPlayer implements Player, Serializable {
         }
     }
 
-    protected MoveValue leafMoveValue(Board t) {
+    protected MoveValue leafMoveValue(Board board) {
         MoveValue mv = new MoveValue();
-        mv.value = F1(t);
+        mv.value = strategy.apply(board, set);
         return mv;
-    }
-
-    public int F1(Board board) {
-        int f1 = 0, f2 = 0;
-
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (isPieceOurs(board, i, j)) {
-                    switch (Math.abs(board.tab[i][j])) {
-                        case 1://cuanto más adelante mejor
-                            f1 += 100;
-                            if (board.tab[i][j] < 0)
-                                f1 += i * 20;
-                            else
-                                f1 += (7 - i) * 20;
-                            //Un peón cubierto vale más
-                            if (i + board.turn < 8 && i + board.turn > 0 && j - 1 > 0 && j + 1 < 8
-                                    && (board.tab[i + board.turn][j - 1] == board.tab[i][j]
-                                    || board.tab[i + board.turn][j + 1] == board.tab[i][j]))
-                                f1 += 30;
-                            break;
-                        case 2://cuanto más al centro del tablero mejor
-                            f1 += 300 + (3.5 - Math.abs(3.5 - j)) * 20;
-                            if (board.tab[i][j] < 0)
-                                f1 += Math.abs(3.5 - i) * 10;
-                            else
-                                f1 += Math.abs(3.5 - i) * 10;
-                            break;
-                        case 3:
-                            f1 += 300 + board.Movimientos(i, j) * 10;
-                            break;
-                        case 4:
-                            f1 += 500;
-                            break;
-                        case 5://cuanto más al centro mejor
-                            f1 += 940 + (3.5 - Math.abs(3.5 - j)) * 20;
-                            if (board.tab[i][j] < 0)
-                                f1 += Math.abs(3.5 - i) * 10;
-                            else
-                                f1 += Math.abs(3.5 - i) * 10;
-                            break;
-                        case 6:
-                            //el rey siempre está así que no lo evaluamos
-                            break;
-                        default:
-                            logger.warn("ERROR GRAVE");
-                    }
-                } else if (isPieceTheirs(board, i, j)) {
-                    switch (Math.abs(board.tab[i][j])) {
-                        case 1://cuanto más adelante mejor
-                            f2 += 100;
-                            if (board.tab[i][j] < 0)
-                                f2 += i * 30;
-                            else
-                                f2 += (7 - i) * 30;
-                            if (i + board.turn < 8 && i + board.turn > 0 && j - 1 > 0 && j + 1 < 8
-                                    && (board.tab[i + board.turn][j - 1] == board.tab[i][j]
-                                    || board.tab[i + board.turn][j + 1] == board.tab[i][j]))
-                                f2 += 20;
-                            break;
-                        case 2:
-                            f2 += 300 + (3.5 - Math.abs(3.5 - j)) * 20;
-                            break;
-                        case 3:
-                            f2 += 330 + board.Movimientos(i, j) * 10;
-                            break;
-                        case 4:
-                            f2 += 500;
-                            break;
-                        case 5:
-                            f2 += 1000;
-                            if (board.tab[i][j] < 0)
-                                f2 += Math.abs(3.5 - i) * 10;
-                            else
-                                f2 += Math.abs(3.5 - i) * 10;
-                            break;
-                        case 6:
-                            //el rey siempre está así que no lo evaluamos
-                            break;
-                        default:
-                            logger.warn("ERROR GRAVE");
-                    }
-                }
-            }
-        }
-        return f1 - f2;
-    }
-
-    boolean isPieceOurs(Board board, int i, int j) {
-        return board.tab[i][j] * set > 0;
-    }
-
-    boolean isPieceTheirs(Board board, int i, int j) {
-        return board.tab[i][j] * set < 0;
     }
 }

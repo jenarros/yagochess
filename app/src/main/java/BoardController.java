@@ -82,14 +82,12 @@ public class BoardController extends JPanel {
 
 	void startGame() {
 		board.drawCounter = 0;
-		logger.info("drawCounter = " + board.drawCounter);
 		board.finished = false;
-		logger.info("finished = " + board.finished);
-		if (board.player1.type().equals("u") && board.player2.type().equals("m")) {
+		if (board.player1.isUser() && board.player2.isComputer()) {
 			board.movePlayer2();
 			update();
 
-		} else if (board.player2.type().equals("m") && board.player1.type().equals("m")) {
+		} else if (board.player2.isComputer() && board.player1.isComputer()) {
 			while (!board.finished) {
 				try {
 					Thread.sleep(200);
@@ -101,7 +99,7 @@ public class BoardController extends JPanel {
 						update();
 					}
 				} catch (Exception exc) {
-					logger.warn("Error: " + exc);
+					throw new RuntimeException(exc);
 				}
 			}
 		}
@@ -116,18 +114,13 @@ public class BoardController extends JPanel {
 	}
 
 	void configurePlayers(ActionEvent e) {
-		if (board == null) {
-			logger.warn("Primero debes crear el juego");
-			return;
-		}
-
 		try {
 			int game = gameTypeOptions[JOptionPane.showOptionDialog(this,
 					"  black set   | white set\n" +
 							"1: machine   | user\n" +
 							"2: user         | machine\n" +
-							"3: machine1 | machine2\n" +
-							"4: user1       | user2\n",
+							"3: machine 1 | machine 2\n" +
+							"4: user 1       | user 2\n",
 					"Choose type of game",
 					JOptionPane.YES_NO_CANCEL_OPTION,
 					JOptionPane.QUESTION_MESSAGE,
@@ -137,17 +130,17 @@ public class BoardController extends JPanel {
 			logger.info("Type " + game + " chosen");
 
 			if (game == 1) {
-				board.player1 = new ComputerPlayer("machine1", -1, "m", logger, getLevel("Select player 1 level: ", 1));
-				board.player2 = new UserPlayer("user1", 1, "u", logger);
+				board.player1 = new ComputerPlayer("computer 1", -1, logger, getLevel("Select player 1 level: ", 1), PlayerStrategies.F1);
+				board.player2 = new UserPlayer("user 1", 1);
 			} else if (game == 2) {
-				board.player1 = new UserPlayer("user1", -1, "u", logger);
-				board.player2 = new ComputerPlayer("machine1", 1, "m", logger, getLevel("Select player 2 level: ", 1));
+				board.player1 = new UserPlayer("user 1", -1);
+				board.player2 = new ComputerPlayer("computer 1", 1, logger, getLevel("Select player 2 level: ", 1), PlayerStrategies.F1);
 			} else if (game == 3) {
-				board.player1 = new ComputerPlayer("machine1", -1, "m", logger, getLevel("Select player 1 level: ", 1));
-				board.player2 = new Computer2Player("machine2", 1, "m", logger, getLevel("Select player 2 level: ", 1));
+				board.player1 = new ComputerPlayer("computer 1", -1, logger, getLevel("Select player 1 level: ", 1), PlayerStrategies.F1);
+				board.player2 = new ComputerPlayer("computer 2", 1, logger, getLevel("Select player 2 level: ", 1), PlayerStrategies.F2);
 			} else {
-				board.player1 = new UserPlayer("user1", -1, "u", logger);
-				board.player2 = new UserPlayer("user2", 1, "u", logger);
+				board.player1 = new UserPlayer("user 1", -1);
+				board.player2 = new UserPlayer("user 2", 1);
 			}
 			logger.info("Player\tname\ttype\tlevel");
 			logger.info(" 1" + board.player1);

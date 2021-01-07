@@ -89,8 +89,8 @@ public class Board implements Serializable {
                 tab[i][j] = 0;
 
         //por defecto la partida es de tipo 1
-        player1 = new ComputerPlayer("maquina1", -1, "m", logger, 3);
-        player2 = new UserPlayer("usuario1", 1, "u", logger);
+        player1 = new ComputerPlayer("computer 1", -1, logger, 3, PlayerStrategies.F1);
+        player2 = new UserPlayer("user 1", 1);
     }
 
     public Point boardSquare(Point p) {
@@ -98,15 +98,15 @@ public class Board implements Serializable {
     }
 
     void movePlayer1() {
-        if (player1.type().equals("m")) { //si es una maquina
-            Move j = player1.move(this);
+        if (player1.isComputer()) { //si es una maquina
+            Move move = player1.move(this);
 
-            logger.info("Player 1: " + j.toString());
+            logger.info("Player 1: " + move.toString());
 
-            play(j);
+            play(move);
             //si el peón ha llegado al final lo cambio por una ficha
-            if ((j.piece == -1 && j.to.x == 7) || (j.piece == 1 && j.to.x == 0)) {
-                tab[j.to.x][j.to.y] = 5 * turn * (-1);
+            if ((move.piece == -1 && move.to.x == 7) || (move.piece == 1 && move.to.x == 0)) {
+                tab[move.to.x][move.to.y] = 5 * turn * (-1);
             }
 
             finished = isFinished();
@@ -114,16 +114,15 @@ public class Board implements Serializable {
     }
 
     void movePlayer2() {
-        if (player2.type().equals("m")) {
-            Move j = player2.move(this);
+        if (player2.isComputer()) {
+            Move move = player2.move(this);
 
-            logger.info("Player 2: " + j.toString());
+            logger.info("Player 2: " + move.toString());
 
-            play(j);
+            play(move);
             //si el peón ha llegado al final lo cambio por una ficha
-            if ((j.piece == -1 && j.to.x == 7) ||
-                    (j.piece == 1 && j.to.x == 0))
-                tab[j.to.x][j.to.y] = 5 * turn * (-1);
+            if ((move.piece == -1 && move.to.x == 7) || (move.piece == 1 && move.to.x == 0))
+                tab[move.to.x][move.to.y] = 5 * turn * (-1);
 
             finished = isFinished();
         }
@@ -139,20 +138,19 @@ public class Board implements Serializable {
         if (turn * piece < 0)
             return;
 
-        if (piece < 0 && player1.type().equals("u") || piece > 0 && player2.type().equals("u")) { //si el jugador es un usuario
+        if (piece < 0 && player1.isUser() || piece > 0 && player2.isUser()) {
             if (!from.equals(to)
                     && correctMove(from, to)
                     && !moveCreatesCheck(from, to)) {
 
                 Move move = new Move(piece, from, to);
                 play(move);
-                if ((piece == -1 && to.x == 7) ||
-                        (piece == 1 && to.x == 0)) {
+                if ((piece == -1 && to.x == 7) || (piece == 1 && to.x == 0)) {
                     try {
                         int f;
                         BufferedReader entrada = new BufferedReader(new InputStreamReader(System.in));
                         do {
-                            logger.info("********************** CAMBIO DE FICHA *********************");
+                            logger.info("********************** TODO CAMBIO DE FICHA *********************");
                             logger.info("Introduzca la piece por la que desea cambiar el peón:");
                             System.out.print("[2:caballo | 3:alfil | 4:torre | 5:reina ] ");
                             f = Integer.parseInt(entrada.readLine());
@@ -177,7 +175,6 @@ public class Board implements Serializable {
         }
     }
 
-    //realiza la jugada sobre el tablero
     MoveResult play(Move move) {
         MoveResult m = new MoveResult();
 
@@ -217,8 +214,7 @@ public class Board implements Serializable {
             //logger.info("Realizo enroque");
             realizarEnroque(m, move.from, move.to);
         } else { //movimiento convencional
-            if (tab[move.to.x][move.to.y] != 0 ||
-                    Math.abs(move.piece) == 1) {
+            if (tab[move.to.x][move.to.y] != 0 || Math.abs(move.piece) == 1) {
                 //reinicio el contador por matar una ficha
                 //o mover un peon
                 drawCounter = 0;
@@ -230,7 +226,6 @@ public class Board implements Serializable {
                 cap[move.to.y] = moveCounter;
             }
             //realizar captura al paso
-            //if (capturaAlPaso) {
             if (Math.abs(move.piece) == 1
                     && Math.abs(move.from.x - move.to.x) == 1
                     && Math.abs(move.from.y - move.to.y) == 1
@@ -540,29 +535,29 @@ public class Board implements Serializable {
         if (Math.abs(from.x - to.x) == Math.abs(from.y - to.y)) {
             //vamos a recorrer el movimiento de izquierda a derecha
             int ma = Math.max(from.y, to.y); //y final
-            int fila, columna, desp;
+            int rank, file, direction;
 
             //calculamos la casilla de inicio
             if (from.y < to.y) {
-                fila = from.x;
-                columna = from.y;
+                rank = from.x;
+                file = from.y;
             } else {
-                fila = to.x;
-                columna = to.y;
+                rank = to.x;
+                file = to.y;
             }
 
             //calculamos el desplazamiento
-            if (fila == Math.min(from.x, to.x))                 //hacia abajo
-                desp = 1;
+            if (rank == Math.min(from.x, to.x))                 //hacia abajo
+                direction = 1;
             else //hacia arriba
-                desp = -1;
+                direction = -1;
 
             //recorremos el movimiento
-            for ( columna++, fila += desp;columna < ma; ) {
-                if ( tab[ fila ][ columna ] != 0 )
+            for (file++, rank += direction; file < ma; ) {
+                if (tab[rank][file] != 0)
                     return false;
-                fila += desp;
-                columna++;
+                rank += direction;
+                file++;
             }
             return true;
         } else
@@ -609,8 +604,6 @@ public class Board implements Serializable {
                 jugadaCorrectaEnroque(from, to);
     }
 
-    //-------------------------------------------------------------------------------//
-    //Comprueba si la jugada se corresponde con un enroque correcto: 1 si así es
     boolean jugadaCorrectaEnroque(Point from, Point to) {
         int piece = tab[from.x][from.y];
 
@@ -662,28 +655,27 @@ public class Board implements Serializable {
     }
 
     public void generateMoves(LinkedList<Move> l) {
-
-        for (int i = 0; i < 8; i++) { //para todas las filas
-            for (int j = 0; j < 8; j++) { //para todas las columnas
-                if (tab[i][j] * turn > 0) { //en la posicion hay ficha del turno
-                    switch (Math.abs(tab[i][j])) {
+        for (int rank = 0; rank < 8; rank++) {
+            for (int file = 0; file < 8; file++) {
+                if (tab[rank][file] * turn > 0) { //en la posicion hay ficha del turno
+                    switch (Math.abs(tab[rank][file])) {
                         case 1:
-                            generarJugadasPeon(i, j, l);
+                            generarJugadasPeon(rank, file, l);
                             break;
                         case 2:
-                            generarJugadasCaballo(i, j, l);
+                            generarJugadasCaballo(rank, file, l);
                             break;
                         case 3:
-                            generarJugadasAlfil(i, j, l);
+                            generarJugadasAlfil(rank, file, l);
                             break;
                         case 4:
-                            generarJugadasTorre(i, j, l);
+                            generarJugadasTorre(rank, file, l);
                             break;
                         case 5:
-                            generarJugadasReina(i, j, l);
+                            generarJugadasReina(rank, file, l);
                             break;
                         case 6:
-                            generarJugadasRey(i, j, l);
+                            generarJugadasRey(rank, file, l);
                             break;
                         default:
                             logger.info("ERROR GRAVE");

@@ -1,7 +1,15 @@
 public interface Player {
     Move move(Board board);
 
-    String type();
+    PlayerType type();
 
     String name();
+
+    default boolean isUser() {
+        return type() == PlayerType.user;
+    }
+
+    default boolean isComputer() {
+        return type() == PlayerType.computer;
+    }
 }
