@@ -8,11 +8,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 public class Game extends JFrame {
+    final static int BOARD_WIDTH = 530;
+    final static int BOARD_HEIGHT = 520;
+    final static int SIDEBAR_WIDTH = 120;
+    private final Logger logger;
 
     BoardController boardController;
     Container buttonContainer = Box.createVerticalBox();
-    JButton b1 = new JButton("New Game ");
-    JButton b2 = new JButton("Configure");
+    JButton b1 = new JButton(" New Game ");
+    JButton b2 = new JButton(" Configure");
     JButton b3 = new JButton("  Start  ");
     JButton b4 = new JButton("  Load   ");
     JButton b5 = new JButton("  Save   ");
@@ -27,17 +31,26 @@ public class Game extends JFrame {
 
     public Game() {
         enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+        JTextPane textPane = new JTextPane();
+        textPane.setEditable(false);
+        logger = new Logger(textPane);
+
         try {
-            boardController = new BoardController(images());
+            JScrollPane scrollPane = new JScrollPane(textPane);
+            scrollPane.setPreferredSize(new Dimension(BOARD_WIDTH, 200));
+            scrollPane.setMaximumSize(new Dimension(BOARD_WIDTH, 200));
+            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
             Container cont = getContentPane();
             cont.setLayout(new BorderLayout());
 
-            boardController.setLayout(new BorderLayout());
+            boardController = new BoardController(images(), logger);
+            boardController.setLayout(new BorderLayout(1, 1));
             boardController.setBackground(Color.lightGray);
-            boardController.setPreferredSize(new Dimension(530, 520));
+            boardController.setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HEIGHT));
 
             cont.add(boardController, BorderLayout.WEST);
+            cont.add(scrollPane, BorderLayout.SOUTH);
 
             b1.addActionListener(boardController::newBoard);
             b2.addActionListener(boardController::configurePlayers);
@@ -45,13 +58,15 @@ public class Game extends JFrame {
             b4.addActionListener(this::load);
             b5.addActionListener(this::save);
             b6.addActionListener(this::exit);
-            buttonContainer.setSize(new Dimension(120, 520));
-            b1.setPreferredSize(new Dimension(110, 40));
-            b2.setPreferredSize(new Dimension(110, 40));
-            b3.setPreferredSize(new Dimension(110, 40));
-            b4.setPreferredSize(new Dimension(110, 40));
-            b5.setPreferredSize(new Dimension(110, 40));
-            b6.setPreferredSize(new Dimension(110, 40));
+
+            Dimension buttonSize = new Dimension(SIDEBAR_WIDTH - 10, 40);
+            buttonContainer.setSize(new Dimension(SIDEBAR_WIDTH, BOARD_HEIGHT));
+            b1.setPreferredSize(buttonSize);
+            b2.setPreferredSize(buttonSize);
+            b3.setPreferredSize(buttonSize);
+            b4.setPreferredSize(buttonSize);
+            b5.setPreferredSize(buttonSize);
+            b6.setPreferredSize(buttonSize);
             buttonContainer.add(espacio0);
             buttonContainer.add(b1);
             buttonContainer.add(espacio1);
@@ -85,12 +100,12 @@ public class Game extends JFrame {
             Board board = (Board) stream.readObject();
             boardController.resetBoard(board);
             repaint();
-            System.out.println("drawCounter =" + board.drawCounter);
-            System.out.println("finished =" + board.finished);
+            logger.info("drawCounter =" + board.drawCounter);
+            logger.info("finished =" + board.finished);
             stream.close();
             fileStream.close();
         } catch (Exception exc) {
-            System.out.println("Could not read file: " + exc);
+            logger.warn("Could not read file: " + exc);
         }
     }
 
@@ -106,9 +121,9 @@ public class Game extends JFrame {
             stream.writeObject(boardController.getBoard());
             stream.close();
             fileStream.close();
-            System.out.println("Saved game to " + absolutePath);
+            logger.info("Saved game to " + absolutePath);
         } catch (Exception exc) {
-            System.out.println("Could not write file:" + exc);
+            logger.warn("Could not write file:" + exc);
         }
     }
 

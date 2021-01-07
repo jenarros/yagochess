@@ -11,8 +11,7 @@ public class Move {
 		to = D;
 	}
 
-	void print() {
-		System.out.print("Piece " + piece + " from [ " + from.x + " , " + from.y + " ] ");
-		System.out.println("to [ " + to.x + " , " + to.y + " ] ");
+	public String toString() {
+		return "Piece " + piece + " from [ " + from.x + " , " + from.y + " ] " + "to [ " + to.x + " , " + to.y + " ] ";
 	}
 }

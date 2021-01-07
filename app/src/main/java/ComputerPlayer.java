@@ -1,29 +1,44 @@
 import java.io.Serializable;
 import java.util.LinkedList;
 
-class DefaultPlayer implements Player, Serializable {
-    final int set;
-    final String name;
-    final String type; //"m" (maquina) | "u" (usuario)
-    int alphaBetaFunction = 1;
-    int level = 1;
+public class ComputerPlayer implements Player, Serializable {
+    final protected Logger logger;
+    final private int set;
+    final private String name;
+    final private String type; //"m" (machine) | "u" (user)
+    final private int level;
 
-    DefaultPlayer(String name, int set, String type) {
+    ComputerPlayer(String name, int set, String type, Logger logger, int level) {
         this.name = name;
         this.set = set;
         this.type = type;
+        this.logger = logger;
+        this.level = level;
+    }
+
+    @Override
+    public String type() {
+        return type;
+    }
+
+    @Override
+    public String name() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return " \t" + set + "\t" + name() + "\t" + type() + "\t" + level;
     }
 
     public Move move(Board board) {
         MoveValue moveValue = alfaBeta(level, board, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        System.out.println("/********************** Alfa-Beta *********************/");
-        System.out.println("JUGADAS PROCESADAS = " + moveValue.processedMoves + "  MINIMAX = " + moveValue.value);
+        logger.info("/********************** Alfa-Beta *********************/");
+        logger.info("Moved processed = " + moveValue.processedMoves + "  minimax = " + moveValue.value);
 
         return moveValue.move;
     }
 
-    //Algoritmo AlfaBeta
-    //El nodo está compuesto por (nivel,Tablero)
     public MoveValue alfaBeta(int depth, Board board, int alfa, int beta) {
         LinkedList<Move> moves = new LinkedList<>();
         //si es un nodo hoja
@@ -121,12 +136,9 @@ class DefaultPlayer implements Player, Serializable {
         }
     }
 
-    private MoveValue leafMoveValue(Board t) {
+    protected MoveValue leafMoveValue(Board t) {
         MoveValue mv = new MoveValue();
-        if (alphaBetaFunction == 1)
-            mv.value = F1(t);
-        else if (alphaBetaFunction == 2)
-            mv.value = F2(t);
+        mv.value = F1(t);
         return mv;
     }
 
@@ -173,7 +185,7 @@ class DefaultPlayer implements Player, Serializable {
                             //el rey siempre está así que no lo evaluamos
                             break;
                         default:
-                            System.out.println("ERROR GRAVE");
+                            logger.warn("ERROR GRAVE");
                     }
                 } else if (isPieceTheirs(board, i, j)) {
                     switch (Math.abs(board.tab[i][j])) {
@@ -208,7 +220,7 @@ class DefaultPlayer implements Player, Serializable {
                             //el rey siempre está así que no lo evaluamos
                             break;
                         default:
-                            System.out.println("ERROR GRAVE");
+                            logger.warn("ERROR GRAVE");
                     }
                 }
             }
@@ -222,90 +234,5 @@ class DefaultPlayer implements Player, Serializable {
 
     boolean isPieceTheirs(Board board, int i, int j) {
         return board.tab[i][j] * set < 0;
-    }
-
-    public int F2(Board board) {
-        int f1 = 0, f2 = 0;
-
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (isPieceOurs(board, i, j)) {
-                    switch (Math.abs(board.tab[i][j])) {
-                        case 1://cuanto más adelante mejor
-                            f1 += 100;
-                            if (board.tab[i][j] < 0)
-                                f1 += i * 20;
-                            else
-                                f1 += (7 - i) * 20;
-                            break;
-                        case 2://cuanto más al centro del tablero mejor
-                            f1 += 300 + (3.5 - Math.abs(3.5 - j)) * 20;
-                            if (board.tab[i][j] < 0)
-                                f1 += Math.abs(3.5 - i) * 10;
-                            else
-                                f1 += Math.abs(3.5 - i) * 10;
-                            break;
-                        case 3:
-                            f1 += 330 + board.Movimientos(i, j) * 10;
-                            break;
-                        case 4:
-                            f1 += 500;
-                            if (board.tab[i][j] < 0)
-                                f1 += Math.abs(3.5 - i) * 15;
-                            else
-                                f1 += Math.abs(3.5 - i) * 15;
-                            break;
-                        case 5://cuanto más al centro del tablero mejor
-                            f1 += 940 + (3.5 - Math.abs(3.5 - j)) * 20;
-                            if (board.tab[i][j] < 0)
-                                f1 += Math.abs(3.5 - i) * 10;
-                            else
-                                f1 += Math.abs(3.5 - i) * 10;
-                            break;
-                        case 6:
-                            //el rey siempre está así que no lo evaluamos
-                            break;
-                        default:
-                            System.out.println("ERROR GRAVE");
-                    }
-                } else if (isPieceTheirs(board, i, j)) {
-                    switch (Math.abs(board.tab[i][j])) {
-                        case 1: //cuanto más adelante mejor
-                            f2 += 100;
-                            if (board.tab[i][j] < 0)
-                                f2 += i * 30;
-                            else
-                                f2 += (7 - i) * 30;
-                            break;
-                        case 2:
-                            f2 += 300 + (3.5 - Math.abs(3.5 - j)) * 20;
-                            break;
-                        case 3:
-                            f2 += 330 + board.Movimientos(i, j) * 10;
-                            if (board.tab[i][j] < 0)
-                                f2 += Math.abs(3.5 - i) * 10;
-                            else
-                                f2 += Math.abs(3.5 - i) * 10;
-                            break;
-                        case 4:
-                            f2 += 500;
-                            break;
-                        case 5:
-                            f2 += 940 + (3.5 - Math.abs(3.5 - j)) * 10;
-                            if (board.tab[i][j] < 0)
-                                f2 += Math.abs(3.5 - i) * 10;
-                            else
-                                f2 += Math.abs(3.5 - i) * 10;
-                            break;
-                        case 6:
-                            //el rey siempre está así que no lo evaluamos
-                            break;
-                        default:
-                            System.out.println("ERROR GRAVE");
-                    }
-                }
-            }
-        }
-        return f1 - f2;
     }
 }

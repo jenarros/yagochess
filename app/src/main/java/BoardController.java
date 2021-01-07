@@ -3,16 +3,19 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
 public class BoardController extends JPanel {
+	private static final Integer[] playerLevels = {1, 2, 3, 4, 5};
+	private static final Integer[] gameTypeOptions = {1, 2, 3, 4};
+
 	private final Board board;
 	private final Image[] images;
+	private final Logger logger;
 
-	public BoardController(Image[] images) {
+	public BoardController(Image[] images, Logger logger) {
 		this.images = images;
-		this.board = new Board();
+		this.logger = logger;
+		this.board = new Board(logger);
 		addMouseListener(new AccionListener());
 		startGame();
 	}
@@ -79,26 +82,26 @@ public class BoardController extends JPanel {
 
 	void startGame() {
 		board.drawCounter = 0;
-		System.out.println("drawCounter = " + board.drawCounter);
+		logger.info("drawCounter = " + board.drawCounter);
 		board.finished = false;
-		System.out.println("finished = " + board.finished);
-		if (board.player1.type.equals("u") && board.player2.type.equals("m")) {
+		logger.info("finished = " + board.finished);
+		if (board.player1.type().equals("u") && board.player2.type().equals("m")) {
 			board.movePlayer2();
 			update();
 
-		} else if (board.player2.type.equals("m") && board.player1.type.equals("m")) {
+		} else if (board.player2.type().equals("m") && board.player1.type().equals("m")) {
 			while (!board.finished) {
 				try {
-					Thread.sleep(100);
-				} catch (Exception exc) {
-					System.out.println("Error: " + exc);
-				}
-
-				board.movePlayer2();
-				update();
-				if (!board.finished) {
-					board.movePlayer1();
+					Thread.sleep(200);
+					board.movePlayer2();
 					update();
+					if (!board.finished) {
+						Thread.sleep(200);
+						board.movePlayer1();
+						update();
+					}
+				} catch (Exception exc) {
+					logger.warn("Error: " + exc);
 				}
 			}
 		}
@@ -114,53 +117,58 @@ public class BoardController extends JPanel {
 
 	void configurePlayers(ActionEvent e) {
 		if (board == null) {
-			System.out.println("Primero debes crear el juego");
+			logger.warn("Primero debes crear el juego");
 			return;
 		}
-		int partida;
-		BufferedReader entrada = new BufferedReader(new InputStreamReader(System.in));
-		try {
-			System.out.println("******************CONFIGURACION DE JUGADORES******************");
-			System.out.println("Introduzca el tipo de partida:");
-			System.out.println("Tipo 1: Jugador1 = maquina1:negras  &  Jugador2 = USUARIO1:blancas");
-			System.out.println("Tipo 2: Jugador1 = USUARIO1:negras  &  Jugador2 = maquina1:blancas");
-			System.out.println("Tipo 3: Jugador1 = maquina1:negras  &  Jugador2 = maquina2:blancas");
-			System.out.println("Tipo 4: Jugador1 = USUARIO1:negras  &  Jugador2 = USUARIO2:blancas");
-			do {
-				System.out.print("Introduzca el tipo de partida:[ 1 | 2 | 3 | 4 ]  ");
-				partida = Integer.parseInt(entrada.readLine());
-			}
-			while (partida < 1 || partida > 4);
 
-			if (partida == 1) {
-				board.player1 = new DefaultPlayer("maquina1", -1, "m");
-				System.out.print("Introduzca el nivel del jugador 1: ");
-				board.player1.level = Integer.parseInt(entrada.readLine());
-				board.player2 = new DefaultPlayer("usuario1", 1, "u");
-			} else if (partida == 2) {
-				board.player1 = new DefaultPlayer("usuario1", -1, "u");
-				board.player2 = new DefaultPlayer("maquina1", 1, "m");
-				System.out.print("Introduzca el nivel del jugador 2: ");
-				board.player2.level = Integer.parseInt(entrada.readLine());
-			} else if (partida == 3) {
-				board.player1 = new DefaultPlayer("maquina1", -1, "m");
-				System.out.print("Introduzca el nivel del jugador 1: ");
-				board.player1.level = Integer.parseInt(entrada.readLine());
-				board.player2 = new DefaultPlayer("maquina2", 1, "m");
-				System.out.print("Introduzca el nivel del jugador 2: ");
-				board.player2.level = Integer.parseInt(entrada.readLine());
-				board.player2.alphaBetaFunction = 2;
+		try {
+			int game = gameTypeOptions[JOptionPane.showOptionDialog(this,
+					"  black set   | white set\n" +
+							"1: machine   | user\n" +
+							"2: user         | machine\n" +
+							"3: machine1 | machine2\n" +
+							"4: user1       | user2\n",
+					"Choose type of game",
+					JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.QUESTION_MESSAGE,
+					null,
+					gameTypeOptions,
+					gameTypeOptions[0])];
+			logger.info("Type " + game + " chosen");
+
+			if (game == 1) {
+				board.player1 = new ComputerPlayer("machine1", -1, "m", logger, getLevel("Select player 1 level: ", 1));
+				board.player2 = new UserPlayer("user1", 1, "u", logger);
+			} else if (game == 2) {
+				board.player1 = new UserPlayer("user1", -1, "u", logger);
+				board.player2 = new ComputerPlayer("machine1", 1, "m", logger, getLevel("Select player 2 level: ", 1));
+			} else if (game == 3) {
+				board.player1 = new ComputerPlayer("machine1", -1, "m", logger, getLevel("Select player 1 level: ", 1));
+				board.player2 = new Computer2Player("machine2", 1, "m", logger, getLevel("Select player 2 level: ", 1));
 			} else {
-				board.player1 = new DefaultPlayer("usuario1", -1, "u");
-				board.player2 = new DefaultPlayer("usuario2", 1, "u");
+				board.player1 = new UserPlayer("user1", -1, "u", logger);
+				board.player2 = new UserPlayer("user2", 1, "u", logger);
 			}
-			System.out.println("JUGADOR \tNOMBRE\t\tTIPO\tNIVEL");
-			System.out.println("1-NEGRAS\t" + board.player1.name + "\t" + board.player1.type + "\t" + board.player1.level);
-			System.out.println("2-BLANCAS\t" + board.player2.name + "\t" + board.player2.type + "\t" + board.player2.level);
+			logger.info("Player\tname\ttype\tlevel");
+			logger.info(" 1" + board.player1);
+			logger.info(" 2" + board.player2);
 		} catch (Exception exc) {
-			System.out.println("Error: " + exc);
+			logger.info("Error: " + exc);
 			System.exit(-1);
 		}
+	}
+
+	private int getLevel(String message, Integer defaultOption) {
+		int level = playerLevels[JOptionPane.showOptionDialog(this,
+				message,
+				"Select player level",
+				JOptionPane.YES_NO_CANCEL_OPTION,
+				JOptionPane.QUESTION_MESSAGE,
+				null,
+				playerLevels,
+				defaultOption)];
+		logger.info("level " + level + " selected");
+		return level;
 	}
 
 	public void resetBoard(Board board) {
