@@ -176,7 +176,7 @@ class BoardController extends JPanel {
 		public void mousePressed(MouseEvent e) {
 			Point position = e.getPoint();
 			if ((position.x > 19) && (position.x < 501) && (position.y > 19) && (position.y < 501)) {
-				from = board.boardSquare(position);
+				from = boardSquare(position);
 			}
 		}
 
@@ -184,7 +184,7 @@ class BoardController extends JPanel {
 			Point position = e.getPoint();
 
 			if ((position.x > 19) && (position.x < 501) && (position.y > 19) && (position.y < 501)) {
-				to = board.boardSquare(position);
+				to = boardSquare(position);
 				board.moveIfPossible(from, to);
 				update();
 			}
@@ -194,6 +194,10 @@ class BoardController extends JPanel {
 		}
 
 		public void mouseExited(MouseEvent e) {
+		}
+
+		Square boardSquare(Point p) {
+			return new Square(Double.valueOf(Math.floor((p.y - 20) / 60)).intValue(), Double.valueOf(Math.floor((p.x - 20) / 60)).intValue());
 		}
 	}
 }

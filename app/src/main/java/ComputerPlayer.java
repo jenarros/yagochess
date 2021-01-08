@@ -52,7 +52,7 @@ class ComputerPlayer implements Player, Serializable {
             MoveResult moveResult;
             moveValue.value = alfa;
 
-            board.generateMoves(moves);
+            moves.addAll(board.generateMoves());
             //MEJORA DEL ALGORITMO
             if (moves.size() == 0) {
                 moveValue.value = Integer.MIN_VALUE + (level - depth + 1);
@@ -96,7 +96,7 @@ class ComputerPlayer implements Player, Serializable {
             MoveValue moveValue = new MoveValue();
             moveValue.value = beta;
 
-            board.generateMoves(moves);
+            moves.addAll(board.generateMoves());
             //MEJORA DEL ALGORITMO
             if (moves.size() == 0) {
                 moveValue.value = Integer.MAX_VALUE - (level - depth + 1);

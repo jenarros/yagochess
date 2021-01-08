@@ -126,4 +126,26 @@ public class Square {
     public boolean exists() {
         return this.x <= 7 && this.x >= 0 && this.y <= 7 && this.y >= 0;
     }
+
+    public List<Square> diagonalSquares() {
+        List<Square> acc = new ArrayList<>();
+        for (int distance = 1; distance <= 7; distance++) {
+            acc.add(new Square(x + distance, y + distance));
+            acc.add(new Square(x + distance, y - distance));
+            acc.add(new Square(x - distance, y + distance));
+            acc.add(new Square(x - distance, y - distance));
+        }
+        return acc;
+    }
+
+    public List<Square> straightSquares() {
+        List<Square> acc = new ArrayList<>();
+        for (int distance = 1; distance <= 7; distance++) {
+            acc.add(new Square(x + distance, y));
+            acc.add(new Square(x - distance, y));
+            acc.add(new Square(x, y + distance));
+            acc.add(new Square(x, y - distance));
+        }
+        return acc;
+    }
 }
