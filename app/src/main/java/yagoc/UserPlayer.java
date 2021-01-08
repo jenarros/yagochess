@@ -1,3 +1,4 @@
+package yagoc;
 
 class UserPlayer implements Player {
     private final String name;
@@ -10,7 +11,7 @@ class UserPlayer implements Player {
 
     @Override
     public Move move(Board board) {
-        throw new RuntimeException("Player " + name + " cannot move without user input.");
+        throw new RuntimeException(name + " cannot move without user input.");
     }
 
     @Override
@@ -24,6 +25,6 @@ class UserPlayer implements Player {
 
     @Override
     public String toString() {
-        return " \t" + set + "\t" + name() + "\t" + type();
+        return set + "\t" + name() + "\t" + type();
     }
 }

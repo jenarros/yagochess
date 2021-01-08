@@ -1,3 +1,5 @@
+package yagoc;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -9,9 +11,9 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-class Game extends JFrame {
-    public static final int BOARD_FONT_SIZE = 16;
-    public static final int MENU_FONT_SIZE = 12;
+class YagocUI extends JFrame {
+    final static int BOARD_FONT_SIZE = 16;
+    final static int MENU_FONT_SIZE = 12;
     final static int BORDER_SIZE = 20;
     final static int IMAGE_SIZE = 40;
     final static int SQUARE_SIZE = 60;
@@ -20,37 +22,22 @@ class Game extends JFrame {
     final static Color frame = Color.DARK_GRAY;
     final static int BOARD_AND_BORDER_SIZE = SQUARE_SIZE * 8 + BORDER_SIZE * 2;
     final static int BOARD_SIZE = SQUARE_SIZE * 8;
-    final static int SIDEBAR_WIDTH = SQUARE_SIZE * 2;
 
     private final Logger logger;
+    private final BoardController boardController;
 
-    BoardController boardController;
-    Container buttonContainer = Box.createVerticalBox();
-    JButton b1 = new JButton(" New Game ");
-    JButton b2 = new JButton(" Configure");
-    JButton b3 = new JButton("  Start  ");
-    JButton b4 = new JButton("  Load   ");
-    JButton b5 = new JButton("  Save   ");
-    JButton b6 = new JButton("  Exit   ");
-    Component espacio0 = Box.createGlue();
-    Component espacio1 = Box.createGlue();
-    Component espacio2 = Box.createGlue();
-    Component espacio3 = Box.createGlue();
-    Component espacio4 = Box.createGlue();
-    Component espacio5 = Box.createGlue();
-    Component espacio6 = Box.createGlue();
-
-    Game() {
+    YagocUI() {
         enableEvents(AWTEvent.WINDOW_EVENT_MASK);
-        JTextPane textPane = new JTextPane();
-        textPane.setEditable(false);
-        textPane.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        JTextPane textPane = textpane();
+        logger = new Logger(textPane);
+        boardController = new BoardController(images(), logger);
+
+        addMenuBar(this, boardController);
 
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (int) ((dimension.getWidth() - this.getWidth()) / 2 - BOARD_AND_BORDER_SIZE / 2);
         int y = (int) ((dimension.getHeight() - this.getHeight()) / 2 - BOARD_AND_BORDER_SIZE / 2);
         this.setLocation(x, y);
-        logger = new Logger(textPane);
 
         try {
             JScrollPane scrollPane = new JScrollPane(textPane);
@@ -61,7 +48,6 @@ class Game extends JFrame {
             Container cont = getContentPane();
             cont.setLayout(new BorderLayout());
 
-            boardController = new BoardController(images(), logger);
             boardController.setLayout(new BorderLayout(0, 0));
             boardController.setBackground(frame);
             boardController.setPreferredSize(new Dimension(BOARD_AND_BORDER_SIZE, BOARD_AND_BORDER_SIZE));
@@ -74,40 +60,46 @@ class Game extends JFrame {
             cont.add(boardController, BorderLayout.WEST);
             cont.add(scrollPane, BorderLayout.SOUTH);
 
-            b1.addActionListener(boardController::newBoard);
-            b2.addActionListener(boardController::configurePlayers);
-            b3.addActionListener(boardController::startGame);
-            b4.addActionListener(this::load);
-            b5.addActionListener(this::save);
-            b6.addActionListener(this::exit);
-
-            Dimension buttonSize = new Dimension(SIDEBAR_WIDTH - 10, 40);
-            buttonContainer.setSize(new Dimension(SIDEBAR_WIDTH, BOARD_AND_BORDER_SIZE));
-            b1.setPreferredSize(buttonSize);
-            b2.setPreferredSize(buttonSize);
-            b3.setPreferredSize(buttonSize);
-            b4.setPreferredSize(buttonSize);
-            b5.setPreferredSize(buttonSize);
-            b6.setPreferredSize(buttonSize);
-            buttonContainer.add(espacio0);
-            buttonContainer.add(b1);
-            buttonContainer.add(espacio1);
-            buttonContainer.add(b2);
-            buttonContainer.add(espacio2);
-            buttonContainer.add(b3);
-            buttonContainer.add(espacio3);
-            buttonContainer.add(b4);
-            buttonContainer.add(espacio4);
-            buttonContainer.add(b5);
-            buttonContainer.add(espacio5);
-            buttonContainer.add(b6);
-            buttonContainer.add(espacio6);
-            cont.add(buttonContainer, BorderLayout.EAST);
-
             pack();
         } catch (Exception e) {
             System.out.println("Error:" + e);
         }
+    }
+
+    private static void addMenuBar(YagocUI yagocUI, BoardController boardController) {
+        JMenuItem restartGameMenuItem = new JMenuItem("Reset");
+        restartGameMenuItem.addActionListener(boardController::newBoard);
+
+        JMenuItem saveMenuItem = new JMenuItem("Save");
+        saveMenuItem.addActionListener(yagocUI::save);
+
+        JMenuItem loadMenuItem = new JMenuItem("Load");
+        loadMenuItem.addActionListener(yagocUI::load);
+
+        JMenuItem optionsMenuItem = new JMenuItem("Options");
+        optionsMenuItem.addActionListener(boardController::configurePlayers);
+
+        JMenuItem startGameMenuItem = new JMenuItem("Start Game");
+        startGameMenuItem.addActionListener(boardController::startGame);
+
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menu = new JMenu("File");
+        menu.add(saveMenuItem);
+        menu.add(loadMenuItem);
+        menu.add(optionsMenuItem);
+        menu.add(restartGameMenuItem);
+        menu.add(startGameMenuItem);
+
+        menuBar.add(menu);
+        yagocUI.setJMenuBar(menuBar);
+    }
+
+    private JTextPane textpane() {
+        JTextPane textPane = new JTextPane();
+        textPane.setEditable(false);
+        textPane.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+
+        return textPane;
     }
 
     void load(ActionEvent e) {
@@ -115,17 +107,19 @@ class Game extends JFrame {
             FileDialog fDialog = new FileDialog(this);
             fDialog.setMode(FileDialog.LOAD);
             fDialog.setVisible(true);
-            String absolutePath = fDialog.getDirectory() + fDialog.getFile();
-            FileInputStream fileStream = new FileInputStream(absolutePath);
-            ObjectInputStream stream = new ObjectInputStream(fileStream);
+            if (fDialog.getFile() != null) {
+                String absolutePath = fDialog.getDirectory() + fDialog.getFile();
+                FileInputStream fileStream = new FileInputStream(absolutePath);
+                ObjectInputStream stream = new ObjectInputStream(fileStream);
 
-            Board board = (Board) stream.readObject();
-            boardController.resetBoard(board);
-            repaint();
-            logger.info("drawCounter =" + board.drawCounter);
-            logger.info("finished =" + board.finished);
-            stream.close();
-            fileStream.close();
+                Board board = (Board) stream.readObject();
+                boardController.resetBoard(board);
+                repaint();
+                logger.info("drawCounter =" + board.drawCounter);
+                logger.info("finished =" + board.finished);
+                stream.close();
+                fileStream.close();
+            }
         } catch (Exception exc) {
             logger.warn("Could not read file: " + exc);
         }
@@ -136,14 +130,16 @@ class Game extends JFrame {
             FileDialog fDialog = new FileDialog(this);
             fDialog.setMode(FileDialog.SAVE);
             fDialog.setVisible(true);
-            String absolutePath = fDialog.getDirectory() + fDialog.getFile();
-            FileOutputStream fileStream = new FileOutputStream(absolutePath);
-            ObjectOutputStream stream = new ObjectOutputStream(fileStream);
+            if (fDialog.getFile() != null) {
+                String absolutePath = fDialog.getDirectory() + fDialog.getFile();
+                FileOutputStream fileStream = new FileOutputStream(absolutePath);
+                ObjectOutputStream stream = new ObjectOutputStream(fileStream);
 
-            stream.writeObject(boardController.getBoard());
-            stream.close();
-            fileStream.close();
-            logger.info("Saved game to " + absolutePath);
+                stream.writeObject(boardController.getBoard());
+                stream.close();
+                fileStream.close();
+                logger.info("Saved game to " + absolutePath);
+            }
         } catch (Exception exc) {
             logger.warn("Could not write file:" + exc);
         }
@@ -176,9 +172,5 @@ class Game extends JFrame {
         } else if (e.getID() == WindowEvent.WINDOW_ACTIVATED) {
             e.getWindow().repaint();
         }
-    }
-
-    void exit(ActionEvent e) {
-        System.exit(0);
     }
 }

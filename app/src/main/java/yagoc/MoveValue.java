@@ -1,3 +1,5 @@
+package yagoc;
+
 class MoveValue {
     int value;
     int processedMoves;

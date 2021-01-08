@@ -1,3 +1,5 @@
+package yagoc;
+
 import java.util.function.BiFunction;
 
 class PlayerStrategies {

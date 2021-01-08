@@ -1,3 +1,7 @@
+package yagoc;
+
+import static yagoc.BoardController.fileNames;
+import static yagoc.BoardController.rankNames;
 
 class Move {
     Piece piece;
@@ -11,7 +15,7 @@ class Move {
     }
 
     public String toString() {
-        return "Piece " + piece + " from [ " + from.x + " , " + from.y + " ] " + "to [ " + to.x + " , " + to.y + " ] ";
+        return piece + " from " + rankNames[from.x] + fileNames[from.y] + " to " + rankNames[to.x] + fileNames[to.y] + " ";
     }
 
     /**

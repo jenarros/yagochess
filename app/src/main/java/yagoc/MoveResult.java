@@ -1,3 +1,5 @@
+package yagoc;
+
 class MoveResult {
 	MoveResult() {
 	}

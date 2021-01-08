@@ -1,3 +1,5 @@
+package yagoc;
+
 enum SetType {
     blackSet, whiteSet;
 

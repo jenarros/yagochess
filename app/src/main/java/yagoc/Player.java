@@ -1,3 +1,5 @@
+package yagoc;
+
 interface Player {
     Move move(Board board);
 

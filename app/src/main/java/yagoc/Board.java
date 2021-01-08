@@ -1,3 +1,5 @@
+package yagoc;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -25,6 +27,8 @@ import java.util.stream.Stream;
 7         4,  2,  3,  5,  6,  3,  2,  4
 */
 class Board implements Serializable {
+    private transient final Logger logger;
+
     private Piece[][] tab;
     int[] cap; //para la captura al paso
     SetType turn;
@@ -33,57 +37,21 @@ class Board implements Serializable {
     boolean finished;
     int drawCounter;
     int moveCounter;
-    private final Logger logger;
     /* Se ponen a true cuando a jugadaCorrecta devuelve true para alguna de ellas */
     boolean castlingQueenside, castlingKingside;
     Player player1, player2;
 
     Board(Logger logger) {
         this.logger = logger;
-        tab = newTable();
-        cap = new int[8];
-
-        for (int k = 0; k < 8; k++) {
-            cap[k] = -5;//movimiento absurdo
-        }
-
-        turn = SetType.whiteSet;
-
-        tab[0][0] = Piece.blackRook;
-        tab[0][1] = Piece.blackKnight;
-        tab[0][2] = Piece.blackBishop;
-        tab[0][3] = Piece.blackQueen;
-        tab[0][4] = Piece.blackKing;
-        tab[0][5] = Piece.blackBishop;
-        tab[0][6] = Piece.blackKnight;
-        tab[0][7] = Piece.blackRook;
-        for (int file = 0; file < 8; file++) {
-            tab[1][file] = Piece.blackPawn;
-        }
-
-        tab[7][0] = Piece.whiteRook;
-        tab[7][1] = Piece.whiteKnight;
-        tab[7][2] = Piece.whiteBishop;
-        tab[7][3] = Piece.whiteQueen;
-        tab[7][4] = Piece.whiteKing;
-        tab[7][5] = Piece.whiteBishop;
-        tab[7][6] = Piece.whiteKnight;
-        tab[7][7] = Piece.whiteRook;
-        for (int file = 0; file < 8; file++) {
-            tab[6][file] = Piece.whitePawn;
-        }
-
-        //por defecto la partida es de tipo 1
-        player1 = new ComputerPlayer("computer 1", SetType.blackSet, logger, 3, PlayerStrategies.F1);
-        player2 = new UserPlayer("user 1", SetType.whiteSet);
+        reset();
     }
 
     @NotNull
     private Piece[][] newTable() {
         Piece[][] pieces = new Piece[8][8];
 
-        for (int rank = 0; rank < pieces.length; rank++) {
-            Arrays.fill(pieces[rank], Piece.none);
+        for (Piece[] piece : pieces) {
+            Arrays.fill(piece, Piece.none);
         }
 
         return pieces;
@@ -93,7 +61,7 @@ class Board implements Serializable {
         if (player1.isComputer()) {
             Move move = player1.move(this);
 
-            logger.info("Player 1: " + move.toString());
+            logger.info(player1.name() + " " + move.toString());
 
             play(move);
             ifPawnHasReachedFinalRankReplaceWithQueen(move);
@@ -115,7 +83,7 @@ class Board implements Serializable {
         if (player2.isComputer()) {
             Move move = player2.move(this);
 
-            logger.info("Player 2: " + move.toString());
+            logger.info(player2.name() + " " + move.toString());
 
             play(move);
             ifPawnHasReachedFinalRankReplaceWithQueen(move);
@@ -149,10 +117,10 @@ class Board implements Serializable {
                 finished = isFinished();
                 if (!finished) {
                     if (move.piece.set == SetType.blackSet) {
-                        logger.info("Player 1: " + move.toString());
+                        logger.info(player1.name() + " " + move.toString());
                         movePlayer2();
                     } else {
-                        logger.info("Player 2: " + move.toString());
+                        logger.info(player2.name() + " " + move.toString());
                         movePlayer1();
                     }
                 }
@@ -794,5 +762,44 @@ class Board implements Serializable {
         player2 = board.player2;
         castlingQueenside = board.castlingQueenside;
         castlingKingside = board.castlingKingside;
+    }
+
+    public void reset() {
+        tab = newTable();
+        cap = new int[8];
+
+        for (int k = 0; k < 8; k++) {
+            cap[k] = -5;//movimiento absurdo
+        }
+
+        turn = SetType.whiteSet;
+
+        tab[0][0] = Piece.blackRook;
+        tab[0][1] = Piece.blackKnight;
+        tab[0][2] = Piece.blackBishop;
+        tab[0][3] = Piece.blackQueen;
+        tab[0][4] = Piece.blackKing;
+        tab[0][5] = Piece.blackBishop;
+        tab[0][6] = Piece.blackKnight;
+        tab[0][7] = Piece.blackRook;
+        for (int file = 0; file < 8; file++) {
+            tab[1][file] = Piece.blackPawn;
+        }
+
+        tab[7][0] = Piece.whiteRook;
+        tab[7][1] = Piece.whiteKnight;
+        tab[7][2] = Piece.whiteBishop;
+        tab[7][3] = Piece.whiteQueen;
+        tab[7][4] = Piece.whiteKing;
+        tab[7][5] = Piece.whiteBishop;
+        tab[7][6] = Piece.whiteKnight;
+        tab[7][7] = Piece.whiteRook;
+        for (int file = 0; file < 8; file++) {
+            tab[6][file] = Piece.whitePawn;
+        }
+
+        //por defecto la partida es de tipo 1
+        player1 = new ComputerPlayer("computer 1", SetType.blackSet, logger, 3, PlayerStrategies.F1);
+        player2 = new UserPlayer("user 1", SetType.whiteSet);
     }
 }

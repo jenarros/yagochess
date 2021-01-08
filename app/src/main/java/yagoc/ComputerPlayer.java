@@ -1,3 +1,5 @@
+package yagoc;
+
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.function.BiFunction;
@@ -29,7 +31,7 @@ class ComputerPlayer implements Player, Serializable {
 
     @Override
     public String toString() {
-        return " \t" + set + "\t" + name() + "\t" + type() + "\t" + level;
+        return set + "\t" + name() + "\t" + type() + "\t" + level;
     }
 
     public Move move(Board board) {

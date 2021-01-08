@@ -1,3 +1,5 @@
+package yagoc;
+
 import java.util.Arrays;
 
 enum Piece {
