@@ -3,16 +3,16 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
-public class Logger {
+class Logger {
     private final JTextPane textPanel;
     private final SimpleAttributeSet info = info();
     private final SimpleAttributeSet warn = warn();
 
-    public Logger(JTextPane textPanel) {
+    Logger(JTextPane textPanel) {
         this.textPanel = textPanel;
     }
 
-    public void info(String message) {
+    void info(String message) {
         try {
             textPanel.getStyledDocument().insertString(textPanel.getStyledDocument().getLength(), message + "\n", info);
             textPanel.setCaretPosition(textPanel.getDocument().getLength());
@@ -21,7 +21,7 @@ public class Logger {
         }
     }
 
-    public void warn(String message) {
+    void warn(String message) {
         try {
             textPanel.getStyledDocument().insertString(textPanel.getStyledDocument().getLength(), message + "\n", warn);
             textPanel.setCaretPosition(textPanel.getDocument().getLength());

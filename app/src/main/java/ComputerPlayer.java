@@ -2,14 +2,14 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.function.BiFunction;
 
-public class ComputerPlayer implements Player, Serializable {
+class ComputerPlayer implements Player, Serializable {
     final protected Logger logger;
-    final protected int set;
+    final protected SetType set;
     final private String name;
     final private int level;
-    private final BiFunction<Board, Integer, Integer> strategy;
+    private final BiFunction<Board, SetType, Integer> strategy;
 
-    ComputerPlayer(String name, int set, Logger logger, int level, BiFunction<Board, Integer, Integer> strategy) {
+    ComputerPlayer(String name, SetType set, Logger logger, int level, BiFunction<Board, SetType, Integer> strategy) {
         this.name = name;
         this.set = set;
         this.logger = logger;
@@ -39,7 +39,7 @@ public class ComputerPlayer implements Player, Serializable {
         return moveValue.move;
     }
 
-    public MoveValue alfaBeta(int depth, Board board, int alfa, int beta) {
+    MoveValue alfaBeta(int depth, Board board, int alfa, int beta) {
         LinkedList<Move> moves = new LinkedList<>();
         //si es un nodo hoja
         if (depth == 0) {

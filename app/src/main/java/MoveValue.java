@@ -1,4 +1,4 @@
-public class MoveValue {
+class MoveValue {
     int value;
     int processedMoves;
     Move move;

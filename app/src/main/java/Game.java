@@ -6,8 +6,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Game extends JFrame {
+class Game extends JFrame {
     final static int BOARD_WIDTH = 530;
     final static int BOARD_HEIGHT = 520;
     final static int SIDEBAR_WIDTH = 120;
@@ -29,7 +31,7 @@ public class Game extends JFrame {
     Component espacio5 = Box.createGlue();
     Component espacio6 = Box.createGlue();
 
-    public Game() {
+    Game() {
         enableEvents(AWTEvent.WINDOW_EVENT_MASK);
         JTextPane textPane = new JTextPane();
         textPane.setEditable(false);
@@ -127,22 +129,22 @@ public class Game extends JFrame {
         }
     }
 
-    private Image[] images() {
+    private Map<Piece, Image> images() {
         Toolkit t = getToolkit();
-        Image[] images = new Image[13];
+        Map<Piece, Image> images = new HashMap<>();
 
-        images[1] = t.getImage("img/peon.gif");
-        images[2] = t.getImage("img/caballo.gif");
-        images[3] = t.getImage("img/alfil.gif");
-        images[4] = t.getImage("img/torre.gif");
-        images[5] = t.getImage("img/reina.gif");
-        images[6] = t.getImage("img/rey.gif");
-        images[7] = t.getImage("img/peonNegro.gif");
-        images[8] = t.getImage("img/caballoNegro.gif");
-        images[9] = t.getImage("img/alfilNegro.gif");
-        images[10] = t.getImage("img/torreNegro.gif");
-        images[11] = t.getImage("img/reinaNegro.gif");
-        images[12] = t.getImage("img/reyNegro.gif");
+        images.put(Piece.whitePawn, t.getImage("img/peon.gif"));
+        images.put(Piece.whiteKnight, t.getImage("img/caballo.gif"));
+        images.put(Piece.whiteBishop, t.getImage("img/alfil.gif"));
+        images.put(Piece.whiteRook, t.getImage("img/torre.gif"));
+        images.put(Piece.whiteQueen, t.getImage("img/reina.gif"));
+        images.put(Piece.whiteKing, t.getImage("img/rey.gif"));
+        images.put(Piece.blackPawn, t.getImage("img/peonNegro.gif"));
+        images.put(Piece.blackKnight, t.getImage("img/caballoNegro.gif"));
+        images.put(Piece.blackBishop, t.getImage("img/alfilNegro.gif"));
+        images.put(Piece.blackRook, t.getImage("img/torreNegro.gif"));
+        images.put(Piece.blackQueen, t.getImage("img/reinaNegro.gif"));
+        images.put(Piece.blackKing, t.getImage("img/reyNegro.gif"));
 
         return images;
     }

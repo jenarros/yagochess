@@ -1,3 +1,3 @@
-public enum PlayerType {
+enum PlayerType {
     user, computer
 }

@@ -1,168 +1,164 @@
 import java.util.function.BiFunction;
 
-public class PlayerStrategies {
-    public static BiFunction<Board, Integer, Integer> F1 = (board, set) -> {
+class PlayerStrategies {
+    static BiFunction<Board, SetType, Integer> F1 = (board, set) -> {
+        return (Integer) Square.allSquares.stream().map((square) -> {
+            int acc = 0;
+            final Piece piece = board.tab(square);
 
-        int f1 = 0, f2 = 0;
+            if (piece == Piece.none) {
+                // ignore empty squares
+            } else if (isPieceOurs(board, set, square)) {
+                switch (piece.type) {
+                    case pawn: // further ahead is better
+                        acc += 100;
+                        if (piece.set == SetType.blackSet)
+                            acc += square.x * 20;
+                        else
+                            acc += (7 - square.x) * 20;
 
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (isPieceOurs(board, set, i, j)) {
-                    switch (Math.abs(board.tab[i][j])) {
-                        case 1://cuanto más adelante mejor
-                            f1 += 100;
-                            if (board.tab[i][j] < 0)
-                                f1 += i * 20;
-                            else
-                                f1 += (7 - i) * 20;
-                            //Un peón cubierto vale más
-                            if (i + board.turn < 8 && i + board.turn > 0 && j - 1 > 0 && j + 1 < 8
-                                    && (board.tab[i + board.turn][j - 1] == board.tab[i][j]
-                                    || board.tab[i + board.turn][j + 1] == board.tab[i][j]))
-                                f1 += 30;
-                            break;
-                        case 2://cuanto más al centro del tablero mejor
-                            f1 += 300 + (3.5 - Math.abs(3.5 - j)) * 20;
-                            if (board.tab[i][j] < 0)
-                                f1 += Math.abs(3.5 - i) * 10;
-                            else
-                                f1 += Math.abs(3.5 - i) * 10;
-                            break;
-                        case 3:
-                            f1 += 300 + board.Movimientos(i, j) * 10;
-                            break;
-                        case 4:
-                            f1 += 500;
-                            break;
-                        case 5://cuanto más al centro mejor
-                            f1 += 940 + (3.5 - Math.abs(3.5 - j)) * 20;
-                            if (board.tab[i][j] < 0)
-                                f1 += Math.abs(3.5 - i) * 10;
-                            else
-                                f1 += Math.abs(3.5 - i) * 10;
-                            break;
-                        default:
-                            break;
-                    }
-                } else if (isPieceTheirs(board, set, i, j)) {
-                    switch (Math.abs(board.tab[i][j])) {
-                        case 1://cuanto más adelante mejor
-                            f2 += 100;
-                            if (board.tab[i][j] < 0)
-                                f2 += i * 30;
-                            else
-                                f2 += (7 - i) * 30;
-                            if (i + board.turn < 8 && i + board.turn > 0 && j - 1 > 0 && j + 1 < 8
-                                    && (board.tab[i + board.turn][j - 1] == board.tab[i][j]
-                                    || board.tab[i + board.turn][j + 1] == board.tab[i][j]))
-                                f2 += 20;
-                            break;
-                        case 2:
-                            f2 += 300 + (3.5 - Math.abs(3.5 - j)) * 20;
-                            break;
-                        case 3:
-                            f2 += 330 + board.Movimientos(i, j) * 10;
-                            break;
-                        case 4:
-                            f2 += 500;
-                            break;
-                        case 5:
-                            f2 += 1000;
-                            if (board.tab[i][j] < 0)
-                                f2 += Math.abs(3.5 - i) * 10;
-                            else
-                                f2 += Math.abs(3.5 - i) * 10;
-                            break;
-                        default:
-                            break;
-                    }
+                        //Un peón cubierto vale más
+                        if (square.nextRank(set).exists() && square.y - 1 > 0 && square.y + 1 < 8
+                                && (board.tab(square.nextRankPreviousFile(set)) == piece || board.tab(square.nextRankPreviousFile(set)) == piece))
+                            acc += 30;
+                        break;
+                    case knight://cuanto más al centro del tablero mejor
+                        acc += 300 + (3.5 - Math.abs(3.5 - square.y)) * 20;
+                        if (piece.set == SetType.blackSet)
+                            acc += Math.abs(3.5 - square.x) * 10;
+                        else
+                            acc += Math.abs(3.5 - square.x) * 10;
+                        break;
+                    case bishop:
+                        acc += 300 + board.possibleMoves(square.x, square.y) * 10;
+                        break;
+                    case rook:
+                        acc += 500;
+                        break;
+                    case queen://cuanto más al centro mejor
+                        acc += 940 + (3.5 - Math.abs(3.5 - square.y)) * 20;
+                        if (piece.set == SetType.blackSet)
+                            acc += Math.abs(3.5 - square.x) * 10;
+                        else
+                            acc += Math.abs(3.5 - square.x) * 10;
+                        break;
+                    default:
+                        break;
+                }
+            } else if (isPieceTheirs(board, set, square)) {
+                switch (piece.type) {
+                    case pawn: // further ahead is better
+                        acc -= 100;
+                        if (piece.set == SetType.blackSet)
+                            acc -= square.x * 30;
+                        else
+                            acc -= (7 - square.x) * 30;
+                        if (square.nextRank(set).exists() && square.y - 1 > 0 && square.y + 1 < 8
+                                && (board.tab(square.nextRankPreviousFile(set)) == piece || board.tab(square.nextRankPreviousFile(set)) == piece))
+                            acc -= 20;
+                        break;
+                    case knight:
+                        acc -= 300 + (3.5 - Math.abs(3.5 - square.y)) * 20;
+                        break;
+                    case bishop:
+                        acc -= 330 + board.possibleMoves(square.x, square.y) * 10;
+                        break;
+                    case rook:
+                        acc -= 500;
+                        break;
+                    case queen:
+                        acc -= 1000;
+                        acc -= Math.abs(3.5 - square.x) * 10;
+                        break;
+                    default:
+                        break;
                 }
             }
-        }
-        return f1 - f2;
+            return acc;
+        }).mapToInt(Integer::intValue).sum();
     };
-    public static BiFunction<Board, Integer, Integer> F2 = (board, set) -> {
-        int f1 = 0, f2 = 0;
 
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (isPieceOurs(board, set, i, j)) {
-                    switch (Math.abs(board.tab[i][j])) {
-                        case 1://cuanto más adelante mejor
-                            f1 += 100;
-                            if (board.tab[i][j] < 0)
-                                f1 += i * 20;
-                            else
-                                f1 += (7 - i) * 20;
-                            break;
-                        case 2://cuanto más al centro del tablero mejor
-                            f1 += 300 + (3.5 - Math.abs(3.5 - j)) * 20;
-                            if (board.tab[i][j] < 0)
-                                f1 += Math.abs(3.5 - i) * 10;
-                            else
-                                f1 += Math.abs(3.5 - i) * 10;
-                            break;
-                        case 3:
-                            f1 += 330 + board.Movimientos(i, j) * 10;
-                            break;
-                        case 4:
-                            f1 += 500;
-                            if (board.tab[i][j] < 0)
-                                f1 += Math.abs(3.5 - i) * 15;
-                            else
-                                f1 += Math.abs(3.5 - i) * 15;
-                            break;
-                        case 5://cuanto más al centro del tablero mejor
-                            f1 += 940 + (3.5 - Math.abs(3.5 - j)) * 20;
-                            if (board.tab[i][j] < 0)
-                                f1 += Math.abs(3.5 - i) * 10;
-                            else
-                                f1 += Math.abs(3.5 - i) * 10;
-                            break;
-                        default:
-                    }
-                } else if (isPieceTheirs(board, set, i, j)) {
-                    switch (Math.abs(board.tab[i][j])) {
-                        case 1: //cuanto más adelante mejor
-                            f2 += 100;
-                            if (board.tab[i][j] < 0)
-                                f2 += i * 30;
-                            else
-                                f2 += (7 - i) * 30;
-                            break;
-                        case 2:
-                            f2 += 300 + (3.5 - Math.abs(3.5 - j)) * 20;
-                            break;
-                        case 3:
-                            f2 += 330 + board.Movimientos(i, j) * 10;
-                            if (board.tab[i][j] < 0)
-                                f2 += Math.abs(3.5 - i) * 10;
-                            else
-                                f2 += Math.abs(3.5 - i) * 10;
-                            break;
-                        case 4:
-                            f2 += 500;
-                            break;
-                        case 5:
-                            f2 += 940 + (3.5 - Math.abs(3.5 - j)) * 10;
-                            if (board.tab[i][j] < 0)
-                                f2 += Math.abs(3.5 - i) * 10;
-                            else
-                                f2 += Math.abs(3.5 - i) * 10;
-                            break;
-                        default:
-                    }
+    static BiFunction<Board, SetType, Integer> F2 = (board, set) -> {
+        return (Integer) Square.allSquares.stream().map((square) -> {
+            int acc = 0;
+            final Piece piece = board.tab(square);
+
+            if (isPieceOurs(board, set, square)) {
+                switch (piece.type) {
+                    case pawn://cuanto más adelante mejor
+                        acc += 100;
+                        if (piece.set == SetType.blackSet)
+                            acc += square.x * 20;
+                        else
+                            acc += (7 - square.x) * 20;
+                        break;
+                    case knight://cuanto más al centro del tablero mejor
+                        acc += 300 + (3.5 - Math.abs(3.5 - square.y)) * 20;
+                        if (piece.set == SetType.blackSet)
+                            acc += Math.abs(3.5 - square.x) * 10;
+                        else
+                            acc += Math.abs(3.5 - square.x) * 10;
+                        break;
+                    case bishop:
+                        acc += 330 + board.possibleMoves(square.x, square.y) * 10;
+                        break;
+                    case rook:
+                        acc += 500;
+                        if (piece.set == SetType.blackSet)
+                            acc += Math.abs(3.5 - square.x) * 15;
+                        else
+                            acc += Math.abs(3.5 - square.x) * 15;
+                        break;
+                    case queen://cuanto más al centro del tablero mejor
+                        acc += 940 + (3.5 - Math.abs(3.5 - square.y)) * 20;
+                        if (piece.set == SetType.blackSet)
+                            acc += Math.abs(3.5 - square.x) * 10;
+                        else
+                            acc += Math.abs(3.5 - square.x) * 10;
+                        break;
+                    default:
+                }
+            } else if (isPieceTheirs(board, set, square)) {
+                switch (piece.type) {
+                    case pawn:
+                        acc -= 100;
+                        if (piece.set == SetType.blackSet)
+                            acc -= square.x * 30;
+                        else
+                            acc -= (7 - square.x) * 30;
+                        break;
+                    case knight:
+                        acc -= 300 + (3.5 - Math.abs(3.5 - square.y)) * 20;
+                        break;
+                    case bishop:
+                        acc -= 330 + board.possibleMoves(square.x, square.y) * 10;
+                        if (piece.set == SetType.blackSet)
+                            acc -= Math.abs(3.5 - square.x) * 10;
+                        else
+                            acc -= Math.abs(3.5 - square.x) * 10;
+                        break;
+                    case rook:
+                        acc -= 500;
+                        break;
+                    case king:
+                        acc -= 940 + (3.5 - Math.abs(3.5 - square.y)) * 10;
+                        if (piece.set == SetType.blackSet)
+                            acc -= Math.abs(3.5 - square.x) * 10;
+                        else
+                            acc -= Math.abs(3.5 - square.x) * 10;
+                        break;
+                    default:
                 }
             }
-        }
-        return f1 - f2;
+            return acc;
+        }).mapToInt(Integer::intValue).sum();
     };
 
-    public static boolean isPieceOurs(Board board, int set, int i, int j) {
-        return board.tab[i][j] * set > 0;
+    static boolean isPieceOurs(Board board, SetType set, Square square) {
+        return board.tab(square).set == set;
     }
 
-    public static boolean isPieceTheirs(Board board, int set, int i, int j) {
-        return board.tab[i][j] * set < 0;
+    static boolean isPieceTheirs(Board board, SetType set, Square square) {
+        return board.tab(square).set != set;
     }
 }

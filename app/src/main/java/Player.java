@@ -1,4 +1,4 @@
-public interface Player {
+interface Player {
     Move move(Board board);
 
     PlayerType type();

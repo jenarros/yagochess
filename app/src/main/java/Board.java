@@ -1,31 +1,34 @@
-import java.awt.*;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.util.LinkedList;
+import org.jetbrains.annotations.NotNull;
 
-//Codificación de las fichas blancas
-// 1 Peón
-// 2 Caballo
-// 3 Alfil
-// 4 Torre
-// 5 Reina
-// 6 Rey
-// 4 Torre
+import java.awt.*;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+// 1 pawn
+// 2 knight
+// 3 bishop
+// 4 rook
+// 5 queen
+// 6 king
 /*
--4, -2, -3, -5, -6, -3, -2, -4,
--1, -1, -1, -1, -1, -1, -1, -1,
-0,  0,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  0,  0,  0,  0,  0,   
-1,  1,  1,  1,  1,  1,  1,  1,
-4,  2,  3,  5,  6,  3,  2,  4
+0        -4, -2, -3, -5, -6, -3, -2, -4,
+1        -1, -1, -1, -1, -1, -1, -1, -1,
+2         0,  0,  0,  0,  0,  0,  0,  0,
+3         0,  0,  0,  0,  0,  0,  0,  0,
+4         0,  0,  0,  0,  0,  0,  0,  0,
+5         0,  0,  0,  0,  0,  0,  0,  0,
+6         1,  1,  1,  1,  1,  1,  1,  1,
+7         4,  2,  3,  5,  6,  3,  2,  4
 */
-public class Board implements Serializable {
-    int[][] tab;
+class Board implements Serializable {
+    Piece[][] tab;
     int[] cap; //para la captura al paso
-    int turn; //-1:dark, 1:light
+    SetType turn;
     boolean movTorreI_b, movTorreD_b, movRey_b;
     boolean movTorreI_n, movTorreD_n, movRey_n;
     boolean finished;
@@ -33,84 +36,84 @@ public class Board implements Serializable {
     int moveCounter;
     private final Logger logger;
     /* Se ponen a true cuando a jugadaCorrecta devuelve true para alguna de ellas */
-    boolean enroqueL, enroqueC;
+    boolean castlingQueenside, castlingKingside;
     Player player1, player2;
 
-    public Board(Logger logger) {
+    Board(Logger logger) {
         this.logger = logger;
-        int i, j;
-        tab = new int[8][8];
+        tab = newTable();
         cap = new int[8];
 
         for (int k = 0; k < 8; k++) {
             cap[k] = -5;//movimiento absurdo
         }
-        movTorreI_b = false;
-        movTorreI_n = false;
-        movTorreD_b = false;
-        movTorreD_n = false;
-        movRey_b = false;
-        movRey_b = false;
-        turn = 1; //blancas
-        finished = false;
-        drawCounter = 0;
-        moveCounter = 0;
 
-        enroqueL = false;
-        enroqueC = false;
+        turn = SetType.whiteSet;
 
-        // dark pieces
-        tab[0][0] = -4;
-        tab[0][1] = -2;
-        tab[0][2] = -3;
-        tab[0][3] = -5;
-        tab[0][4] = -6;
-        tab[0][5] = -3;
-        tab[0][6] = -2;
-        tab[0][7] = -4;
-        for (j = 0; j < 8; j++)
-            tab[1][j] = -1;
+        tab[0][0] = Piece.blackRook;
+        tab[0][1] = Piece.blackKnight;
+        tab[0][2] = Piece.blackBishop;
+        tab[0][3] = Piece.blackQueen;
+        tab[0][4] = Piece.blackKing;
+        tab[0][5] = Piece.blackBishop;
+        tab[0][6] = Piece.blackKnight;
+        tab[0][7] = Piece.blackRook;
+        for (int file = 0; file < 8; file++) {
+            tab[1][file] = Piece.blackPawn;
+        }
 
-        // light pieces
-        tab[7][0] = 4;
-        tab[7][1] = 2;
-        tab[7][2] = 3;
-        tab[7][3] = 5;
-        tab[7][4] = 6;
-        tab[7][5] = 3;
-        tab[7][6] = 2;
-        tab[7][7] = 4;
-        for (j = 0; j < 8; j++)
-            tab[6][j] = 1;
-
-        // other squares
-        for (i = 2; i < 6; i++)
-            for (j = 0; j < 8; j++)
-                tab[i][j] = 0;
+        tab[7][0] = Piece.whiteRook;
+        tab[7][1] = Piece.whiteKnight;
+        tab[7][2] = Piece.whiteBishop;
+        tab[7][3] = Piece.whiteQueen;
+        tab[7][4] = Piece.whiteKing;
+        tab[7][5] = Piece.whiteBishop;
+        tab[7][6] = Piece.whiteKnight;
+        tab[7][7] = Piece.whiteRook;
+        for (int file = 0; file < 8; file++) {
+            tab[6][file] = Piece.whitePawn;
+        }
 
         //por defecto la partida es de tipo 1
-        player1 = new ComputerPlayer("computer 1", -1, logger, 3, PlayerStrategies.F1);
-        player2 = new UserPlayer("user 1", 1);
+        player1 = new ComputerPlayer("computer 1", SetType.blackSet, logger, 3, PlayerStrategies.F1);
+        player2 = new UserPlayer("user 1", SetType.whiteSet);
     }
 
-    public Point boardSquare(Point p) {
-        return new Point(Double.valueOf(Math.floor((p.y - 20) / 60)).intValue(), Double.valueOf(Math.floor((p.x - 20) / 60)).intValue());
+    @NotNull
+    private Piece[][] newTable() {
+        Piece[][] pieces = new Piece[8][8];
+
+        for (int rank = 0; rank < pieces.length; rank++) {
+            Arrays.fill(pieces[rank], Piece.none);
+        }
+
+        return pieces;
+    }
+
+    Square boardSquare(Point p) {
+        return new Square(Double.valueOf(Math.floor((p.y - 20) / 60)).intValue(), Double.valueOf(Math.floor((p.x - 20) / 60)).intValue());
     }
 
     void movePlayer1() {
-        if (player1.isComputer()) { //si es una maquina
+        if (player1.isComputer()) {
             Move move = player1.move(this);
 
             logger.info("Player 1: " + move.toString());
 
             play(move);
-            //si el peón ha llegado al final lo cambio por una ficha
-            if ((move.piece == -1 && move.to.x == 7) || (move.piece == 1 && move.to.x == 0)) {
-                tab[move.to.x][move.to.y] = 5 * turn * (-1);
-            }
-
-            finished = isFinished();
+            ifPawnHasReachedFinalRankReplaceWithQueen(move);
         }
+    }
+
+    private void ifPawnHasReachedFinalRankReplaceWithQueen(Move move) {
+        //TODO What if there is already a queen?
+        if ((move.piece == Piece.blackPawn && move.to.x == 7)) {
+            tab(move.to, Piece.blackQueen);
+        } else if (move.piece == Piece.whitePawn && move.to.x == 0) {
+            tab(move.to, Piece.whiteQueen);
+        }
+
+        finished = isFinished();
     }
 
     void movePlayer2() {
@@ -120,50 +123,37 @@ public class Board implements Serializable {
             logger.info("Player 2: " + move.toString());
 
             play(move);
-            //si el peón ha llegado al final lo cambio por una ficha
-            if ((move.piece == -1 && move.to.x == 7) || (move.piece == 1 && move.to.x == 0))
-                tab[move.to.x][move.to.y] = 5 * turn * (-1);
-
-            finished = isFinished();
+            ifPawnHasReachedFinalRankReplaceWithQueen(move);
         }
     }
 
-    void movePiece(Point from, Point to) {
+    void moveIfPossible(Square from, Square to) {
         if (finished)
             return;
 
-        int piece = tab[from.x][from.y];
+        Move move = new Move(tab(from), from, to);
 
-        //si la piece no es del turno no hago nada
-        if (turn * piece < 0)
+        if (turn != move.piece.set)
             return;
 
-        if (piece < 0 && player1.isUser() || piece > 0 && player2.isUser()) {
+        if ((turn == SetType.blackSet && player1.isUser()) || (turn == SetType.whiteSet && player2.isUser())) {
             if (!from.equals(to)
-                    && correctMove(from, to)
-                    && !moveCreatesCheck(from, to)) {
+                    && isCorrectMove(move)
+                    && !moveCreatesCheck(move)) {
 
-                Move move = new Move(piece, from, to);
                 play(move);
-                if ((piece == -1 && to.x == 7) || (piece == 1 && to.x == 0)) {
-                    try {
-                        int f;
-                        BufferedReader entrada = new BufferedReader(new InputStreamReader(System.in));
-                        do {
-                            logger.info("********************** TODO CAMBIO DE FICHA *********************");
-                            logger.info("Introduzca la piece por la que desea cambiar el peón:");
-                            System.out.print("[2:caballo | 3:alfil | 4:torre | 5:reina ] ");
-                            f = Integer.parseInt(entrada.readLine());
-                            tab[to.x][to.y] = f * turn * (-1);
-                        } while (f < 1 || f > 5);
-                    } catch (Exception e) {
-                        logger.info("Error: " + e);
+                if ((move.piece == Piece.blackPawn && to.x == 7) || (move.piece == Piece.whitePawn && to.x == 0)) {
+                    // TODO Should be able to choose piece instead of always getting a Queen
+                    if (turn == SetType.blackSet) {
+                        tab(to, Piece.whiteQueen);
+                    } else {
+                        tab(to, Piece.blackQueen);
                     }
                 }
 
                 finished = isFinished();
                 if (!finished) {
-                    if (piece < 0) {
+                    if (move.piece.set == SetType.blackSet) {
                         logger.info("Player 1: " + move.toString());
                         movePlayer2();
                     } else {
@@ -176,88 +166,90 @@ public class Board implements Serializable {
     }
 
     MoveResult play(Move move) {
-        MoveResult m = new MoveResult();
+        MoveResult moveResult = new MoveResult();
 
         //guardamos los datos actuales sobre enroques
-        m.movTorreI_b = movTorreI_b;
-        m.movTorreD_b = movTorreD_b;
-        m.movRey_b = movRey_b;
-        m.movTorreI_n = movTorreI_n;
-        m.movTorreD_n = movTorreD_n;
-        m.movRey_n = movRey_n;
-        m.castlingQueenside = enroqueL;
-        m.castlingKingside = enroqueC;
-        m.drawCounter = drawCounter;
-        m.moveCounter = moveCounter;
-        m.captura = cap[move.to.y];
-        //comprobamos si están implicadas las fichas que pueden enrocar
-        //y las marcamos como movidas
-        if (move.piece == 6)
+        moveResult.movTorreI_b = movTorreI_b;
+        moveResult.movTorreD_b = movTorreD_b;
+        moveResult.movRey_b = movRey_b;
+        moveResult.movTorreI_n = movTorreI_n;
+        moveResult.movTorreD_n = movTorreD_n;
+        moveResult.movRey_n = movRey_n;
+        moveResult.castlingQueenside = castlingQueenside;
+        moveResult.castlingKingside = castlingKingside;
+        moveResult.drawCounter = drawCounter;
+        moveResult.moveCounter = moveCounter;
+        moveResult.captura = cap[move.to.y];
+
+        if (move.piece == Piece.whiteKing)
             movRey_b = true;
-        else if (move.piece == 4 && move.from.y == 0)
+        else if (move.piece == Piece.whiteRook && move.from.y == 0)
             movTorreI_b = true;
-        else if (move.piece == 4 && move.from.y == 7)
+        else if (move.piece == Piece.whiteRook && move.from.y == 7)
             movTorreD_b = true;
 
-        if (move.piece == -6)
+        if (move.piece == Piece.blackKing)
             movRey_n = true;
-        else if (move.piece == -4 && move.from.y == 0)
+        else if (move.piece == Piece.blackRook && move.from.y == 0)
             movTorreI_n = true;
-        else if (move.piece == -4 && move.from.y == 7)
+        else if (move.piece == Piece.blackRook && move.from.y == 7)
             movTorreD_n = true;
 
         //miramos si hay que realizar un enroque
-        if (Math.abs(move.piece) == 6
+        if (move.piece == Piece.whiteKing
                 && Math.abs(move.from.y - move.to.y) == 2
-                && (enroqueL || enroqueC)) {
+                && (castlingQueenside || castlingKingside)) {
             drawCounter++;
             //logger.info("Realizo enroque");
-            realizarEnroque(m, move.from, move.to);
-        } else { //movimiento convencional
-            if (tab[move.to.x][move.to.y] != 0 || Math.abs(move.piece) == 1) {
+            realizarEnroque(moveResult, move.from, move.to);
+        } else {
+            if (tab(move.to) != Piece.none || move.piece == Piece.whitePawn) {
                 //reinicio el contador por matar una ficha
                 //o mover un peon
                 drawCounter = 0;
-            } else
+            } else {
                 drawCounter++;
+            }
             //si peon avanza dos activar posible captura al paso
-            if (Math.abs(move.piece) == 1
-                    && Math.abs(move.from.x - move.to.x) == 2) {
+            if (move.piece.type == PieceType.pawn && Math.abs(move.from.x - move.to.x) == 2) {
                 cap[move.to.y] = moveCounter;
             }
             //realizar captura al paso
-            if (Math.abs(move.piece) == 1
-                    && Math.abs(move.from.x - move.to.x) == 1
-                    && Math.abs(move.from.y - move.to.y) == 1
+            if (move.piece.type == PieceType.pawn
+                    && move.rankDistance() == 1
+                    && move.fileDistanceAbs() == 1
                     && cap[move.to.y] == moveCounter - 1) {
-                m.type = 3;
-                m.squareC = new Point(move.to.x + turn, move.to.y);
-                m.pieceC = tab[move.to.x + turn][move.to.y];
-                tab[move.to.x + turn][move.to.y] = 0;
-            } else
-                m.type = 2;
-            m.squareA = move.from;
-            m.squareB = move.to;
-            m.pieceA = tab[move.from.x][move.from.y];
-            m.pieceB = tab[move.to.x][move.to.y];
-            tab[move.from.x][move.from.y] = 0;
-            tab[move.to.x][move.to.y] = move.piece;
+                moveResult.type = 3;
+                // i.e. for whites
+                // turn=1, to.x = 2, to.y = 5, squareC = (3,5)
+                moveResult.squareC = move.to.previousRank(move.piece.set);
+                moveResult.pieceC = tab(moveResult.squareC);
+                tab(moveResult.squareC, Piece.none);
+            } else {
+                moveResult.type = 2;
+            }
+            moveResult.squareA = move.from;
+            moveResult.squareB = move.to;
+            moveResult.pieceA = tab(move.from);
+            moveResult.pieceB = tab(move.to);
+            tab(move.from, Piece.none);
+            tab(move.to, move.piece);
         }
-        turn *= -1;
+        turn = turn.next();
         moveCounter++;
-        return m;
+        return moveResult;
     }
 
     void undo(MoveResult moveResult) {
-        tab[moveResult.squareA.x][moveResult.squareA.y] = moveResult.pieceA;
-        tab[moveResult.squareB.x][moveResult.squareB.y] = moveResult.pieceB;
+        tab(moveResult.squareA, moveResult.pieceA);
+        tab(moveResult.squareB, moveResult.pieceB);
         if (moveResult.type == 3) {
-            tab[moveResult.squareC.x][moveResult.squareC.y] = moveResult.pieceC;
+            tab(moveResult.squareC, moveResult.pieceC);
         }
         if (moveResult.type == 4) {
             //logger.info("Deshago enroque");
-            tab[moveResult.squareC.x][moveResult.squareC.y] = moveResult.pieceC;
-            tab[moveResult.squareD.x][moveResult.squareD.y] = moveResult.pieceD;
+            tab(moveResult.squareC, moveResult.pieceC);
+            tab(moveResult.squareD, moveResult.pieceD);
         }
         movTorreI_b = moveResult.movTorreI_b;
         movTorreD_b = moveResult.movTorreD_b;
@@ -265,67 +257,61 @@ public class Board implements Serializable {
         movTorreI_n = moveResult.movTorreI_n;
         movTorreD_n = moveResult.movTorreD_n;
         movRey_n = moveResult.movRey_n;
-        enroqueC = moveResult.castlingKingside;
-        enroqueL = moveResult.castlingQueenside;
+        castlingKingside = moveResult.castlingKingside;
+        castlingQueenside = moveResult.castlingQueenside;
         cap[moveResult.squareB.y] = moveResult.captura;
         drawCounter = moveResult.drawCounter;
         moveCounter = moveResult.moveCounter;
 
-        turn *= -1;
+        turn = turn.next();
     }
 
-    // Comprobación de jugada correcta para las blancas
-    boolean correctMove(Point from, Point to) {
+    boolean isCorrectMove(Square from, Square to) {
+        return isCorrectMove(new Move(tab(from), from, to));
+    }
+
+    boolean isCorrectMove(Move move) {
         boolean r = false;
-        int piece = tab[from.x][from.y];
 
-        //comprobamos que no nos salimos del tablero
-        if (to.x > 7 || to.x < 0 || to.y > 7 || to.y < 0) {
-            return false;
-        }
-
-        //en el to no debe haber una piece nuestra
-        if (tab[from.x][from.y] * tab[to.x][to.y] > 0)
+        // can not capture piece of the same set
+        if (!move.to.exists() || tab(move.from).set == tab(move.to).set)
             return false;
 
-        //jugadas convencionales
-        switch (Math.abs(piece)) {
-            case 1:
-                r = jugadaCorrectaPeon(from, to);
+        switch (move.piece.type) {
+            case pawn:
+                r = isCorrectMoveForPawn(move);
                 break;
-            case 2:
-                r = jugadaCorrectaCaballo(from, to);
+            case knight:
+                r = isCorrectMoveForKnight(move);
                 break;
-            case 3:
-                r = jugadaCorrectaAlfil(from, to);
+            case bishop:
+                r = isCorrectMoveForBishop(move);
                 break;
-            case 4:
-                r = jugadaCorrectaTorre(from, to);
+            case rook:
+                r = isCorrectMoveForRook(move);
                 break;
-            case 5:
-                r = jugadaCorrectaReina(from, to);
+            case queen:
+                r = isCorrectMoveForQueen(move);
                 break;
-            case 6:
-                r = jugadaCorrectaRey(from, to);
+            case king:
+                r = isCorrectMoveForKing(move);
                 break;
         }
         return r;
     }
 
-    //---------------------------------------------------------------------------//
-    //comprueba si tras realizar la jugada el nuestro rey queda en jaque
-    boolean moveCreatesCheck(Point from, Point to) {
-        int piece = tab[from.x][from.y];
+    boolean moveCreatesCheck(Square from, Square to) {
+        return moveCreatesCheck(new Move(tab(from), from, to));
+    }
 
-        //realizo la jugada,el turno pasa al contrario
-        MoveResult m = play(new Move(piece, from, to));
+    boolean moveCreatesCheck(Move move) {
+        //realizo la jugada, el turno pasa al contrario
+        MoveResult m = play(move);
 
-        turn *= -1; //cambio el turno para ver si nosotros estamos en jaque
-        boolean r;
-        r = isInCheck();
-        turn *= -1; //lo dejo como estaba
+        turn = turn.next(); //cambio el turno para ver si nosotros estamos en jaque
+        boolean r = isInCheck();
+        turn = turn.next(); //lo dejo como estaba
 
-        //desago la jugada
         undo(m);
 
         return r;
@@ -333,46 +319,45 @@ public class Board implements Serializable {
 
     boolean isFinished() {
         if (isCheckmate()) {
-            if (turn == -1)
-                logger.info("JAQUE MATE: GANA " + player2.name());
+            if (turn == SetType.blackSet)
+                logger.info("checkmate winner is " + player2.name());
             else
-                logger.info("JAQUE MATE: GANA " + player1.name());
+                logger.info("checkmate winner is " + player1.name());
             return true;
         } else if (isADraw()) {
-            logger.info("TABLAS");
+            logger.info("draw");
             return true;
         } else
             return false;
     }
 
     boolean isInCheck() {
-        //buscamos el rey
         int xRey = 0, yRey = 0;
-        for (int i = 0; i <= 7; i++) {
-            for (int j = 0; j <= 7; j++) {
-                if (tab[i][j] == 6 * turn) {
-                    xRey = i;
-                    yRey = j;
+        for (int rank = 0; rank <= 7; rank++) {
+            for (int file = 0; file <= 7; file++) {
+                if (tab[rank][file].type == PieceType.king && tab[rank][file].set == turn) {
+                    xRey = rank;
+                    yRey = file;
                 }
             }
         }
 
-        //intentamos matar al rey con todas las fichas contrarias
-        //cambiamos el turno por que comprobamos jugadas del contrario
-        turn *= -1;
-        for ( int i = 0; i <= 7; i++ ) {
-            for ( int j = 0; j <= 7; j++ ) {
-                if (tab[i][j] * turn > 0) {
-                    if (correctMove(new Point(i, j), new Point(xRey, yRey))) {
-                        turn *= -1;
+        // intentamos matar al rey con todas las fichas contrarias
+        // cambiamos el turno por que comprobamos jugadas del contrario
+        turn = turn.next();
+        for (int i = 0; i <= 7; i++) {
+            for (int j = 0; j <= 7; j++) {
+                if (tab[i][j].set == turn) {
+                    if (isCorrectMove(new Square(i, j), new Square(xRey, yRey))) {
+                        turn = turn.next();
                         //logger.info("JAQUE AL REY "+tab[xRey][yRey]+" POR "+tab[i][j]+" DESDE "+i+","+j);
                         return true;
                     }
                 }
             }
         }
-        //dejamos el turno como estaba
-        turn *= -1;
+        // dejamos el turno como estaba
+        turn = turn.next();
         return false;
     }
 
@@ -381,8 +366,8 @@ public class Board implements Serializable {
 
         generateMoves(moves);
         while (moves.size() != 0) {
-            Move j = moves.removeFirst();
-            if (!moveCreatesCheck(j.from, j.to))
+            Move move = moves.removeFirst();
+            if (!moveCreatesCheck(move.from, move.to))
                 return true;
         }
         return false;
@@ -405,182 +390,172 @@ public class Board implements Serializable {
     }
 
     //realiza el enroque
-    //---------------------------------------------------------------------------//
-    void realizarEnroque(MoveResult m, Point from, Point to) {
-        int piece = tab[from.x][from.y];
+    void realizarEnroque(MoveResult m, Square from, Square to) {
+        Piece piece = tab[from.x][from.y];
         m.type = 4;
 
-        if (enroqueL && from.y - to.y > 0) //enroque largo
-        {
-            if (piece > 0) {
-                m.squareA = new Point(7, 0);
-                m.squareB = new Point(7, 4);
-                m.squareC = new Point(7, 2);
-                m.squareD = new Point(7, 3);
+        if (castlingQueenside && from.y - to.y > 0) {
+            if (piece.set == SetType.whiteSet) {
+                m.squareA = new Square(7, 0);
+                m.squareB = new Square(7, 4);
+                m.squareC = new Square(7, 2);
+                m.squareD = new Square(7, 3);
                 m.pieceA = tab[7][0];
                 m.pieceB = tab[7][4];
                 m.pieceC = tab[7][2];
                 m.pieceD = tab[7][3];
-                tab[7][0] = 0; //torre
-                tab[7][4] = 0; //rey
-                tab[7][2] = 6; //rey
-                tab[7][3] = 4; //torre
-                //logger.info("Realizo enroque largo en blancas");
-            }
-            else {
-                m.squareA = new Point(0, 0);
-                m.squareB = new Point(0, 4);
-                m.squareC = new Point(0, 2);
-                m.squareD = new Point(0, 3);
+                tab[7][0] = Piece.none;
+                tab[7][4] = Piece.none;
+                tab[7][2] = Piece.whiteKing;
+                tab[7][3] = Piece.whiteRook;
+            } else {
+                m.squareA = new Square(0, 0);
+                m.squareB = new Square(0, 4);
+                m.squareC = new Square(0, 2);
+                m.squareD = new Square(0, 3);
                 m.pieceA = tab[0][0];
                 m.pieceB = tab[0][4];
                 m.pieceC = tab[0][2];
                 m.pieceD = tab[0][3];
-                tab[0][0] = 0; //torre
-                tab[0][4] = 0; //rey
-                tab[0][2] = -6; //rey
-                tab[0][3] = -4; //torre
-                //logger.info("Realizo enroque largo en negras");
+                tab[0][0] = Piece.none;
+                tab[0][4] = Piece.none;
+                tab[0][2] = Piece.blackKing;
+                tab[0][3] = Piece.blackRook;
             }
 
-            enroqueL = false;
-        } else if (enroqueC && from.y - to.y < 0) { //enroque corto
-            if (piece > 0) {
-                m.squareA = new Point(7, 7);
-                m.squareB = new Point(7, 4);
-                m.squareC = new Point(7, 6);
-                m.squareD = new Point(7, 5);
+            castlingQueenside = false;
+        } else if (castlingKingside && from.y - to.y < 0) { //enroque corto
+            if (piece.set == SetType.whiteSet) {
+                m.squareA = new Square(7, 7);
+                m.squareB = new Square(7, 4);
+                m.squareC = new Square(7, 6);
+                m.squareD = new Square(7, 5);
                 m.pieceA = tab[7][7];
                 m.pieceB = tab[7][4];
                 m.pieceC = tab[7][6];
                 m.pieceD = tab[7][5];
-                tab[7][7] = 0; //torre
-                tab[7][4] = 0; //rey
-                tab[7][6] = 6; //rey
-                tab[7][5] = 4; //torre
-                //logger.info("Realizo enroque corto en blancas");
+                tab[7][7] = Piece.none;
+                tab[7][4] = Piece.none;
+                tab[7][6] = Piece.whiteKing;
+                tab[7][5] = Piece.whiteRook;
             } else {
-                m.squareA = new Point(0, 7);
-                m.squareB = new Point(0, 4);
-                m.squareC = new Point(0, 6);
-                m.squareD = new Point(0, 5);
+                m.squareA = new Square(0, 7);
+                m.squareB = new Square(0, 4);
+                m.squareC = new Square(0, 6);
+                m.squareD = new Square(0, 5);
                 m.pieceA = tab[0][7];
                 m.pieceB = tab[0][4];
                 m.pieceC = tab[0][6];
                 m.pieceD = tab[0][5];
-                tab[0][7] = 0; //torre
-                tab[0][4] = 0; //rey
-                tab[0][6] = -6; //rey
-                tab[0][5] = -4; //torre
-                //logger.info("Realizo enroque largo en negras");
+                tab[0][7] = Piece.none;
+                tab[0][4] = Piece.none;
+                tab[0][6] = Piece.blackKing;
+                tab[0][5] = Piece.blackRook;
             }
-            enroqueC = false;
+            castlingKingside = false;
         }
     }
 
-    //comprueba si la jugada es correcta para un peón
-    //-------------------------------------------------------------------------//
-    boolean jugadaCorrectaPeon(Point from, Point to) {
-        //solo se puede avanzar una casilla o dos
-        if (to.x - from.x != (-1) * turn * 1 && to.x - from.x != (-1) * turn * 2) {
+    Piece tab(Square square) {
+        return tab[square.x][square.y];
+    }
+
+    void tab(Square square, Piece newPiece) {
+        tab[square.x][square.y] = newPiece;
+    }
+
+    boolean isCorrectMoveForPawn(Move move) {
+        if (move.rankDistance() != 1 && move.rankDistance() != 2) {
             return false;
         }
 
         //si avanzamos en la misma columna el to debe esta vacio
-        if (to.y == from.y && tab[to.x][to.y] == 0) {
+        if (move.hasSameFile() && tab(move.to) == Piece.none) {
             //si avanzamos dos casillas debemos partir de la posicion
             //inicial y la casilla saltada debe estar vacía
-            if ((to.x - from.x == (-1) * turn * 2) &&
-                    tab[to.x + turn][to.y] == 0 &&
-                    ((from.x == 6 && turn == 1) ||
-                            (from.x == 1 && turn == -1)))
+            if (move.rankDistance() == 2 && tab(move.to.previousRank(move.piece.set)) == Piece.none &&
+                    ((move.from.x == 6 && turn == SetType.whiteSet) || (move.from.x == 1 && turn == SetType.blackSet)))
                 return true;
 
             //si avanzamos una casilla bien
-            if (to.x - from.x == (-1) * turn * 1)
+            if (move.rankDistance() == 1)
                 return true;
         }
 
-
         //si avanzamos en diagonal en el to debe haber una ficha
         //enemiga o debe ser la jugada de "captura al paso"
-        if ((Math.abs(to.y - from.y)) == 1 && (to.x - from.x) == (-1) * turn * 1) {
+        if (move.fileDistanceAbs() == 1 && move.rankDistance() == 1) {
             //si en el to hay una ficha contraria
-            if (tab[to.x][to.y] * turn < 0) {
+            if (tab(move.to).set != turn) {
                 return true; //captura diagonal
             }
             //si el to está vacio y se da la condición de captura al paso
-            int c = (turn == 1) ? 3 : 4;
-            return tab[to.x][to.y] == 0
-                    && cap[to.y] == moveCounter - 1
-                    && from.x == c; //captura al paso
+            int c = (turn == SetType.whiteSet) ? 3 : 4;
+            return move.piece == Piece.none
+                    && cap[move.to.y] == moveCounter - 1
+                    && move.from.x == c; //captura al paso
         }
         return false;
     }
 
-    //-----------------------------------------------------------------------------//
-    //comprueba si la jugada es correcta para un caballo
-    boolean jugadaCorrectaCaballo(Point from, Point to) {
-        //comprobamos si el movimiento(largo) es horizontal o vertical
-        //vertical
-        if ((Math.abs(from.x - to.x) == 2) && (Math.abs(from.y - to.y) == 1)) {
-            //horizontal
+    boolean isCorrectMoveForKnight(Move move) {
+        if (move.rankDistanceAbs() == 2 && move.fileDistanceAbs() == 1) {
             return true;
-        } else
-            return (Math.abs(from.y - to.y) == 2) && (Math.abs(from.x - to.x) == 1);
+        } else {
+            return move.fileDistanceAbs() == 2 && move.rankDistanceAbs() == 1;
+        }
     }
 
-    //comprueba si la jugada es correcta para un alfil
-    boolean jugadaCorrectaAlfil(Point from, Point to) {
-        if (Math.abs(from.x - to.x) == Math.abs(from.y - to.y)) {
+    boolean isCorrectMoveForBishop(Move move) {
+        if (move.rankDistanceAbs() == move.fileDistanceAbs()) {
             //vamos a recorrer el movimiento de izquierda a derecha
-            int ma = Math.max(from.y, to.y); //y final
+            int ma = Math.max(move.from.y, move.to.y); //y final
             int rank, file, direction;
 
             //calculamos la casilla de inicio
-            if (from.y < to.y) {
-                rank = from.x;
-                file = from.y;
+            if (move.from.y < move.to.y) {
+                rank = move.from.x;
+                file = move.from.y;
             } else {
-                rank = to.x;
-                file = to.y;
+                rank = move.to.x;
+                file = move.to.y;
             }
 
             //calculamos el desplazamiento
-            if (rank == Math.min(from.x, to.x))                 //hacia abajo
+            if (rank == Math.min(move.from.x, move.to.x))                 //hacia abajo
                 direction = 1;
             else //hacia arriba
                 direction = -1;
 
             //recorremos el movimiento
             for (file++, rank += direction; file < ma; ) {
-                if (tab[rank][file] != 0)
+                if (tab[rank][file] != Piece.none)
                     return false;
                 rank += direction;
                 file++;
             }
             return true;
-        } else
+        } else {
             return false;
+        }
     }
 
-    //comprueba si la jugada es correcta para un torre
-    boolean jugadaCorrectaTorre(Point from, Point to) {
-        if (from.x == to.x) {
+    boolean isCorrectMoveForRook(Move move) {
+        if (move.hasSameRank()) {
             //movimiento horizontal
-            int mi = Math.min(from.y, to.y) + 1;
-            int ma = Math.max(from.y, to.y);
+            int mi = Math.min(move.from.y, move.to.y) + 1;
+            int ma = Math.max(move.from.y, move.to.y);
             for (; mi < ma; mi++) {
-                if (tab[from.x][mi] != 0)
+                if (tab[move.from.x][mi] != Piece.none)
                     return false;
             }
             return true;
-        } else if (from.y == to.y) {
+        } else if (move.hasSameFile()) {
             //movimiento vertical
-            int mi = Math.min(from.x, to.x) + 1;
-            int ma = Math.max(from.x, to.x);
+            int mi = Math.min(move.from.x, move.to.x) + 1;
+            int ma = Math.max(move.from.x, move.to.x);
             for (; mi < ma; mi++) {
-                if (tab[mi][from.y] != 0)
+                if (tab[mi][move.from.y] != Piece.none)
                     return false;
             }
             return true;
@@ -588,65 +563,55 @@ public class Board implements Serializable {
             return false;
     }
 
-    //------------------------------------------------------------------------------//
-    //comprueba si la jugada es correcta para un reina
-    boolean jugadaCorrectaReina(Point from, Point to) {
-        return (jugadaCorrectaAlfil(from, to) ||
-                jugadaCorrectaTorre(from, to));
-
+    boolean isCorrectMoveForQueen(Move move) {
+        return (isCorrectMoveForBishop(move) || isCorrectMoveForRook(move));
     }
 
-    //-------------------------------------------------------------------------------//
-    //comprueba si la jugada es correcta para un rey
-    boolean jugadaCorrectaRey(Point from, Point to) {
-        return ((Math.abs(from.x - to.x) <= 1) &&
-                (Math.abs(from.y - to.y) <= 1)) ||
-                jugadaCorrectaEnroque(from, to);
+    boolean isCorrectMoveForKing(Move move) {
+        return (move.fileDistanceAbs() <= 1 && move.rankDistanceAbs() <= 1) || isCorrectCastling(move);
     }
 
-    boolean jugadaCorrectaEnroque(Point from, Point to) {
-        int piece = tab[from.x][from.y];
+    boolean isCorrectCastling(Move move) {
 
-        //comprobamos si las fichas implicadas son el rey y una torre
-        if (((piece == 6 && !movRey_b) || (piece == -6 && !movRey_n)) &&
-                from.x == to.x &&
-                (from.x == 0 || from.x == 7) &&
-                !moveCreatesCheck(from, from)) { //<-no debemos estar en jaque
+        if (((move.piece == Piece.whiteKing && !movRey_b) || (move.piece == Piece.blackKing && !movRey_n)) &&
+                move.hasSameRank() &&
+                (move.from.x == 0 || move.from.x == 7) &&
+                !moveCreatesCheck(move)) {
 
-            if (to.y == 2 && tab[from.x][0] == turn * 4) { //torre izquierda
+            if (move.to.y == 2 && tab[move.from.x][0] == move.piece.to(PieceType.rook)) {
                 //blancas
-                if (piece > 0 && !movTorreI_b &&
-                        tab[7][1] == 0 && tab[7][2] == 0 &&
-                        tab[7][3] == 0 && tab[7][4] == 0 &&
-                        !moveCreatesCheck(from, new Point(7, 3)) &&
-                        !moveCreatesCheck(from, new Point(7, 2))) {
-                    enroqueL = true;
+                if (move.piece.set == SetType.whiteSet && !movTorreI_b &&
+                        tab[7][1] == Piece.none && tab[7][2] == Piece.none &&
+                        tab[7][3] == Piece.none &&
+                        !moveCreatesCheck(move.from, new Square(7, 3)) &&
+                        !moveCreatesCheck(move.from, new Square(7, 2))) {
+                    castlingQueenside = true;
                     return true;
                 }
                 //negras
-                if (piece < 0 && !movTorreI_n &&
-                        tab[0][1] == 0 && tab[0][2] == 0 &&
-                        tab[0][3] == 0 && tab[0][4] == 0 &&
-                        !moveCreatesCheck(from, new Point(0, 3)) &&
-                        !moveCreatesCheck(from, new Point(0, 2))) {
-                    enroqueL = true;
+                if (move.piece.set == SetType.blackSet && !movTorreI_n &&
+                        tab[0][1] == Piece.none && tab[0][2] == Piece.none &&
+                        tab[0][3] == Piece.none && tab[0][4] == Piece.none &&
+                        !moveCreatesCheck(move.from, new Square(0, 3)) &&
+                        !moveCreatesCheck(move.from, new Square(0, 2))) {
+                    castlingQueenside = true;
                     return true;
                 }
-            } else if (to.y == 6 && tab[from.x][7] == turn * 4) { //torre derecha
+            } else if (move.to.y == 6 && tab[move.from.x][7] == move.piece.to(PieceType.rook)) { //torre derecha
                 //blancas
-                if (piece > 0 && !movTorreD_b &&
-                        tab[7][5] == 0 && tab[7][6] == 0 &&
-                        !moveCreatesCheck(from, new Point(7, 6)) &&
-                        !moveCreatesCheck(from, new Point(7, 5))) {
-                    enroqueC = true;
+                if (move.piece.set == SetType.whiteSet && !movTorreD_b &&
+                        tab[7][5] == Piece.none && tab[7][6] == Piece.none &&
+                        !moveCreatesCheck(move.from, new Square(7, 6)) &&
+                        !moveCreatesCheck(move.from, new Square(7, 5))) {
+                    castlingKingside = true;
                     return true;
                 }
                 //negras
-                if (piece < 0 && !movTorreD_n &&
-                        tab[0][5] == 0 && tab[0][6] == 0 &&
-                        !moveCreatesCheck(from, new Point(0, 6)) &&
-                        !moveCreatesCheck(from, new Point(0, 5))) {
-                    enroqueC = true;
+                if (move.piece.set == SetType.blackSet && !movTorreD_n &&
+                        tab[0][5] == Piece.none && tab[0][6] == Piece.none &&
+                        !moveCreatesCheck(move.from, new Square(0, 6)) &&
+                        !moveCreatesCheck(move.from, new Square(0, 5))) {
+                    castlingKingside = true;
                     return true;
                 }
             }
@@ -654,260 +619,159 @@ public class Board implements Serializable {
         return false;
     }
 
-    public void generateMoves(LinkedList<Move> l) {
+    void generateMoves(LinkedList<Move> l) {
         for (int rank = 0; rank < 8; rank++) {
             for (int file = 0; file < 8; file++) {
-                if (tab[rank][file] * turn > 0) { //en la posicion hay ficha del turno
-                    switch (Math.abs(tab[rank][file])) {
-                        case 1:
-                            generarJugadasPeon(rank, file, l);
+                if (tab[rank][file].set == turn) {
+                    Square currentPosition = new Square(rank, file);
+                    switch (tab[rank][file].type) {
+                        case pawn:
+                            l.addAll(generatePawnMoves(currentPosition));
                             break;
-                        case 2:
-                            generarJugadasCaballo(rank, file, l);
+                        case knight:
+                            l.addAll(generateKnightMoves(currentPosition));
                             break;
-                        case 3:
-                            generarJugadasAlfil(rank, file, l);
+                        case bishop:
+                            l.addAll(generateBishopMoves(currentPosition));
                             break;
-                        case 4:
-                            generarJugadasTorre(rank, file, l);
+                        case rook:
+                            l.addAll(generateRookMoves(currentPosition));
                             break;
-                        case 5:
-                            generarJugadasReina(rank, file, l);
+                        case queen:
+                            l.addAll(generateQueenMoves(currentPosition));
                             break;
-                        case 6:
-                            generarJugadasRey(rank, file, l);
+                        case king:
+                            l.addAll(generateKingMoves(currentPosition));
                             break;
-                        default:
-                            logger.info("ERROR GRAVE");
                     }
                 }
             }
         }
     }
 
-    //Genera todas las posibles jugadas con el tablero y la ficha [i][j] y las introduce en la lista
-    public void generarJugadasPeon(int x, int y, LinkedList<Move> l) {
-
-        //comprobamos izquierda-centro-derecha, t indica el turno{+1,-1}
+    Collection<Move> generatePawnMoves(Square from) {
         //-p-       -P-
         //ppp   ó   ppp
         //-P-       -p-
-        //izquierda
-        if (correctMove(new Point(x, y), new Point(x - turn, y - 1)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x - turn, y - 1))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x - turn, y - 1)));
-        }
+        Piece piece = tab(from);
 
-        //centro1
-        if (correctMove(new Point(x, y), new Point(x - turn, y)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x - turn, y))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x - turn, y)));
-        }
-
-        //centro2
-        if (correctMove(new Point(x, y), new Point(x - turn - turn, y)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x - turn - turn, y))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x - turn - turn, y)));
-        }
-
-        //derecha
-        if (correctMove(new Point(x, y), new Point(x - turn, y + 1)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x - turn, y + 1))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x - turn, y + 1)));
-        }
+        return Stream.of(
+                from.nextRankPreviousFile(turn), // left
+                from.nextRank(turn),             // ahead
+                from.next2Rank(turn),            // ahead 2
+                from.nextRankNextFile(turn)      // right
+        ).map((to) -> new Move(piece, from, to))
+                .filter((move) -> isCorrectMove(move) && !moveCreatesCheck(move))
+                .collect(Collectors.toList());
     }
 
-    //-----------------------------------------------------------------------------//
-    //devuelve true si tras mover correctamente el caballo(x,y) no existe jaque
-    public void generarJugadasCaballo(int x, int y, LinkedList<Move> l) {
+    Collection<Move> generateKnightMoves(Square from) {
         //comprueba para las 8 casillas si podemos mover allí y si deshacemos el jaque
         //-c-c-
         //c---c
         //--C--
         //c---c
         //-c-c-
-        if (correctMove(new Point(x, y), new Point(x + 2, y + 1)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x + 2, y + 1))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x + 2, y + 1)));
-        }
-
-        if (correctMove(new Point(x, y), new Point(x + 2, y - 1)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x + 2, y - 1))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x + 2, y - 1)));
-        }
-        if (correctMove(new Point(x, y), new Point(x - 2, y + 1)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x - 2, y + 1))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x - 2, y + 1)));
-        }
-        if (correctMove(new Point(x, y), new Point(x - 2, y - 1)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x - 2, y - 1))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x - 2, y - 1)));
-        }
-        if (correctMove(new Point(x, y), new Point(x + 1, y + 2)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x + 1, y + 2))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x + 1, y + 2)));
-        }
-        if (correctMove(new Point(x, y), new Point(x + 1, y - 2)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x + 1, y - 2))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x + 1, y - 2)));
-        }
-        if (correctMove(new Point(x, y), new Point(x - 1, y + 2)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x - 1, y + 2))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x - 1, y + 2)));
-        }
-        if (correctMove(new Point(x, y), new Point(x - 1, y - 2)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x - 1, y - 2))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x - 1, y - 2)));
-        }
+        Piece piece = tab(from);
+        return Stream.of(
+                from.next2Rank(piece.set).nextFile(piece.set),
+                from.next2Rank(piece.set).previousFile(piece.set),
+                from.previous2Rank(piece.set).nextFile(piece.set),
+                from.previous2Rank(piece.set).previousFile(piece.set),
+                from.next2File(piece.set).nextRank(piece.set),
+                from.next2File(piece.set).previousRank(piece.set),
+                from.previous2File(piece.set).nextRank(piece.set),
+                from.previous2File(piece.set).previousRank(piece.set)
+        ).map((to) -> new Move(piece, from, to))
+                .filter((move) -> isCorrectMove(move) && !moveCreatesCheck(move))
+                .collect(Collectors.toList());
     }
 
-    //devuelve true si tras mover correctamente el alfil(x,y) no existe jaque
-    public void generarJugadasAlfil(int x, int y, LinkedList<Move> l) {
+    Collection<Move> generateBishopMoves(Square from) {
         //comprueba las 4 diagonales posibles, como mucho podrá avanzar 7 casillas
         //a---a
         //-a-a-
         //--A--
         //-a-a-
         //a---a
-        for (int i = 1; i <= 7; i++) {
-            if (correctMove(new Point(x, y), new Point(x + i, y + i)) &&
-                    !moveCreatesCheck(new Point(x, y), new Point(x + i, y + i))) {
-                l.add(new Move(tab[x][y], new Point(x, y), new Point(x + i, y + i)));
-            }
-            if (correctMove(new Point(x, y), new Point(x + i, y - i)) &&
-                    !moveCreatesCheck(new Point(x, y), new Point(x + i, y - i))) {
-                l.add(new Move(tab[x][y], new Point(x, y), new Point(x + i, y - i)));
-            }
-            if (correctMove(new Point(x, y), new Point(x - i, y + i)) &&
-                    !moveCreatesCheck(new Point(x, y), new Point(x - i, y + i))) {
-                l.add(new Move(tab[x][y], new Point(x, y), new Point(x - i, y + i)));
-            }
-            if (correctMove(new Point(x, y), new Point(x - i, y - i)) &&
-                    !moveCreatesCheck(new Point(x, y), new Point(x - i, y - i))) {
-                l.add(new Move(tab[x][y], new Point(x, y), new Point(x - i, y - i)));
-            }
-        }
+        Piece piece = tab(from);
+
+        return IntStream.range(1, 8).mapToObj((i) -> Stream.of(
+                new Square(from.x + i, from.y + i),
+                new Square(from.x + i, from.y - i),
+                new Square(from.x - i, from.y + i),
+                new Square(from.x - i, from.y - i)
+        )).flatMap((stream) ->
+                stream.map((to) -> new Move(piece, from, to))
+        ).filter((move) -> isCorrectMove(move) && !moveCreatesCheck(move))
+                .collect(Collectors.toList());
     }
 
-    //devuelve true si tras mover correctamente la torre(x,y) no existe jaque
-    public void generarJugadasTorre(int x, int y, LinkedList<Move> l) {
+    Collection<Move> generateRookMoves(Square from) {
         //comprueba las 4 rectas posibles, como mucho podrá avanzar 7 casillas
         //--t--
         //--t--
         //ttTtt
         //--t--re
         //--t--
-        for (int i = 1; i <= 7; i++) {
-            if (correctMove(new Point(x, y), new Point(x + i, y)) &&
-                    !moveCreatesCheck(new Point(x, y), new Point(x + i, y))) {
-                l.add(new Move(tab[x][y], new Point(x, y), new Point(x + i, y)));
-            }
-            if (correctMove(new Point(x, y), new Point(x - i, y)) &&
-                    !moveCreatesCheck(new Point(x, y), new Point(x - i, y))) {
-                l.add(new Move(tab[x][y], new Point(x, y), new Point(x - i, y)));
-            }
-            if (correctMove(new Point(x, y), new Point(x, y + i)) &&
-                    !moveCreatesCheck(new Point(x, y), new Point(x, y + i))) {
-                l.add(new Move(tab[x][y], new Point(x, y), new Point(x, y + i)));
-            }
-            if (correctMove(new Point(x, y), new Point(x, y - i)) &&
-                    !moveCreatesCheck(new Point(x, y), new Point(x, y - i))) {
-                l.add(new Move(tab[x][y], new Point(x, y), new Point(x, y - i)));
-            }
-        }
+        Piece piece = tab(from);
+        return Stream.concat(from.otherSquaresInSameFile().stream(), from.otherSquaresInSameRank().stream())
+                .map((to) -> new Move(piece, from, to))
+                .filter((move) -> isCorrectMove(move) && !moveCreatesCheck(move))
+                .collect(Collectors.toList());
     }
 
-    //devuelve true si tras mover correctamente la reina(x,y) no existe jaque
-    public void generarJugadasReina(int x, int y, LinkedList<Move> l) {
+    Collection<Move> generateQueenMoves(Square from) {
         //comprueba si se deshace para un alfil o para una torre
         //r-r-r
         //-rrr-
         //rrRrr
         //-rrr-
         //r-r-r
-        generarJugadasAlfil(x, y, l);
-        generarJugadasTorre(x, y, l);
+        return Stream.concat(generateBishopMoves(from).stream(), generateRookMoves(from).stream())
+                .collect(Collectors.toList());
     }
 
-    //devuelve true si tras mover correctamente el rey(x,y) no existe jaque
-    public void generarJugadasRey(int x, int y, LinkedList<Move> l) {
-        //comprueba para las 8 casillas si podemos mover allí y si deshacemos el jaque
+    Collection<Move> generateKingMoves(Square from) {
         // rrr
-        //rrRrr
+        // rRr
         // rrr
-        //arriba
-        if (correctMove(new Point(x, y), new Point(x + 1, y + 1)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x + 1, y + 1))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x + 1, y + 1)));
-        }
-        if (correctMove(new Point(x, y), new Point(x + 1, y)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x + 1, y))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x + 1, y)));
-        }
-        if (correctMove(new Point(x, y), new Point(x + 1, y - 1)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x + 1, y - 1))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x + 1, y - 1)));
-        }
-        //centro
-        if (correctMove(new Point(x, y), new Point(x, y + 1)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x, y + 1))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x, y + 1)));
-        }
-        if (correctMove(new Point(x, y), new Point(x, y - 1)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x, y - 1))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x, y - 1)));
-        }
-        //abajo
-        if (correctMove(new Point(x, y), new Point(x - 1, y + 1)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x - 1, y + 1))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x - 1, y + 1)));
-        }
-        if (correctMove(new Point(x, y), new Point(x - 1, y)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x - 1, y))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x - 1, y)));
-        }
-        if (correctMove(new Point(x, y), new Point(x - 1, y - 1)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x - 1, y - 1))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x - 1, y - 1)));
-        }
-        //enroques
-        if (correctMove(new Point(x, y), new Point(x, y - 2)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x, y - 2))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x, y - 2)));
-        }
-        if (correctMove(new Point(x, y), new Point(x, y + 2)) &&
-                !moveCreatesCheck(new Point(x, y), new Point(x, y + 2))) {
-            l.add(new Move(tab[x][y], new Point(x, y), new Point(x, y + 2)));
-        }
+        Piece piece = tab(from);
+        return Stream.of(
+                from.nextRank(piece.set),
+                from.nextRank(piece.set).previousFile(piece.set),
+                from.nextRank(piece.set).nextFile(piece.set),
+                from.previousRank(piece.set),
+                from.previousRank(piece.set).nextFile(piece.set),
+                from.previousRank(piece.set).previousFile(piece.set),
+                from.nextFile(piece.set),
+                from.previousFile(piece.set)
+        ).map((to) -> new Move(piece, from, to))
+                .filter((move) -> isCorrectMove(move) && !moveCreatesCheck(move))
+                .collect(Collectors.toList());
     }
 
-    //Calcula los movimientos posibles de una ficha
-    int Movimientos( int x, int y ) {
+    int possibleMoves(int x, int y) {
         int n = 0;
 
-        switch ( Math.abs( tab[ x ][ y ] ) ) {
-        case 3:
-            return MovimientosAlfil( x, y );
-        case 4:
-            return MovimientosTorre( x, y );
-        case 5:
-            return MovimientosAlfil( x, y ) + MovimientosTorre( x, y );
-        default:
-            logger.info("Cuidado: Movimientos no está implementada para peones, caballos y reyes");
+        switch (tab[x][y].type) {
+            case bishop:
+                return possibleMovesForBishop(x, y);
+            case rook:
+                return possibleMovesForRook(x, y);
+            case queen:
+                return possibleMovesForBishop(x, y) + possibleMovesForRook(x, y);
+            default:
+                logger.warn("Possible moves isn't implemented for pawns, knights and kings");
         }
         return n;
     }
 
-    //Calcula los movimientos posibles de un alfil
-    int MovimientosAlfil( int x, int y ) {
+    int possibleMovesForBishop(int x, int y) {
         int n = 0;
-        int t = turn;
+        SetType t = turn;
 
-        //ponemos el turno del tablero al de la ficha
-        if ( tab[ x ][ y ] < 0 )
-            turn = -1;
-        else
-            turn = 1;
+        turn = tab[x][y].set;
 
         //comprueba las 4 diagonales posibles, como mucho podrá avanzar 7 casillas
         //a---a
@@ -915,17 +779,17 @@ public class Board implements Serializable {
         //--A--
         //-a-a-
         //a---a
-        for ( int i = 1; i <= 7;i++ ) {
-            if (correctMove(new Point(x, y), new Point(x + i, y + i))) {
+        for (int i = 1; i <= 7; i++) {
+            if (isCorrectMove(new Square(x, y), new Square(x + i, y + i))) {
                 n++;
             }
-            if (correctMove(new Point(x, y), new Point(x + i, y - i))) {
+            if (isCorrectMove(new Square(x, y), new Square(x + i, y - i))) {
                 n++;
             }
-            if (correctMove(new Point(x, y), new Point(x - i, y + i))) {
+            if (isCorrectMove(new Square(x, y), new Square(x - i, y + i))) {
                 n++;
             }
-            if (correctMove(new Point(x, y), new Point(x - i, y - i))) {
+            if (isCorrectMove(new Square(x, y), new Square(x - i, y - i))) {
                 n++;
             }
         }
@@ -934,16 +798,11 @@ public class Board implements Serializable {
         return n;
     }
 
-    //Calcula los movimientos posibles de una torre
-    int MovimientosTorre( int x, int y ) {
+    int possibleMovesForRook(int x, int y) {
         int n = 0;
-        int t = turn;
+        SetType t = turn;
 
-        //ponemos el turno del tablero al de la ficha
-        if ( tab[ x ][ y ] < 0 )
-            turn = -1;
-        else
-            turn = 1;
+        turn = tab[x][y].set;
 
         //comprueba las 4 rectas posibles, como mucho podrá avanzar 7 casillas
         //--t--
@@ -951,17 +810,17 @@ public class Board implements Serializable {
         //ttTtt
         //--t--re
         //--t--
-        for ( int i = 1; i <= 7;i++ ) {
-            if (correctMove(new Point(x, y), new Point(x + i, y))) {
+        for (int i = 1; i <= 7; i++) {
+            if (isCorrectMove(new Square(x, y), new Square(x + i, y))) {
                 n++;
             }
-            if (correctMove(new Point(x, y), new Point(x - i, y))) {
+            if (isCorrectMove(new Square(x, y), new Square(x - i, y))) {
                 n++;
             }
-            if (correctMove(new Point(x, y), new Point(x, y + i))) {
+            if (isCorrectMove(new Square(x, y), new Square(x, y + i))) {
                 n++;
             }
-            if (correctMove(new Point(x, y), new Point(x, y - i))) {
+            if (isCorrectMove(new Square(x, y), new Square(x, y - i))) {
                 n++;
             }
         }
@@ -970,7 +829,7 @@ public class Board implements Serializable {
         return n;
     }
 
-    public void resetWith(Board board) {
+    void resetWith(Board board) {
         tab = board.tab;
         cap = board.cap;
         turn = board.turn;
@@ -985,7 +844,7 @@ public class Board implements Serializable {
         moveCounter = board.moveCounter;
         player1 = board.player1;
         player2 = board.player2;
-        enroqueL = board.enroqueL;
-        enroqueC = board.enroqueC;
+        castlingQueenside = board.castlingQueenside;
+        castlingKingside = board.castlingKingside;
     }
 }

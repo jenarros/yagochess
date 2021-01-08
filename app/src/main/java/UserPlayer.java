@@ -1,9 +1,9 @@
 
-public class UserPlayer implements Player {
+class UserPlayer implements Player {
     private final String name;
-    private final int set;
+    private final SetType set;
 
-    public UserPlayer(String name, int set) {
+    UserPlayer(String name, SetType set) {
         this.name = name;
         this.set = set;
     }
