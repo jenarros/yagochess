@@ -16,5 +16,5 @@ dependencies {
 }
 
 application {
-    mainClass.set("Ajedrez")
+    mainClass.set("Yagoc")
 }
