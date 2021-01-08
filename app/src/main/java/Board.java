@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 7         4,  2,  3,  5,  6,  3,  2,  4
 */
 class Board implements Serializable {
-    Piece[][] tab;
+    private Piece[][] tab;
     int[] cap; //para la captura al paso
     SetType turn;
     boolean movTorreI_b, movTorreD_b, movRey_b;

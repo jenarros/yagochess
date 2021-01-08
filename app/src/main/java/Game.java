@@ -10,9 +10,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 class Game extends JFrame {
-    final static int BOARD_WIDTH = 530;
-    final static int BOARD_HEIGHT = 520;
-    final static int SIDEBAR_WIDTH = 120;
+    public static final int BOARD_FONT_SIZE = 16;
+    public static final int MENU_FONT_SIZE = 12;
+    final static int BORDER_SIZE = 20;
+    final static int IMAGE_SIZE = 40;
+    final static int SQUARE_SIZE = 60;
+    final static Color lightSquares = new Color(138, 120, 93);
+    final static Color darkSquares = new Color(87, 58, 46);
+    final static Color frame = Color.DARK_GRAY;
+    final static int BOARD_AND_BORDER_SIZE = SQUARE_SIZE * 8 + BORDER_SIZE * 2;
+    final static int BOARD_SIZE = SQUARE_SIZE * 8;
+    final static int SIDEBAR_WIDTH = SQUARE_SIZE * 2;
+
     private final Logger logger;
 
     BoardController boardController;
@@ -35,21 +44,32 @@ class Game extends JFrame {
         enableEvents(AWTEvent.WINDOW_EVENT_MASK);
         JTextPane textPane = new JTextPane();
         textPane.setEditable(false);
+        textPane.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((dimension.getWidth() - this.getWidth()) / 2 - BOARD_AND_BORDER_SIZE / 2);
+        int y = (int) ((dimension.getHeight() - this.getHeight()) / 2 - BOARD_AND_BORDER_SIZE / 2);
+        this.setLocation(x, y);
         logger = new Logger(textPane);
 
         try {
             JScrollPane scrollPane = new JScrollPane(textPane);
-            scrollPane.setPreferredSize(new Dimension(BOARD_WIDTH, 200));
-            scrollPane.setMaximumSize(new Dimension(BOARD_WIDTH, 200));
+            scrollPane.setPreferredSize(new Dimension(BOARD_AND_BORDER_SIZE, 200));
+            scrollPane.setMaximumSize(new Dimension(BOARD_AND_BORDER_SIZE, 200));
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
             Container cont = getContentPane();
             cont.setLayout(new BorderLayout());
 
             boardController = new BoardController(images(), logger);
-            boardController.setLayout(new BorderLayout(1, 1));
-            boardController.setBackground(Color.lightGray);
-            boardController.setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HEIGHT));
+            boardController.setLayout(new BorderLayout(0, 0));
+            boardController.setBackground(frame);
+            boardController.setPreferredSize(new Dimension(BOARD_AND_BORDER_SIZE, BOARD_AND_BORDER_SIZE));
+            boardController.setMaximumSize(new Dimension(BOARD_AND_BORDER_SIZE, BOARD_AND_BORDER_SIZE));
+            boardController.setForeground(Color.WHITE);
+            boardController.setFont(new Font(Font.MONOSPACED, Font.BOLD, BOARD_FONT_SIZE));
+            UIManager.put("OptionPane.messageFont", new Font(Font.MONOSPACED, Font.PLAIN, MENU_FONT_SIZE));
+            UIManager.put("OptionPane.buttonFont", new Font(Font.MONOSPACED, Font.PLAIN, MENU_FONT_SIZE));
 
             cont.add(boardController, BorderLayout.WEST);
             cont.add(scrollPane, BorderLayout.SOUTH);
@@ -62,7 +82,7 @@ class Game extends JFrame {
             b6.addActionListener(this::exit);
 
             Dimension buttonSize = new Dimension(SIDEBAR_WIDTH - 10, 40);
-            buttonContainer.setSize(new Dimension(SIDEBAR_WIDTH, BOARD_HEIGHT));
+            buttonContainer.setSize(new Dimension(SIDEBAR_WIDTH, BOARD_AND_BORDER_SIZE));
             b1.setPreferredSize(buttonSize);
             b2.setPreferredSize(buttonSize);
             b3.setPreferredSize(buttonSize);
