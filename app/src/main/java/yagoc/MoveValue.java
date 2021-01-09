@@ -1,13 +1,15 @@
 package yagoc;
 
 class MoveValue {
-    int value;
-    int processedMoves;
-    Move move;
+    final int value;
+    final Move move;
 
-    MoveValue() {
-        move = null;
-        processedMoves = 0;
-        value = 0;
+    MoveValue(int value) {
+        this(null, value);
+    }
+
+    MoveValue(Move move, int value) {
+        this.move = move;
+        this.value = value;
     }
 }

@@ -31,7 +31,7 @@ import static yagoc.Square.*;
 class Board implements Serializable {
     private transient final Logger logger;
 
-    private Piece[][] tab;
+    private Piece[][] squares;
     int[] cap; //para la captura al paso
     SetType turn;
     boolean whiteLeftRookMoved, whiteRightRookMoved, whiteKingMoved;
@@ -104,11 +104,7 @@ class Board implements Serializable {
                 play(move);
                 if ((move.piece == Piece.blackPawn && to.rank == 7) || (move.piece == Piece.whitePawn && to.rank == 0)) {
                     // TODO Should be able to choose piece instead of always getting a Queen
-                    if (turn == SetType.blackSet) {
-                        set(to, Piece.whiteQueen);
-                    } else {
-                        set(to, Piece.blackQueen);
-                    }
+                    set(to, move.piece.to(PieceType.queen));
                 }
 
                 finished = isFinished();
@@ -163,7 +159,6 @@ class Board implements Serializable {
                 && move.fileDistanceAbs() == 2
                 && (castlingQueenside || castlingKingside)) {
             drawCounter++;
-            //logger.info("Realizo enroque");
             playCastling(moveResult, move);
         } else {
             if (get(move.to) != Piece.none || move.piece == Piece.whitePawn) {
@@ -392,11 +387,11 @@ class Board implements Serializable {
     }
 
     Piece get(Square square) {
-        return tab[square.rank][square.file];
+        return squares[square.rank][square.file];
     }
 
     void set(Square square, Piece newPiece) {
-        tab[square.rank][square.file] = newPiece;
+        squares[square.rank][square.file] = newPiece;
     }
 
     boolean isCorrectMoveForPawn(Move move) {
@@ -462,7 +457,7 @@ class Board implements Serializable {
 
             //recorremos el movimiento
             for (file++, rank += direction; file < ma; ) {
-                if (tab[rank][file] != Piece.none)
+                if (squares[rank][file] != Piece.none)
                     return false;
                 rank += direction;
                 file++;
@@ -479,7 +474,7 @@ class Board implements Serializable {
             int mi = Math.min(move.from.file, move.to.file) + 1;
             int ma = Math.max(move.from.file, move.to.file);
             for (; mi < ma; mi++) {
-                if (tab[move.from.rank][mi] != Piece.none)
+                if (squares[move.from.rank][mi] != Piece.none)
                     return false;
             }
             return true;
@@ -488,7 +483,7 @@ class Board implements Serializable {
             int mi = Math.min(move.from.rank, move.to.rank) + 1;
             int ma = Math.max(move.from.rank, move.to.rank);
             for (; mi < ma; mi++) {
-                if (tab[mi][move.from.file] != Piece.none)
+                if (squares[mi][move.from.file] != Piece.none)
                     return false;
             }
             return true;
@@ -505,17 +500,16 @@ class Board implements Serializable {
     }
 
     boolean isCorrectCastling(Move move) {
-
         if (((move.piece == Piece.whiteKing && !whiteKingMoved) || (move.piece == Piece.blackKing && !blackKingMoved)) &&
                 move.hasSameRank() &&
                 (move.from.rank == 0 || move.from.rank == 7) &&
                 moveDoesNotCreateCheck(move)) {
 
-            if (move.to.file == 2 && tab[move.from.rank][0] == move.piece.to(PieceType.rook)) {
+            if (move.to.file == 2 && squares[move.from.rank][0] == move.piece.to(PieceType.rook)) {
                 //blancas
                 if (move.piece.set == SetType.whiteSet && !whiteLeftRookMoved &&
-                        tab[7][1] == Piece.none && tab[7][2] == Piece.none &&
-                        tab[7][3] == Piece.none &&
+                        squares[7][1] == Piece.none && squares[7][2] == Piece.none &&
+                        squares[7][3] == Piece.none &&
                         moveDoesNotCreateCheck(move.from, new Square(7, 3)) &&
                         moveDoesNotCreateCheck(move.from, new Square(7, 2))) {
                     castlingQueenside = true;
@@ -523,17 +517,17 @@ class Board implements Serializable {
                 }
                 //negras
                 if (move.piece.set == SetType.blackSet && !blackLeftRookMoved &&
-                        tab[0][1] == Piece.none && tab[0][2] == Piece.none &&
-                        tab[0][3] == Piece.none && tab[0][4] == Piece.none &&
+                        squares[0][1] == Piece.none && squares[0][2] == Piece.none &&
+                        squares[0][3] == Piece.none && squares[0][4] == Piece.none &&
                         moveDoesNotCreateCheck(move.from, new Square(0, 3)) &&
                         moveDoesNotCreateCheck(move.from, new Square(0, 2))) {
                     castlingQueenside = true;
                     return true;
                 }
-            } else if (move.to.file == 6 && tab[move.from.rank][7] == move.piece.to(PieceType.rook)) { //torre derecha
+            } else if (move.to.file == 6 && squares[move.from.rank][7] == move.piece.to(PieceType.rook)) { //torre derecha
                 //blancas
                 if (move.piece.set == SetType.whiteSet && !whiteRightRookMoved &&
-                        tab[7][5] == Piece.none && tab[7][6] == Piece.none &&
+                        squares[7][5] == Piece.none && squares[7][6] == Piece.none &&
                         moveDoesNotCreateCheck(move.from, new Square(7, 6)) &&
                         moveDoesNotCreateCheck(move.from, new Square(7, 5))) {
                     castlingKingside = true;
@@ -541,7 +535,7 @@ class Board implements Serializable {
                 }
                 //negras
                 if (move.piece.set == SetType.blackSet && !blackRightRookMoved &&
-                        tab[0][5] == Piece.none && tab[0][6] == Piece.none &&
+                        squares[0][5] == Piece.none && squares[0][6] == Piece.none &&
                         moveDoesNotCreateCheck(move.from, new Square(0, 6)) &&
                         moveDoesNotCreateCheck(move.from, new Square(0, 5))) {
                     castlingKingside = true;
@@ -558,7 +552,7 @@ class Board implements Serializable {
                 return generateMoves(from, (move) -> moveDoesNotCreateCheck(move));
             }
             return Collections.<Move>emptyList();
-        }).flatMap((collection) -> collection.stream()).collect(Collectors.toList());
+        }).flatMap(Collection::stream).collect(Collectors.toList());
     }
 
     Collection<Move> generateMoves(Square from) {
@@ -635,9 +629,6 @@ class Board implements Serializable {
     }
 
     Collection<Move> generateKingMoves(Square from) {
-        // rrr
-        // rRr
-        // rrr
         Piece piece = get(from);
         return Stream.of(
                 from.nextRank(piece.set),
@@ -654,7 +645,7 @@ class Board implements Serializable {
     }
 
     void resetWith(Board board) {
-        tab = board.tab;
+        squares = board.squares;
         cap = board.cap;
         turn = board.turn;
         whiteLeftRookMoved = board.whiteLeftRookMoved;
@@ -673,7 +664,7 @@ class Board implements Serializable {
     }
 
     public void reset() {
-        tab = newTable();
+        squares = newTable();
         cap = new int[8];
 
         for (int k = 0; k < 8; k++) {
@@ -682,28 +673,28 @@ class Board implements Serializable {
 
         turn = SetType.whiteSet;
 
-        tab[0][0] = Piece.blackRook;
-        tab[0][1] = Piece.blackKnight;
-        tab[0][2] = Piece.blackBishop;
-        tab[0][3] = Piece.blackQueen;
-        tab[0][4] = Piece.blackKing;
-        tab[0][5] = Piece.blackBishop;
-        tab[0][6] = Piece.blackKnight;
-        tab[0][7] = Piece.blackRook;
+        squares[0][0] = Piece.blackRook;
+        squares[0][1] = Piece.blackKnight;
+        squares[0][2] = Piece.blackBishop;
+        squares[0][3] = Piece.blackQueen;
+        squares[0][4] = Piece.blackKing;
+        squares[0][5] = Piece.blackBishop;
+        squares[0][6] = Piece.blackKnight;
+        squares[0][7] = Piece.blackRook;
         for (int file = 0; file < 8; file++) {
-            tab[1][file] = Piece.blackPawn;
+            squares[1][file] = Piece.blackPawn;
         }
 
-        tab[7][0] = Piece.whiteRook;
-        tab[7][1] = Piece.whiteKnight;
-        tab[7][2] = Piece.whiteBishop;
-        tab[7][3] = Piece.whiteQueen;
-        tab[7][4] = Piece.whiteKing;
-        tab[7][5] = Piece.whiteBishop;
-        tab[7][6] = Piece.whiteKnight;
-        tab[7][7] = Piece.whiteRook;
+        squares[7][0] = Piece.whiteRook;
+        squares[7][1] = Piece.whiteKnight;
+        squares[7][2] = Piece.whiteBishop;
+        squares[7][3] = Piece.whiteQueen;
+        squares[7][4] = Piece.whiteKing;
+        squares[7][5] = Piece.whiteBishop;
+        squares[7][6] = Piece.whiteKnight;
+        squares[7][7] = Piece.whiteRook;
         for (int file = 0; file < 8; file++) {
-            tab[6][file] = Piece.whitePawn;
+            squares[6][file] = Piece.whitePawn;
         }
 
         player1 = new ComputerPlayer("computer 1", SetType.blackSet, logger, 3, PlayerStrategies.F1);

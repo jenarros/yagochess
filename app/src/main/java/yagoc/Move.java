@@ -4,9 +4,9 @@ import static yagoc.BoardController.FILE_NAMES;
 import static yagoc.BoardController.RANK_NAMES;
 
 class Move {
-    Piece piece;
-    Square from;
-    Square to;
+    final Piece piece;
+    final Square from;
+    final Square to;
 
     Move(Piece piece, Square from, Square to) {
         this.piece = piece;
