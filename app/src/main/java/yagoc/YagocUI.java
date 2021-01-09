@@ -17,11 +17,10 @@ class YagocUI extends JFrame {
     final static int BORDER_SIZE = 20;
     final static int IMAGE_SIZE = 40;
     final static int SQUARE_SIZE = 60;
-    final static Color lightSquares = new Color(138, 120, 93);
-    final static Color darkSquares = new Color(87, 58, 46);
-    final static Color frame = Color.DARK_GRAY;
-    final static int BOARD_AND_BORDER_SIZE = SQUARE_SIZE * 8 + BORDER_SIZE * 2;
-    final static int BOARD_SIZE = SQUARE_SIZE * 8;
+    public static final int LOG_HEIGHT = 200;
+    final static Color lightSquaresColor = new Color(138, 120, 93);
+    final static Color darkSquaresColor = new Color(87, 58, 46);
+    final static Color frameColor = Color.DARK_GRAY;
 
     private final Logger logger;
     private final BoardController boardController;
@@ -34,36 +33,35 @@ class YagocUI extends JFrame {
 
         addMenuBar(this, boardController);
 
-        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (int) ((dimension.getWidth() - this.getWidth()) / 2 - BOARD_AND_BORDER_SIZE / 2);
-        int y = (int) ((dimension.getHeight() - this.getHeight()) / 2 - BOARD_AND_BORDER_SIZE / 2);
-        this.setLocation(x, y);
+        centerInScreen();
 
         try {
             JScrollPane scrollPane = new JScrollPane(textPane);
-            scrollPane.setPreferredSize(new Dimension(BOARD_AND_BORDER_SIZE, 200));
-            scrollPane.setMaximumSize(new Dimension(BOARD_AND_BORDER_SIZE, 200));
+            scrollPane.setPreferredSize(new Dimension(boardController.getBoardAndBorderSize(), LOG_HEIGHT));
+            scrollPane.setMaximumSize(new Dimension(boardController.getBoardAndBorderSize(), LOG_HEIGHT));
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
             Container cont = getContentPane();
             cont.setLayout(new BorderLayout());
 
-            boardController.setLayout(new BorderLayout(0, 0));
-            boardController.setBackground(frame);
-            boardController.setPreferredSize(new Dimension(BOARD_AND_BORDER_SIZE, BOARD_AND_BORDER_SIZE));
-            boardController.setMaximumSize(new Dimension(BOARD_AND_BORDER_SIZE, BOARD_AND_BORDER_SIZE));
-            boardController.setForeground(Color.WHITE);
-            boardController.setFont(new Font(Font.MONOSPACED, Font.BOLD, BOARD_FONT_SIZE));
-            UIManager.put("OptionPane.messageFont", new Font(Font.MONOSPACED, Font.PLAIN, MENU_FONT_SIZE));
-            UIManager.put("OptionPane.buttonFont", new Font(Font.MONOSPACED, Font.PLAIN, MENU_FONT_SIZE));
+            UIManager.put("OptionPane.messageFont", new Font(Font.MONOSPACED, Font.PLAIN, getMenuFontSize()));
+            UIManager.put("OptionPane.buttonFont", new Font(Font.MONOSPACED, Font.PLAIN, getMenuFontSize()));
 
             cont.add(boardController, BorderLayout.WEST);
             cont.add(scrollPane, BorderLayout.SOUTH);
+            setResizable(false);
 
             pack();
         } catch (Exception e) {
             System.out.println("Error:" + e);
         }
+    }
+
+    private void centerInScreen() {
+        Dimension dimension = getToolkit().getScreenSize();
+        int x = (int) ((dimension.getWidth() - this.getWidth()) / 2 - boardController.getBoardAndBorderSize() / 2);
+        int y = (int) ((dimension.getHeight() - this.getHeight()) / 2 - boardController.getBoardAndBorderSize() / 2);
+        this.setLocation(x, y);
     }
 
     private static void addMenuBar(YagocUI yagocUI, BoardController boardController) {
@@ -92,6 +90,10 @@ class YagocUI extends JFrame {
 
         menuBar.add(menu);
         yagocUI.setJMenuBar(menuBar);
+    }
+
+    int getMenuFontSize() {
+        return MENU_FONT_SIZE;
     }
 
     private JTextPane textpane() {

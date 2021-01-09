@@ -8,6 +8,14 @@ import java.awt.event.MouseListener;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+import static yagoc.YagocUI.BOARD_FONT_SIZE;
+import static yagoc.YagocUI.BORDER_SIZE;
+import static yagoc.YagocUI.IMAGE_SIZE;
+import static yagoc.YagocUI.LOG_HEIGHT;
+import static yagoc.YagocUI.SQUARE_SIZE;
+import static yagoc.YagocUI.darkSquaresColor;
+import static yagoc.YagocUI.lightSquaresColor;
+
 class BoardController extends JPanel {
 	static final Integer[] playerLevels = {1, 2, 3, 4, 5};
 	static final Integer[] gameTypeOptions = {1, 2, 3, 4};
@@ -22,6 +30,12 @@ class BoardController extends JPanel {
 		this.images = images;
 		this.logger = logger;
 		this.board = new Board(logger);
+		setLayout(new BorderLayout(0, 0));
+		setBackground(YagocUI.frameColor);
+		setPreferredSize(new Dimension(getBoardAndBorderSize(), getBoardAndBorderSize()));
+		setMaximumSize(new Dimension(getBoardAndBorderSize(), getBoardAndBorderSize()));
+		setFont(new Font(Font.MONOSPACED, Font.BOLD, getBoardFontSize()));
+
 		addMouseListener(new AccionListener());
 		startGame();
 	}
@@ -37,30 +51,31 @@ class BoardController extends JPanel {
 
 	void drawPiece(Graphics g, Square square, Piece piece) {
 		Point position = toScreenCoordinates(square);
-		g.drawImage(images.get(piece), position.x + 10, position.y + 10, YagocUI.IMAGE_SIZE, YagocUI.IMAGE_SIZE, this);
+		int gap = (getSquareSize() - getImageSize()) / 2;
+		g.drawImage(images.get(piece), position.x + gap, position.y + gap, getImageSize(), getImageSize(), this);
 	}
 
 	Point toScreenCoordinates(Square square) {
-		return new Point(square.file * YagocUI.SQUARE_SIZE + YagocUI.BORDER_SIZE, square.rank * YagocUI.SQUARE_SIZE + YagocUI.BORDER_SIZE);
+		return new Point(square.file * getSquareSize() + getBorderSize(), square.rank * getSquareSize() + getBorderSize());
 	}
 
 	void draw(Graphics g) {
-		for (int x = YagocUI.BORDER_SIZE; x < YagocUI.BOARD_SIZE; x += YagocUI.SQUARE_SIZE * 2)
-			for (int y = YagocUI.BORDER_SIZE; y < YagocUI.BOARD_SIZE; y += YagocUI.SQUARE_SIZE * 2) {
-				drawSquare(g, x, y, YagocUI.lightSquares);
-				drawSquare(g, x + YagocUI.SQUARE_SIZE, y, YagocUI.darkSquares);
-				drawSquare(g, x, y + YagocUI.SQUARE_SIZE, YagocUI.darkSquares);
-				drawSquare(g, x + YagocUI.SQUARE_SIZE, y + YagocUI.SQUARE_SIZE, YagocUI.lightSquares);
+		for (int x = getBorderSize(); x < getBoardSize(); x += getSquareSize() * 2)
+			for (int y = getBorderSize(); y < getBoardSize(); y += getSquareSize() * 2) {
+				drawSquare(g, x, y, lightSquaresColor);
+				drawSquare(g, x + getSquareSize(), y, darkSquaresColor);
+				drawSquare(g, x, y + getSquareSize(), darkSquaresColor);
+				drawSquare(g, x + getSquareSize(), y + getSquareSize(), lightSquaresColor);
 			}
 
 		IntStream.range(0, 8).forEach((file) -> {
-			g.drawString(fileNames[file], YagocUI.BORDER_SIZE + (int) (YagocUI.SQUARE_SIZE * 0.4) + file * YagocUI.SQUARE_SIZE, YagocUI.BOARD_FONT_SIZE);
-			g.drawString(fileNames[file], YagocUI.BORDER_SIZE + (int) (YagocUI.SQUARE_SIZE * 0.4) + file * YagocUI.SQUARE_SIZE, YagocUI.BOARD_SIZE + (int) (YagocUI.BORDER_SIZE * 1.8));
+			g.drawString(fileNames[file], getBorderSize() + (int) (getSquareSize() * 0.4) + file * getSquareSize(), getBoardFontSize());
+			g.drawString(fileNames[file], getBorderSize() + (int) (getSquareSize() * 0.4) + file * getSquareSize(), getBoardSize() + (int) (getBorderSize() * 1.8));
 		});
 
 		IntStream.range(0, 8).forEach((rank) -> {
-			g.drawString(rankNames[rank], (int) (YagocUI.BORDER_SIZE * 0.25), YagocUI.BORDER_SIZE + (int) (YagocUI.SQUARE_SIZE * 0.6) + rank * YagocUI.SQUARE_SIZE);
-			g.drawString(rankNames[rank], YagocUI.BOARD_SIZE + ((int) (YagocUI.BORDER_SIZE * 1.3)), YagocUI.BORDER_SIZE + (int) (YagocUI.SQUARE_SIZE * 0.6) + rank * YagocUI.SQUARE_SIZE);
+			g.drawString(rankNames[rank], (int) (getBorderSize() * 0.25), getBorderSize() + (int) (getSquareSize() * 0.6) + rank * getSquareSize());
+			g.drawString(rankNames[rank], getBoardSize() + ((int) (getBorderSize() * 1.3)), getBorderSize() + (int) (getSquareSize() * 0.6) + rank * getSquareSize());
 		});
 
 		Square.allSquares.forEach((square) -> {
@@ -78,11 +93,11 @@ class BoardController extends JPanel {
 		g.setColor(colorin);
 		coordX[0] = x;
 		coordX[1] = x;
-		coordX[2] = x + YagocUI.SQUARE_SIZE;
-		coordX[3] = x + YagocUI.SQUARE_SIZE;
+		coordX[2] = x + getSquareSize();
+		coordX[3] = x + getSquareSize();
 		coordY[0] = y;
-		coordY[1] = y + YagocUI.SQUARE_SIZE;
-		coordY[2] = y + YagocUI.SQUARE_SIZE;
+		coordY[1] = y + getSquareSize();
+		coordY[2] = y + getSquareSize();
 		coordY[3] = y;
 		g.fillPolygon(coordX, coordY, 4);
 	}
@@ -176,6 +191,37 @@ class BoardController extends JPanel {
 		return level;
 	}
 
+
+	int getBorderSize() {
+		return scale(BORDER_SIZE);
+	}
+
+	int getImageSize() {
+		return scale(IMAGE_SIZE);
+	}
+
+	int getSquareSize() {
+		return scale(SQUARE_SIZE);
+	}
+
+	int scale(int value) {
+		Dimension dimension = getToolkit().getScreenSize();
+		int originalBoardAndBorderSize = SQUARE_SIZE * 8 + BORDER_SIZE * 2;
+		return Math.min((dimension.height - LOG_HEIGHT) / originalBoardAndBorderSize, dimension.width / originalBoardAndBorderSize) * value;
+	}
+
+	int getBoardAndBorderSize() {
+		return getSquareSize() * 8 + getBorderSize() * 2;
+	}
+
+	int getBoardSize() {
+		return getSquareSize() * 8;
+	}
+
+	int getBoardFontSize() {
+		return scale(BOARD_FONT_SIZE);
+	}
+
 	void resetBoard(Board board) {
 		this.board.resetWith(board);
 	}
@@ -188,15 +234,20 @@ class BoardController extends JPanel {
 
 		public void mousePressed(MouseEvent e) {
 			Point position = e.getPoint();
-			if ((position.x > 19) && (position.x < 501) && (position.y > 19) && (position.y < 501)) {
+			if (isInsideTheBoard(position)) {
 				from = boardSquare(position);
 			}
+		}
+
+		private boolean isInsideTheBoard(Point position) {
+			return (position.x >= getBorderSize()) && (position.x < getBoardAndBorderSize() - getBorderSize()) &&
+					(position.y >= getBorderSize()) && (position.y < getBoardAndBorderSize() - getBorderSize());
 		}
 
 		public void mouseReleased(MouseEvent e) {
 			Point position = e.getPoint();
 
-			if ((position.x > 19) && (position.x < 501) && (position.y > 19) && (position.y < 501)) {
+			if (isInsideTheBoard(position)) {
 				to = boardSquare(position);
 				board.moveIfPossible(from, to);
 				update();
@@ -210,7 +261,7 @@ class BoardController extends JPanel {
 		}
 
 		Square boardSquare(Point p) {
-			return new Square(Double.valueOf(Math.floor((p.y - 20) / 60)).intValue(), Double.valueOf(Math.floor((p.x - 20) / 60)).intValue());
+			return new Square(Double.valueOf(Math.floor((p.y - getBorderSize()) / getSquareSize())).intValue(), Double.valueOf(Math.floor((p.x - getBorderSize()) / getSquareSize())).intValue());
 		}
 	}
 }
