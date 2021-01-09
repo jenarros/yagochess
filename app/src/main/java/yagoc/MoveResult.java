@@ -9,10 +9,12 @@ class MoveResult {
 	Square squareB;
 	Square squareC;
 	Square squareD;
+	Square enPassantSquare;
 	Piece pieceA;
 	Piece pieceB;
 	Piece pieceC;
 	Piece pieceD;
+	Piece enPassantPiece;
 	boolean whiteLeftRookMoved, whiteRightRookMoved, whiteKingMoved;
 	boolean blackLeftRookMoved, blackRightRookMoved, blackKingMoved;
 	boolean castlingQueenside, castlingKingside;

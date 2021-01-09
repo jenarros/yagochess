@@ -180,9 +180,9 @@ class Board implements Serializable {
                 moveResult.type = 3;
                 // i.e. for whites
                 // turn=1, to.x = 2, to.y = 5, squareC = (3,5)
-                moveResult.squareC = move.to.previousRank(move.piece.set);
-                moveResult.pieceC = get(moveResult.squareC);
-                set(moveResult.squareC, Piece.none);
+                moveResult.enPassantSquare = move.to.previousRank(move.piece.set);
+                moveResult.enPassantPiece = get(moveResult.enPassantSquare);
+                set(moveResult.enPassantSquare, Piece.none);
             } else {
                 moveResult.type = 2;
             }
@@ -202,7 +202,7 @@ class Board implements Serializable {
         set(moveResult.squareA, moveResult.pieceA);
         set(moveResult.squareB, moveResult.pieceB);
         if (moveResult.type == 3) {
-            set(moveResult.squareC, moveResult.pieceC);
+            set(moveResult.enPassantSquare, moveResult.enPassantPiece);
         }
         if (moveResult.type == 4) {
             //logger.info("Deshago enroque");
@@ -418,10 +418,9 @@ class Board implements Serializable {
             }
 
             // en passant
-            int c = (turn == SetType.whiteSet) ? 3 : 4;
-            return move.piece == Piece.none
+            return get(move.to) == Piece.none
                     && cap[move.to.file] == moveCounter - 1
-                    && move.from.rank == c;
+                    && move.from.rank == ((turn == SetType.whiteSet) ? 3 : 4);
         }
         return false;
     }
