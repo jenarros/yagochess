@@ -32,7 +32,7 @@ class PlayerStrategies {
                             acc += Math.abs(3.5 - square.x) * 10;
                         break;
                     case bishop:
-                        acc += 300 + board.possibleMoves(square) * 10;
+                        acc += 300 + board.generateMoves(square).size() * 10;
                         break;
                     case rook:
                         acc += 500;
@@ -63,7 +63,7 @@ class PlayerStrategies {
                         acc -= 300 + (3.5 - Math.abs(3.5 - square.y)) * 20;
                         break;
                     case bishop:
-                        acc -= 330 + board.possibleMoves(square) * 10;
+                        acc -= 330 + board.generateMoves(square).size() * 10;
                         break;
                     case rook:
                         acc -= 500;
@@ -102,7 +102,7 @@ class PlayerStrategies {
                             acc += Math.abs(3.5 - square.x) * 10;
                         break;
                     case bishop:
-                        acc += 330 + board.possibleMoves(square) * 10;
+                        acc += 330 + board.generateMoves(square).size() * 10;
                         break;
                     case rook:
                         acc += 500;
@@ -133,7 +133,7 @@ class PlayerStrategies {
                         acc -= 300 + (3.5 - Math.abs(3.5 - square.y)) * 20;
                         break;
                     case bishop:
-                        acc -= 330 + board.possibleMoves(square) * 10;
+                        acc -= 330 + board.generateMoves(square).size() * 10;
                         if (piece.set == SetType.blackSet)
                             acc -= Math.abs(3.5 - square.x) * 10;
                         else

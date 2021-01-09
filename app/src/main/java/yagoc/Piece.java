@@ -2,7 +2,7 @@ package yagoc;
 
 import java.util.Arrays;
 
-enum Piece {
+public enum Piece {
     blackRook(PieceType.rook, SetType.blackSet),
     blackKnight(PieceType.knight, SetType.blackSet),
     blackBishop(PieceType.bishop, SetType.blackSet),
