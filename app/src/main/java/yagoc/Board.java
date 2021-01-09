@@ -10,7 +10,15 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static yagoc.Square.*;
+import static yagoc.PieceType.king;
+import static yagoc.Square.castlingKingsideBlackFrom;
+import static yagoc.Square.castlingKingsideBlackTo;
+import static yagoc.Square.castlingKingsideWhiteFrom;
+import static yagoc.Square.castlingKingsideWhiteTo;
+import static yagoc.Square.castlingQueensideBlackFrom;
+import static yagoc.Square.castlingQueensideBlackTo;
+import static yagoc.Square.castlingQueensideWhiteFrom;
+import static yagoc.Square.castlingQueensideWhiteTo;
 
 // 1 pawn
 // 2 knight
@@ -39,8 +47,6 @@ class Board implements Serializable {
     boolean finished;
     int drawCounter;
     int moveCounter;
-    /* Se ponen a true cuando a jugadaCorrecta devuelve true para alguna de ellas */
-    boolean castlingQueenside, castlingKingside;
     Player player1, player2;
 
     Board(Logger logger) {
@@ -124,21 +130,8 @@ class Board implements Serializable {
         return false;
     }
 
-    MoveResult play(Move move) {
-        MoveResult moveResult = new MoveResult();
-
-        //guardamos los datos actuales sobre enroques
-        moveResult.whiteLeftRookMoved = whiteLeftRookMoved;
-        moveResult.whiteRightRookMoved = whiteRightRookMoved;
-        moveResult.whiteKingMoved = whiteKingMoved;
-        moveResult.blackLeftRookMoved = blackLeftRookMoved;
-        moveResult.blackRightRookMoved = blackRightRookMoved;
-        moveResult.blackKingMoved = blackKingMoved;
-        moveResult.castlingQueenside = castlingQueenside;
-        moveResult.castlingKingside = castlingKingside;
-        moveResult.drawCounter = drawCounter;
-        moveResult.moveCounter = moveCounter;
-        moveResult.captura = cap[move.to.file];
+    MoveLog play(Move move) {
+        MoveLog moveLog = new MoveLog(this, move);
 
         if (move.piece == Piece.whiteKing)
             whiteKingMoved = true;
@@ -154,12 +147,10 @@ class Board implements Serializable {
         else if (move.piece == Piece.blackRook && move.from.file == 7)
             blackRightRookMoved = true;
 
-        //miramos si hay que realizar un enroque
-        if (move.piece == Piece.whiteKing
-                && move.fileDistanceAbs() == 2
-                && (castlingQueenside || castlingKingside)) {
+        if (move.isCastling()) {
             drawCounter++;
-            playCastling(moveResult, move);
+            moveLog.type = MoveType.castling;
+            playCastlingExtraMove(moveLog);
         } else {
             if (get(move.to) != Piece.none || move.piece == Piece.whitePawn) {
                 //reinicio el contador por matar una ficha
@@ -177,49 +168,49 @@ class Board implements Serializable {
                     && move.rankDistance() == 1
                     && move.fileDistanceAbs() == 1
                     && cap[move.to.file] == moveCounter - 1) {
-                moveResult.type = 3;
+                moveLog.type = MoveType.enPassant;
                 // i.e. for whites
                 // turn=1, to.x = 2, to.y = 5, squareC = (3,5)
-                moveResult.enPassantSquare = move.to.previousRank(move.piece.set);
-                moveResult.enPassantPiece = get(moveResult.enPassantSquare);
-                set(moveResult.enPassantSquare, Piece.none);
+                moveLog.enPassantSquare = move.to.previousRank(move.piece.set);
+                moveLog.enPassantPiece = get(moveLog.enPassantSquare);
+                set(moveLog.enPassantSquare, Piece.none);
             } else {
-                moveResult.type = 2;
+                moveLog.type = MoveType.normal;
             }
-            moveResult.squareA = move.from;
-            moveResult.squareB = move.to;
-            moveResult.pieceA = get(move.from);
-            moveResult.pieceB = get(move.to);
-            set(move.from, Piece.none);
-            set(move.to, move.piece);
         }
+        moveLog.pieceB = get(move.to);
+        set(move.from, Piece.none);
+        set(move.to, move.piece);
         turn = turn.next();
         moveCounter++;
-        return moveResult;
+        return moveLog;
     }
 
-    void undo(MoveResult moveResult) {
-        set(moveResult.squareA, moveResult.pieceA);
-        set(moveResult.squareB, moveResult.pieceB);
-        if (moveResult.type == 3) {
-            set(moveResult.enPassantSquare, moveResult.enPassantPiece);
+    void undo(MoveLog moveLog) {
+        if (moveLog.type == MoveType.normal) {
+            set(moveLog.move.from, moveLog.move.piece);
+            set(moveLog.move.to, moveLog.pieceB);
+
+        } else if (moveLog.type == MoveType.enPassant) {
+            set(moveLog.move.from, moveLog.move.piece);
+            set(moveLog.move.to, moveLog.pieceB);
+            set(moveLog.enPassantSquare, moveLog.enPassantPiece);
+
+        } else if (moveLog.type == MoveType.castling) {
+            set(moveLog.move.from, moveLog.move.piece);
+            set(moveLog.move.to, moveLog.pieceB);
+            set(moveLog.castlingExtraMove.from, moveLog.castlingExtraMove.piece);
+            set(moveLog.castlingExtraMove.to, Piece.none);
         }
-        if (moveResult.type == 4) {
-            //logger.info("Deshago enroque");
-            set(moveResult.squareC, moveResult.pieceC);
-            set(moveResult.squareD, moveResult.pieceD);
-        }
-        whiteLeftRookMoved = moveResult.whiteLeftRookMoved;
-        whiteRightRookMoved = moveResult.whiteRightRookMoved;
-        whiteKingMoved = moveResult.whiteKingMoved;
-        blackLeftRookMoved = moveResult.blackLeftRookMoved;
-        blackRightRookMoved = moveResult.blackRightRookMoved;
-        blackKingMoved = moveResult.blackKingMoved;
-        castlingKingside = moveResult.castlingKingside;
-        castlingQueenside = moveResult.castlingQueenside;
-        cap[moveResult.squareB.file] = moveResult.captura;
-        drawCounter = moveResult.drawCounter;
-        moveCounter = moveResult.moveCounter;
+        whiteLeftRookMoved = moveLog.whiteLeftRookMoved;
+        whiteRightRookMoved = moveLog.whiteRightRookMoved;
+        whiteKingMoved = moveLog.whiteKingMoved;
+        blackLeftRookMoved = moveLog.blackLeftRookMoved;
+        blackRightRookMoved = moveLog.blackRightRookMoved;
+        blackKingMoved = moveLog.blackKingMoved;
+        cap[moveLog.move.to.file] = moveLog.captura;
+        drawCounter = moveLog.drawCounter;
+        moveCounter = moveLog.moveCounter;
 
         turn = turn.previous();
     }
@@ -256,7 +247,7 @@ class Board implements Serializable {
 
     boolean moveDoesNotCreateCheck(Move move) { //can i do this in a sandbox to avoid undo?
         //realizo la jugada, el turno pasa al contrario
-        MoveResult m = play(move);
+        MoveLog m = play(move);
 
         turn = turn.next(); //cambio el turno para ver si nosotros estamos en jaque
         boolean r = isInCheck();
@@ -283,7 +274,7 @@ class Board implements Serializable {
 
     boolean isInCheck() {
         Square kingSquare = Square.allSquares.stream()
-                .filter((square) -> get(square).type == PieceType.king && get(square).set == turn)
+                .filter((square) -> get(square).type == king && get(square).set == turn)
                 .findAny().orElseThrow();
 
         turn = turn.next();
@@ -321,68 +312,26 @@ class Board implements Serializable {
         return drawCounter == 50;
     }
 
-    void playCastling(MoveResult moveResult, Move move) {
-        moveResult.type = 4;
-
-        if (castlingQueenside && move.movesLeft()) {
-            if (move.piece.set == SetType.whiteSet) {
-                moveResult.squareA = castlingQueensideWhiteA;
-                moveResult.squareB = castlingQueensideWhiteB;
-                moveResult.squareC = castlingQueensideWhiteC;
-                moveResult.squareD = castlingQueensideWhiteD;
-                moveResult.pieceA = get(castlingQueensideWhiteA);
-                moveResult.pieceB = get(castlingQueensideWhiteB);
-                moveResult.pieceC = get(castlingQueensideWhiteC);
-                moveResult.pieceD = get(castlingQueensideWhiteD);
-                set(castlingQueensideWhiteA, Piece.none);
-                set(castlingQueensideWhiteB, Piece.none);
-                set(castlingQueensideWhiteC, Piece.whiteKing);
-                set(castlingQueensideWhiteD, Piece.whiteRook);
+    void playCastlingExtraMove(MoveLog moveLog) {
+        if (moveLog.move.isCastlingQueenside()) {
+            if (moveLog.move.piece.set == SetType.whiteSet) {
+                moveLog.castlingExtraMove = new Move(Piece.whiteRook, castlingQueensideWhiteFrom, castlingQueensideWhiteTo);
+                set(castlingQueensideWhiteFrom, Piece.none);
+                set(castlingQueensideWhiteTo, Piece.whiteRook);
             } else {
-                moveResult.squareA = castlingQueensideBlackA;
-                moveResult.squareB = castlingQueensideBlackB;
-                moveResult.squareC = castlingQueensideBlackC;
-                moveResult.squareD = castlingQueensideBlackD;
-                moveResult.pieceA = get(castlingQueensideBlackA);
-                moveResult.pieceB = get(castlingQueensideBlackB);
-                moveResult.pieceC = get(castlingQueensideBlackC);
-                moveResult.pieceD = get(castlingQueensideBlackD);
-                set(castlingQueensideBlackA, Piece.none);
-                set(castlingQueensideBlackB, Piece.none);
-                set(castlingQueensideBlackC, Piece.blackKing);
-                set(castlingQueensideBlackD, Piece.blackRook);
+                moveLog.castlingExtraMove = new Move(Piece.blackRook, castlingQueensideBlackFrom, castlingQueensideBlackTo);
+                set(castlingQueensideBlackFrom, Piece.none);
+                set(castlingQueensideBlackTo, Piece.blackRook);
             }
 
-            castlingQueenside = false;
-        } else if (castlingKingside && move.movesRight()) {
-            if (move.piece.set == SetType.whiteSet) {
-                moveResult.squareA = castlingKingsideWhiteA;
-                moveResult.squareB = castlingKingsideWhiteB;
-                moveResult.squareC = castlingKingsideWhiteC;
-                moveResult.squareD = castlingKingsideWhiteD;
-                moveResult.pieceA = get(castlingKingsideWhiteA);
-                moveResult.pieceB = get(castlingKingsideWhiteB);
-                moveResult.pieceC = get(castlingKingsideWhiteC);
-                moveResult.pieceD = get(castlingKingsideWhiteD);
-                set(castlingKingsideWhiteA, Piece.none);
-                set(castlingKingsideWhiteB, Piece.none);
-                set(castlingKingsideWhiteC, Piece.whiteKing);
-                set(castlingKingsideWhiteD, Piece.whiteRook);
-            } else {
-                moveResult.squareA = castlingKingsideBlackA;
-                moveResult.squareB = castlingKingsideBlackB;
-                moveResult.squareC = castlingKingsideBlackC;
-                moveResult.squareD = castlingKingsideBlackD;
-                moveResult.pieceA = get(castlingKingsideBlackA);
-                moveResult.pieceB = get(castlingKingsideBlackB);
-                moveResult.pieceC = get(castlingKingsideBlackC);
-                moveResult.pieceD = get(castlingKingsideBlackD);
-                set(castlingKingsideBlackA, Piece.none);
-                set(castlingKingsideBlackB, Piece.none);
-                set(castlingKingsideBlackC, Piece.blackKing);
-                set(castlingKingsideBlackD, Piece.blackRook);
-            }
-            castlingKingside = false;
+        } else if (moveLog.move.piece.set == SetType.whiteSet) {
+            moveLog.castlingExtraMove = new Move(Piece.whiteRook, castlingKingsideWhiteFrom, castlingKingsideWhiteTo);
+            set(castlingKingsideWhiteFrom, Piece.none);
+            set(castlingKingsideWhiteTo, Piece.whiteRook);
+        } else {
+            moveLog.castlingExtraMove = new Move(Piece.blackRook, castlingKingsideBlackFrom, castlingKingsideBlackTo);
+            set(castlingKingsideBlackFrom, Piece.none);
+            set(castlingKingsideBlackTo, Piece.blackRook);
         }
     }
 
@@ -499,9 +448,9 @@ class Board implements Serializable {
     }
 
     boolean isCorrectCastling(Move move) {
-        if (((move.piece == Piece.whiteKing && !whiteKingMoved) || (move.piece == Piece.blackKing && !blackKingMoved)) &&
+        if (((move.from.rank == 7 && move.piece == Piece.whiteKing && !whiteKingMoved) ||
+                (move.from.rank == 0 && move.piece == Piece.blackKing && !blackKingMoved)) &&
                 move.hasSameRank() &&
-                (move.from.rank == 0 || move.from.rank == 7) &&
                 moveDoesNotCreateCheck(move)) {
 
             if (move.to.file == 2 && squares[move.from.rank][0] == move.piece.to(PieceType.rook)) {
@@ -511,35 +460,27 @@ class Board implements Serializable {
                         squares[7][3] == Piece.none &&
                         moveDoesNotCreateCheck(move.from, new Square(7, 3)) &&
                         moveDoesNotCreateCheck(move.from, new Square(7, 2))) {
-                    castlingQueenside = true;
                     return true;
                 }
                 //negras
-                if (move.piece.set == SetType.blackSet && !blackLeftRookMoved &&
+                return move.piece.set == SetType.blackSet && !blackLeftRookMoved &&
                         squares[0][1] == Piece.none && squares[0][2] == Piece.none &&
                         squares[0][3] == Piece.none && squares[0][4] == Piece.none &&
                         moveDoesNotCreateCheck(move.from, new Square(0, 3)) &&
-                        moveDoesNotCreateCheck(move.from, new Square(0, 2))) {
-                    castlingQueenside = true;
-                    return true;
-                }
+                        moveDoesNotCreateCheck(move.from, new Square(0, 2));
             } else if (move.to.file == 6 && squares[move.from.rank][7] == move.piece.to(PieceType.rook)) { //torre derecha
                 //blancas
                 if (move.piece.set == SetType.whiteSet && !whiteRightRookMoved &&
                         squares[7][5] == Piece.none && squares[7][6] == Piece.none &&
                         moveDoesNotCreateCheck(move.from, new Square(7, 6)) &&
                         moveDoesNotCreateCheck(move.from, new Square(7, 5))) {
-                    castlingKingside = true;
                     return true;
                 }
                 //negras
-                if (move.piece.set == SetType.blackSet && !blackRightRookMoved &&
+                return move.piece.set == SetType.blackSet && !blackRightRookMoved &&
                         squares[0][5] == Piece.none && squares[0][6] == Piece.none &&
                         moveDoesNotCreateCheck(move.from, new Square(0, 6)) &&
-                        moveDoesNotCreateCheck(move.from, new Square(0, 5))) {
-                    castlingKingside = true;
-                    return true;
-                }
+                        moveDoesNotCreateCheck(move.from, new Square(0, 5));
             }
         }
         return false;
@@ -585,7 +526,7 @@ class Board implements Serializable {
                 from.next2Rank(turn),            // ahead 2
                 from.nextRankNextFile(turn)      // right
         ).map((to) -> new Move(piece, from, to))
-                .filter((move) -> isCorrectMove(move))
+                .filter(this::isCorrectMove)
                 .collect(Collectors.toList());
     }
 
@@ -601,7 +542,7 @@ class Board implements Serializable {
                 from.previous2File(piece.set).nextRank(piece.set),
                 from.previous2File(piece.set).previousRank(piece.set)
         ).map((to) -> new Move(piece, from, to))
-                .filter((move) -> isCorrectMove(move))
+                .filter(this::isCorrectMove)
                 .collect(Collectors.toList());
     }
 
@@ -610,7 +551,7 @@ class Board implements Serializable {
 
         return from.diagonalSquares()
                 .stream().map((to) -> new Move(piece, from, to))
-                .filter((move) -> isCorrectMove(move))
+                .filter(this::isCorrectMove)
                 .collect(Collectors.toList());
     }
 
@@ -618,7 +559,7 @@ class Board implements Serializable {
         Piece piece = get(from);
         return from.straightSquares().stream()
                 .map((to) -> new Move(piece, from, to))
-                .filter((move) -> isCorrectMove(move))
+                .filter(this::isCorrectMove)
                 .collect(Collectors.toList());
     }
 
@@ -639,7 +580,7 @@ class Board implements Serializable {
                 from.nextFile(piece.set),
                 from.previousFile(piece.set)
         ).map((to) -> new Move(piece, from, to))
-                .filter((move) -> isCorrectMove(move))
+                .filter(this::isCorrectMove)
                 .collect(Collectors.toList());
     }
 
@@ -658,8 +599,6 @@ class Board implements Serializable {
         moveCounter = board.moveCounter;
         player1 = board.player1;
         player2 = board.player2;
-        castlingQueenside = board.castlingQueenside;
-        castlingKingside = board.castlingKingside;
     }
 
     public void reset() {

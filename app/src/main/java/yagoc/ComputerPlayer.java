@@ -63,17 +63,17 @@ class ComputerPlayer implements Player, Serializable {
 
         MoveValue betaMoveValue;
         Move move;
-        MoveResult moveResult;
+        MoveLog moveLog;
         MoveValue moveValue = new MoveValue(beta);
 
         do {
             processedMoves++;
             move = moves.removeFirst();
-            moveResult = board.play(move);
+            moveLog = board.play(move);
 
             // beta = min[beta, AlphaBeta(N_k,alpha,beta)]
             betaMoveValue = alphaBeta(depth - 1, board, alpha, moveValue.value);
-            board.undo(moveResult);
+            board.undo(moveLog);
 
             if (betaMoveValue.value < moveValue.value) {
                 moveValue = new MoveValue(move, betaMoveValue.value); // better
@@ -103,17 +103,17 @@ class ComputerPlayer implements Player, Serializable {
 
         MoveValue alphaMoveValue;
         Move move;
-        MoveResult moveResult;
+        MoveLog moveLog;
         MoveValue moveValue = new MoveValue(alpha);
 
         do {
             processedMoves++;
             move = moves.removeFirst();
-            moveResult = board.play(move);
+            moveLog = board.play(move);
 
             // alpha = max[alpha, AlphaBeta(N_k,alpha,beta)
             alphaMoveValue = alphaBeta(depth - 1, board, moveValue.value, beta);
-            board.undo(moveResult);
+            board.undo(moveLog);
 
             if (alphaMoveValue.value > moveValue.value) {
                 moveValue = new MoveValue(move, alphaMoveValue.value); // better

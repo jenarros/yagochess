@@ -2,6 +2,7 @@ package yagoc;
 
 import static yagoc.BoardController.FILE_NAMES;
 import static yagoc.BoardController.RANK_NAMES;
+import static yagoc.PieceType.king;
 
 class Move {
     final Piece piece;
@@ -48,11 +49,11 @@ class Move {
         return from.rank == to.rank;
     }
 
-    public boolean movesRight() {
-        return fileDistance() > 0;
+    public boolean isCastling() {
+        return piece.type == king && fileDistanceAbs() == 2 && rankDistance() == 0;
     }
 
-    public boolean movesLeft() {
-        return fileDistance() < 0;
+    public boolean isCastlingQueenside() {
+        return isCastling() && this.to.file < this.from.file;
     }
 }
