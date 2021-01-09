@@ -105,26 +105,6 @@ public class Square {
         }
     }
 
-    public List<Square> otherSquaresInSameFile() {
-        List<Square> acc = new ArrayList<>();
-        for (int file = 0; file < 8; file++) {
-            if (file != this.file) {
-                acc.add(new Square(this.rank, file));
-            }
-        }
-        return acc;
-    }
-
-    public List<Square> otherSquaresInSameRank() {
-        List<Square> acc = new ArrayList<>();
-        for (int rank = 0; rank < 8; rank++) {
-            if (rank != this.rank) {
-                acc.add(new Square(rank, this.file));
-            }
-        }
-        return acc;
-    }
-
     public boolean exists() {
         return this.rank <= 7 && this.rank >= 0 && this.file <= 7 && this.file >= 0;
     }
@@ -150,4 +130,24 @@ public class Square {
         }
         return acc;
     }
+
+    static final Square castlingKingsideWhiteA = new Square(7, 7);
+    static final Square castlingKingsideWhiteB = new Square(7, 4); // king
+    static final Square castlingKingsideWhiteC = new Square(7, 6);
+    static final Square castlingKingsideWhiteD = new Square(7, 5);
+
+    static final Square castlingQueensideWhiteA = new Square(7, 0);
+    static final Square castlingQueensideWhiteB = new Square(7, 4); // king
+    static final Square castlingQueensideWhiteC = new Square(7, 2);
+    static final Square castlingQueensideWhiteD = new Square(7, 3);
+
+    static final Square castlingQueensideBlackA = new Square(0, 0);
+    static final Square castlingQueensideBlackB = new Square(0, 4); // king
+    static final Square castlingQueensideBlackC = new Square(0, 2);
+    static final Square castlingQueensideBlackD = new Square(0, 3);
+
+    static final Square castlingKingsideBlackA = new Square(0, 7);
+    static final Square castlingKingsideBlackB = new Square(0, 4); // king
+    static final Square castlingKingsideBlackC = new Square(0, 6);
+    static final Square castlingKingsideBlackD = new Square(0, 5);
 }

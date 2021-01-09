@@ -25,8 +25,15 @@ class Move {
         return (to.rank - from.rank) * (piece.set == SetType.whiteSet ? -1 : 1);
     }
 
+    /**
+     * positive if going to the right, negative if going to the left
+     */
+    int fileDistance() {
+        return (to.file - from.file) * (piece.set == SetType.whiteSet ? 1 : -1);
+    }
+
     int fileDistanceAbs() {
-        return Math.abs((to.file - from.file) * (piece.set == SetType.whiteSet ? 1 : -1));
+        return Math.abs(fileDistance());
     }
 
     int rankDistanceAbs() {
@@ -39,5 +46,13 @@ class Move {
 
     public boolean hasSameRank() {
         return from.rank == to.rank;
+    }
+
+    public boolean movesRight() {
+        return fileDistance() > 0;
+    }
+
+    public boolean movesLeft() {
+        return fileDistance() < 0;
     }
 }

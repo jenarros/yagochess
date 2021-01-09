@@ -4,11 +4,11 @@ class MoveResult {
 	MoveResult() {
 	}
 
-	int type = -1; //2=normal, 3=captura al paso, 4=enroque
-	Square squareA = new Square(0, 0);
-	Square squareB = new Square(0, 0);
-	Square squareC = new Square(0, 0);
-	Square squareD = new Square(0, 0);
+	int type; //2=normal, 3=captura al paso, 4=enroque
+	Square squareA;
+	Square squareB;
+	Square squareC;
+	Square squareD;
 	Piece pieceA;
 	Piece pieceB;
 	Piece pieceC;

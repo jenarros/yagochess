@@ -10,6 +10,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static yagoc.Square.*;
+
 // 1 pawn
 // 2 knight
 // 3 bishop
@@ -164,7 +166,7 @@ class Board implements Serializable {
                 && (castlingQueenside || castlingKingside)) {
             drawCounter++;
             //logger.info("Realizo enroque");
-            playCastling(moveResult, move.from, move.to);
+            playCastling(moveResult, move);
         } else {
             if (get(move.to) != Piece.none || move.piece == Piece.whitePawn) {
                 //reinicio el contador por matar una ficha
@@ -326,67 +328,66 @@ class Board implements Serializable {
         return drawCounter == 50;
     }
 
-    void playCastling(MoveResult m, Square from, Square to) {
-        Piece piece = get(from);
-        m.type = 4;
+    void playCastling(MoveResult moveResult, Move move) {
+        moveResult.type = 4;
 
-        if (castlingQueenside && from.file - to.file > 0) {
-            if (piece.set == SetType.whiteSet) {
-                m.squareA = new Square(7, 0);
-                m.squareB = new Square(7, 4);
-                m.squareC = new Square(7, 2);
-                m.squareD = new Square(7, 3);
-                m.pieceA = get(m.squareA);
-                m.pieceB = get(m.squareB);
-                m.pieceC = get(m.squareC);
-                m.pieceD = get(m.squareD);
-                set(m.squareA, Piece.none);
-                set(m.squareB, Piece.none);
-                set(m.squareC, Piece.whiteKing);
-                set(m.squareD, Piece.whiteRook);
+        if (castlingQueenside && move.movesLeft()) {
+            if (move.piece.set == SetType.whiteSet) {
+                moveResult.squareA = castlingQueensideWhiteA;
+                moveResult.squareB = castlingQueensideWhiteB;
+                moveResult.squareC = castlingQueensideWhiteC;
+                moveResult.squareD = castlingQueensideWhiteD;
+                moveResult.pieceA = get(castlingQueensideWhiteA);
+                moveResult.pieceB = get(castlingQueensideWhiteB);
+                moveResult.pieceC = get(castlingQueensideWhiteC);
+                moveResult.pieceD = get(castlingQueensideWhiteD);
+                set(castlingQueensideWhiteA, Piece.none);
+                set(castlingQueensideWhiteB, Piece.none);
+                set(castlingQueensideWhiteC, Piece.whiteKing);
+                set(castlingQueensideWhiteD, Piece.whiteRook);
             } else {
-                m.squareA = new Square(0, 0);
-                m.squareB = new Square(0, 4);
-                m.squareC = new Square(0, 2);
-                m.squareD = new Square(0, 3);
-                m.pieceA = get(m.squareA);
-                m.pieceB = get(m.squareB);
-                m.pieceC = get(m.squareC);
-                m.pieceD = get(m.squareD);
-                set(m.squareA, Piece.none);
-                set(m.squareB, Piece.none);
-                set(m.squareC, Piece.blackKing);
-                set(m.squareD, Piece.blackRook);
+                moveResult.squareA = castlingQueensideBlackA;
+                moveResult.squareB = castlingQueensideBlackB;
+                moveResult.squareC = castlingQueensideBlackC;
+                moveResult.squareD = castlingQueensideBlackD;
+                moveResult.pieceA = get(castlingQueensideBlackA);
+                moveResult.pieceB = get(castlingQueensideBlackB);
+                moveResult.pieceC = get(castlingQueensideBlackC);
+                moveResult.pieceD = get(castlingQueensideBlackD);
+                set(castlingQueensideBlackA, Piece.none);
+                set(castlingQueensideBlackB, Piece.none);
+                set(castlingQueensideBlackC, Piece.blackKing);
+                set(castlingQueensideBlackD, Piece.blackRook);
             }
 
             castlingQueenside = false;
-        } else if (castlingKingside && from.file - to.file < 0) {
-            if (piece.set == SetType.whiteSet) {
-                m.squareA = new Square(7, 7);
-                m.squareB = new Square(7, 4);
-                m.squareC = new Square(7, 6);
-                m.squareD = new Square(7, 5);
-                m.pieceA = get(m.squareA);
-                m.pieceB = get(m.squareB);
-                m.pieceC = get(m.squareC);
-                m.pieceD = get(m.squareD);
-                set(m.squareA, Piece.none);
-                set(m.squareB, Piece.none);
-                set(m.squareC, Piece.whiteKing);
-                set(m.squareD, Piece.whiteRook);
+        } else if (castlingKingside && move.movesRight()) {
+            if (move.piece.set == SetType.whiteSet) {
+                moveResult.squareA = castlingKingsideWhiteA;
+                moveResult.squareB = castlingKingsideWhiteB;
+                moveResult.squareC = castlingKingsideWhiteC;
+                moveResult.squareD = castlingKingsideWhiteD;
+                moveResult.pieceA = get(castlingKingsideWhiteA);
+                moveResult.pieceB = get(castlingKingsideWhiteB);
+                moveResult.pieceC = get(castlingKingsideWhiteC);
+                moveResult.pieceD = get(castlingKingsideWhiteD);
+                set(castlingKingsideWhiteA, Piece.none);
+                set(castlingKingsideWhiteB, Piece.none);
+                set(castlingKingsideWhiteC, Piece.whiteKing);
+                set(castlingKingsideWhiteD, Piece.whiteRook);
             } else {
-                m.squareA = new Square(0, 7);
-                m.squareB = new Square(0, 4);
-                m.squareC = new Square(0, 6);
-                m.squareD = new Square(0, 5);
-                m.pieceA = get(m.squareA);
-                m.pieceB = get(m.squareB);
-                m.pieceC = get(m.squareC);
-                m.pieceD = get(m.squareD);
-                set(m.squareA, Piece.none);
-                set(m.squareB, Piece.none);
-                set(m.squareC, Piece.blackKing);
-                set(m.squareD, Piece.blackRook);
+                moveResult.squareA = castlingKingsideBlackA;
+                moveResult.squareB = castlingKingsideBlackB;
+                moveResult.squareC = castlingKingsideBlackC;
+                moveResult.squareD = castlingKingsideBlackD;
+                moveResult.pieceA = get(castlingKingsideBlackA);
+                moveResult.pieceB = get(castlingKingsideBlackB);
+                moveResult.pieceC = get(castlingKingsideBlackC);
+                moveResult.pieceD = get(castlingKingsideBlackD);
+                set(castlingKingsideBlackA, Piece.none);
+                set(castlingKingsideBlackB, Piece.none);
+                set(castlingKingsideBlackC, Piece.blackKing);
+                set(castlingKingsideBlackD, Piece.blackRook);
             }
             castlingKingside = false;
         }
@@ -585,9 +586,6 @@ class Board implements Serializable {
     }
 
     Collection<Move> generatePawnMoves(Square from) {
-        //-p-       -P-
-        //ppp   ó   ppp
-        //-P-       -p-
         Piece piece = get(from);
 
         return Stream.of(
@@ -601,12 +599,6 @@ class Board implements Serializable {
     }
 
     Collection<Move> generateKnightMoves(Square from) {
-        //comprueba para las 8 casillas si podemos mover allí y si deshacemos el jaque
-        //-c-c-
-        //c---c
-        //--C--
-        //c---c
-        //-c-c-
         Piece piece = get(from);
         return Stream.of(
                 from.next2Rank(piece.set).nextFile(piece.set),
@@ -623,11 +615,6 @@ class Board implements Serializable {
     }
 
     Collection<Move> generateBishopMoves(Square from) {
-        //a---a
-        //-a-a-
-        //--A--
-        //-a-a-
-        //a---a
         Piece piece = get(from);
 
         return from.diagonalSquares()
@@ -637,26 +624,14 @@ class Board implements Serializable {
     }
 
     Collection<Move> generateRookMoves(Square from) {
-        //comprueba las 4 rectas posibles, como mucho podrá avanzar 7 casillas
-        //--t--
-        //--t--
-        //ttTtt
-        //--t--re
-        //--t--
         Piece piece = get(from);
-        return Stream.concat(from.otherSquaresInSameFile().stream(), from.otherSquaresInSameRank().stream())
+        return from.straightSquares().stream()
                 .map((to) -> new Move(piece, from, to))
                 .filter((move) -> isCorrectMove(move))
                 .collect(Collectors.toList());
     }
 
     Collection<Move> generateQueenMoves(Square from) {
-        //comprueba si se deshace para un alfil o para una torre
-        //r-r-r
-        //-rrr-
-        //rrRrr
-        //-rrr-
-        //r-r-r
         return Stream.concat(generateBishopMoves(from).stream(), generateRookMoves(from).stream())
                 .collect(Collectors.toList());
     }
