@@ -12,15 +12,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 class YagocUI extends JFrame {
-    final static int BOARD_FONT_SIZE = 16;
-    final static int MENU_FONT_SIZE = 12;
-    final static int BORDER_SIZE = 20;
-    final static int IMAGE_SIZE = 40;
-    final static int SQUARE_SIZE = 60;
-    public static final int LOG_HEIGHT = 200;
-    final static Color lightSquaresColor = new Color(138, 120, 93);
-    final static Color darkSquaresColor = new Color(87, 58, 46);
-    final static Color frameColor = Color.DARK_GRAY;
+    static final int BOARD_FONT_SIZE = 16;
+    static final int MENU_FONT_SIZE = 12;
+    static final int BORDER_SIZE = 20;
+    static final int IMAGE_SIZE = 40;
+    static final int SQUARE_SIZE = 60;
+    static final int LOG_HEIGHT = 200;
+    static final Color lightSquaresColor = new Color(138, 120, 93);
+    static final Color darkSquaresColor = new Color(87, 58, 46);
+    static final Color frameColor = Color.DARK_GRAY;
 
     private final Logger logger;
     private final BoardController boardController;

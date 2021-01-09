@@ -17,10 +17,10 @@ import static yagoc.YagocUI.darkSquaresColor;
 import static yagoc.YagocUI.lightSquaresColor;
 
 class BoardController extends JPanel {
-	static final Integer[] playerLevels = {1, 2, 3, 4, 5};
-	static final Integer[] gameTypeOptions = {1, 2, 3, 4};
-	static final String[] fileNames = {"a", "b", "c", "d", "e", "f", "g", "h"};
-	static final String[] rankNames = {"8", "7", "6", "5", "4", "3", "2", "1"};
+	static final Integer[] PLAYER_LEVELS = {1, 2, 3, 4, 5};
+	static final Integer[] GAME_OPTIONS = {1, 2, 3, 4};
+	static final String[] FILE_NAMES = {"a", "b", "c", "d", "e", "f", "g", "h"};
+	static final String[] RANK_NAMES = {"8", "7", "6", "5", "4", "3", "2", "1"};
 
 	private final Board board;
 	private final Map<Piece, Image> images;
@@ -69,13 +69,13 @@ class BoardController extends JPanel {
 			}
 
 		IntStream.range(0, 8).forEach((file) -> {
-			g.drawString(fileNames[file], getBorderSize() + (int) (getSquareSize() * 0.4) + file * getSquareSize(), getBoardFontSize());
-			g.drawString(fileNames[file], getBorderSize() + (int) (getSquareSize() * 0.4) + file * getSquareSize(), getBoardSize() + (int) (getBorderSize() * 1.8));
+			g.drawString(FILE_NAMES[file], getBorderSize() + (int) (getSquareSize() * 0.4) + file * getSquareSize(), getBoardFontSize());
+			g.drawString(FILE_NAMES[file], getBorderSize() + (int) (getSquareSize() * 0.4) + file * getSquareSize(), getBoardSize() + (int) (getBorderSize() * 1.8));
 		});
 
 		IntStream.range(0, 8).forEach((rank) -> {
-			g.drawString(rankNames[rank], (int) (getBorderSize() * 0.25), getBorderSize() + (int) (getSquareSize() * 0.6) + rank * getSquareSize());
-			g.drawString(rankNames[rank], getBoardSize() + ((int) (getBorderSize() * 1.3)), getBorderSize() + (int) (getSquareSize() * 0.6) + rank * getSquareSize());
+			g.drawString(RANK_NAMES[rank], (int) (getBorderSize() * 0.25), getBorderSize() + (int) (getSquareSize() * 0.6) + rank * getSquareSize());
+			g.drawString(RANK_NAMES[rank], getBoardSize() + ((int) (getBorderSize() * 1.3)), getBorderSize() + (int) (getSquareSize() * 0.6) + rank * getSquareSize());
 		});
 
 		Square.allSquares.forEach((square) -> {
@@ -86,11 +86,11 @@ class BoardController extends JPanel {
 		});
 	}
 
-	private void drawSquare(Graphics g, int x, int y, Color colorin) {
+	private void drawSquare(Graphics g, int x, int y, Color color) {
 		int[] coordX = new int[4];
 		int[] coordY = new int[4];
 
-		g.setColor(colorin);
+		g.setColor(color);
 		coordX[0] = x;
 		coordX[1] = x;
 		coordX[2] = x + getSquareSize();
@@ -142,7 +142,7 @@ class BoardController extends JPanel {
 
 	void configurePlayers(ActionEvent e) {
 		try {
-			int game = gameTypeOptions[JOptionPane.showOptionDialog(this,
+			int game = GAME_OPTIONS[JOptionPane.showOptionDialog(this,
 					"  black set  | white set\n" +
 							"1: machine   | user\n" +
 							"2: user      | machine\n" +
@@ -152,8 +152,8 @@ class BoardController extends JPanel {
 					JOptionPane.YES_NO_CANCEL_OPTION,
 					JOptionPane.QUESTION_MESSAGE,
 					null,
-					gameTypeOptions,
-					gameTypeOptions[0])];
+					GAME_OPTIONS,
+					GAME_OPTIONS[0])];
 			logger.info("Type " + game + " chosen");
 
 			if (game == 1) {
@@ -179,13 +179,13 @@ class BoardController extends JPanel {
 	}
 
 	private int getLevel(Player player, Integer defaultOption) {
-		int level = playerLevels[JOptionPane.showOptionDialog(this,
+		int level = PLAYER_LEVELS[JOptionPane.showOptionDialog(this,
 				"Select " + player.name() + " level: ",
 				"Select player level",
 				JOptionPane.YES_NO_CANCEL_OPTION,
 				JOptionPane.QUESTION_MESSAGE,
 				null,
-				playerLevels,
+				PLAYER_LEVELS,
 				defaultOption)];
 		logger.info("level " + level + " selected");
 		return level;
@@ -249,8 +249,9 @@ class BoardController extends JPanel {
 
 			if (isInsideTheBoard(position)) {
 				to = boardSquare(position);
-				board.moveIfPossible(from, to);
-				update();
+				if (board.moveIfPossible(from, to)) {
+					update();
+				}
 			}
 		}
 

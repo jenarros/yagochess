@@ -92,16 +92,11 @@ class Board implements Serializable {
         }
     }
 
-    void moveIfPossible(Square from, Square to) {
-        if (finished)
-            return;
-
+    boolean moveIfPossible(Square from, Square to) {
         Move move = new Move(get(from), from, to);
-
-        if (turn != move.piece.set)
-            return;
-
-        if ((turn == SetType.blackSet && player1.isUser()) || (turn == SetType.whiteSet && player2.isUser())) {
+        if (finished || turn != move.piece.set) {
+            return false;
+        } else if ((turn == SetType.blackSet && player1.isUser()) || (turn == SetType.whiteSet && player2.isUser())) {
             if (!from.equals(to)
                     && isCorrectMove(move)
                     && moveDoesNotCreateCheck(move)) {
@@ -126,8 +121,11 @@ class Board implements Serializable {
                         movePlayer1();
                     }
                 }
+                return true;
             }
         }
+
+        return false;
     }
 
     MoveResult play(Move move) {
