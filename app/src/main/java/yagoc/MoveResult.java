@@ -13,8 +13,8 @@ class MoveResult {
 	Piece pieceB;
 	Piece pieceC;
 	Piece pieceD;
-	boolean movTorreI_b, movTorreD_b, movRey_b;
-	boolean movTorreI_n, movTorreD_n, movRey_n;
+	boolean whiteLeftRookMoved, whiteRightRookMoved, whiteKingMoved;
+	boolean blackLeftRookMoved, blackRightRookMoved, blackKingMoved;
 	boolean castlingQueenside, castlingKingside;
 	int captura;
 	int drawCounter;

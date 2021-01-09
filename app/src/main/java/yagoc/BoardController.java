@@ -41,7 +41,7 @@ class BoardController extends JPanel {
 	}
 
 	Point toScreenCoordinates(Square square) {
-		return new Point(square.y * YagocUI.SQUARE_SIZE + YagocUI.BORDER_SIZE, square.x * YagocUI.SQUARE_SIZE + YagocUI.BORDER_SIZE);
+		return new Point(square.file * YagocUI.SQUARE_SIZE + YagocUI.BORDER_SIZE, square.rank * YagocUI.SQUARE_SIZE + YagocUI.BORDER_SIZE);
 	}
 
 	void draw(Graphics g) {

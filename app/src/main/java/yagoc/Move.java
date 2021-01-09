@@ -15,18 +15,18 @@ class Move {
     }
 
     public String toString() {
-        return piece + " from " + rankNames[from.x] + fileNames[from.y] + " to " + rankNames[to.x] + fileNames[to.y] + " ";
+        return piece + " from " + rankNames[from.rank] + fileNames[from.file] + " to " + rankNames[to.rank] + fileNames[to.file] + " ";
     }
 
     /**
      * positive if going ahead, negative if going backwards
      */
     int rankDistance() {
-        return (to.x - from.x) * (piece.set == SetType.whiteSet ? -1 : 1);
+        return (to.rank - from.rank) * (piece.set == SetType.whiteSet ? -1 : 1);
     }
 
     int fileDistanceAbs() {
-        return Math.abs((to.y - from.y) * (piece.set == SetType.whiteSet ? 1 : -1));
+        return Math.abs((to.file - from.file) * (piece.set == SetType.whiteSet ? 1 : -1));
     }
 
     int rankDistanceAbs() {
@@ -34,10 +34,10 @@ class Move {
     }
 
     boolean hasSameFile() {
-        return to.y == from.y;
+        return to.file == from.file;
     }
 
     public boolean hasSameRank() {
-        return from.x == to.x;
+        return from.rank == to.rank;
     }
 }

@@ -10,4 +10,8 @@ enum SetType {
             return blackSet;
         }
     }
+
+    SetType previous() {
+        return next();
+    }
 }

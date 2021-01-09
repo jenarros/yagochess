@@ -15,21 +15,21 @@ class PlayerStrategies {
                     case pawn: // further ahead is better
                         acc += 100;
                         if (piece.set == SetType.blackSet)
-                            acc += square.x * 20;
+                            acc += square.rank * 20;
                         else
-                            acc += (7 - square.x) * 20;
+                            acc += (7 - square.rank) * 20;
 
                         //Un peón cubierto vale más
-                        if (square.nextRank(set).exists() && square.y - 1 > 0 && square.y + 1 < 8
+                        if (square.nextRank(set).exists() && square.file - 1 > 0 && square.file + 1 < 8
                                 && (board.get(square.nextRankPreviousFile(set)) == piece || board.get(square.nextRankPreviousFile(set)) == piece))
                             acc += 30;
                         break;
                     case knight://cuanto más al centro del tablero mejor
-                        acc += 300 + (3.5 - Math.abs(3.5 - square.y)) * 20;
+                        acc += 300 + (3.5 - Math.abs(3.5 - square.file)) * 20;
                         if (piece.set == SetType.blackSet)
-                            acc += Math.abs(3.5 - square.x) * 10;
+                            acc += Math.abs(3.5 - square.rank) * 10;
                         else
-                            acc += Math.abs(3.5 - square.x) * 10;
+                            acc += Math.abs(3.5 - square.rank) * 10;
                         break;
                     case bishop:
                         acc += 300 + board.generateMoves(square).size() * 10;
@@ -38,11 +38,11 @@ class PlayerStrategies {
                         acc += 500;
                         break;
                     case queen://cuanto más al centro mejor
-                        acc += 940 + (3.5 - Math.abs(3.5 - square.y)) * 20;
+                        acc += 940 + (3.5 - Math.abs(3.5 - square.file)) * 20;
                         if (piece.set == SetType.blackSet)
-                            acc += Math.abs(3.5 - square.x) * 10;
+                            acc += Math.abs(3.5 - square.rank) * 10;
                         else
-                            acc += Math.abs(3.5 - square.x) * 10;
+                            acc += Math.abs(3.5 - square.rank) * 10;
                         break;
                     default:
                         break;
@@ -52,15 +52,15 @@ class PlayerStrategies {
                     case pawn: // further ahead is better
                         acc -= 100;
                         if (piece.set == SetType.blackSet)
-                            acc -= square.x * 30;
+                            acc -= square.rank * 30;
                         else
-                            acc -= (7 - square.x) * 30;
-                        if (square.nextRank(set).exists() && square.y - 1 > 0 && square.y + 1 < 8
+                            acc -= (7 - square.rank) * 30;
+                        if (square.nextRank(set).exists() && square.file - 1 > 0 && square.file + 1 < 8
                                 && (board.get(square.nextRankPreviousFile(set)) == piece || board.get(square.nextRankPreviousFile(set)) == piece))
                             acc -= 20;
                         break;
                     case knight:
-                        acc -= 300 + (3.5 - Math.abs(3.5 - square.y)) * 20;
+                        acc -= 300 + (3.5 - Math.abs(3.5 - square.file)) * 20;
                         break;
                     case bishop:
                         acc -= 330 + board.generateMoves(square).size() * 10;
@@ -70,7 +70,7 @@ class PlayerStrategies {
                         break;
                     case queen:
                         acc -= 1000;
-                        acc -= Math.abs(3.5 - square.x) * 10;
+                        acc -= Math.abs(3.5 - square.rank) * 10;
                         break;
                     default:
                         break;
@@ -90,16 +90,16 @@ class PlayerStrategies {
                     case pawn://cuanto más adelante mejor
                         acc += 100;
                         if (piece.set == SetType.blackSet)
-                            acc += square.x * 20;
+                            acc += square.rank * 20;
                         else
-                            acc += (7 - square.x) * 20;
+                            acc += (7 - square.rank) * 20;
                         break;
                     case knight://cuanto más al centro del tablero mejor
-                        acc += 300 + (3.5 - Math.abs(3.5 - square.y)) * 20;
+                        acc += 300 + (3.5 - Math.abs(3.5 - square.file)) * 20;
                         if (piece.set == SetType.blackSet)
-                            acc += Math.abs(3.5 - square.x) * 10;
+                            acc += Math.abs(3.5 - square.rank) * 10;
                         else
-                            acc += Math.abs(3.5 - square.x) * 10;
+                            acc += Math.abs(3.5 - square.rank) * 10;
                         break;
                     case bishop:
                         acc += 330 + board.generateMoves(square).size() * 10;
@@ -107,16 +107,16 @@ class PlayerStrategies {
                     case rook:
                         acc += 500;
                         if (piece.set == SetType.blackSet)
-                            acc += Math.abs(3.5 - square.x) * 15;
+                            acc += Math.abs(3.5 - square.rank) * 15;
                         else
-                            acc += Math.abs(3.5 - square.x) * 15;
+                            acc += Math.abs(3.5 - square.rank) * 15;
                         break;
                     case queen://cuanto más al centro del tablero mejor
-                        acc += 940 + (3.5 - Math.abs(3.5 - square.y)) * 20;
+                        acc += 940 + (3.5 - Math.abs(3.5 - square.file)) * 20;
                         if (piece.set == SetType.blackSet)
-                            acc += Math.abs(3.5 - square.x) * 10;
+                            acc += Math.abs(3.5 - square.rank) * 10;
                         else
-                            acc += Math.abs(3.5 - square.x) * 10;
+                            acc += Math.abs(3.5 - square.rank) * 10;
                         break;
                     default:
                 }
@@ -125,29 +125,29 @@ class PlayerStrategies {
                     case pawn:
                         acc -= 100;
                         if (piece.set == SetType.blackSet)
-                            acc -= square.x * 30;
+                            acc -= square.rank * 30;
                         else
-                            acc -= (7 - square.x) * 30;
+                            acc -= (7 - square.rank) * 30;
                         break;
                     case knight:
-                        acc -= 300 + (3.5 - Math.abs(3.5 - square.y)) * 20;
+                        acc -= 300 + (3.5 - Math.abs(3.5 - square.file)) * 20;
                         break;
                     case bishop:
                         acc -= 330 + board.generateMoves(square).size() * 10;
                         if (piece.set == SetType.blackSet)
-                            acc -= Math.abs(3.5 - square.x) * 10;
+                            acc -= Math.abs(3.5 - square.rank) * 10;
                         else
-                            acc -= Math.abs(3.5 - square.x) * 10;
+                            acc -= Math.abs(3.5 - square.rank) * 10;
                         break;
                     case rook:
                         acc -= 500;
                         break;
                     case king:
-                        acc -= 940 + (3.5 - Math.abs(3.5 - square.y)) * 10;
+                        acc -= 940 + (3.5 - Math.abs(3.5 - square.file)) * 10;
                         if (piece.set == SetType.blackSet)
-                            acc -= Math.abs(3.5 - square.x) * 10;
+                            acc -= Math.abs(3.5 - square.rank) * 10;
                         else
-                            acc -= Math.abs(3.5 - square.x) * 10;
+                            acc -= Math.abs(3.5 - square.rank) * 10;
                         break;
                     default:
                 }
