@@ -5,12 +5,12 @@ import static yagoc.BoardController.RANK_NAMES;
 import static yagoc.PieceType.king;
 
 class Move {
-    final Piece piece;
+    final Piece fromPiece;
     final Square from;
     final Square to;
 
-    Move(Piece piece, Square from, Square to) {
-        this.piece = piece;
+    Move(Piece fromPiece, Square from, Square to) {
+        this.fromPiece = fromPiece;
         this.from = from;
         this.to = to;
         if (!this.from.exists() || !this.to.exists()) {
@@ -19,21 +19,21 @@ class Move {
     }
 
     public String toString() {
-        return piece + " from " + RANK_NAMES[from.rank] + FILE_NAMES[from.file] + " to " + RANK_NAMES[to.rank] + FILE_NAMES[to.file] + " ";
+        return fromPiece + " from " + RANK_NAMES[from.rank] + FILE_NAMES[from.file] + " to " + RANK_NAMES[to.rank] + FILE_NAMES[to.file] + " ";
     }
 
     /**
      * positive if going ahead, negative if going backwards
      */
     int rankDistance() {
-        return (to.rank - from.rank) * (piece.set == SetType.whiteSet ? -1 : 1);
+        return (to.rank - from.rank) * (fromPiece.set == SetType.whiteSet ? -1 : 1);
     }
 
     /**
      * positive if going to the right, negative if going to the left
      */
     int fileDistance() {
-        return (to.file - from.file) * (piece.set == SetType.whiteSet ? 1 : -1);
+        return (to.file - from.file) * (fromPiece.set == SetType.whiteSet ? 1 : -1);
     }
 
     int fileDistanceAbs() {
@@ -53,7 +53,7 @@ class Move {
     }
 
     public boolean isCastling() {
-        return piece.type == king && fileDistanceAbs() == 2 && rankDistance() == 0;
+        return fromPiece.type == king && fileDistanceAbs() == 2 && rankDistance() == 0;
     }
 
     public boolean isCastlingQueenside() {

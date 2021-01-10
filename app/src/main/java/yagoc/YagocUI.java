@@ -125,8 +125,8 @@ class YagocUI extends JFrame {
                 Board board = (Board) stream.readObject();
                 boardController.resetBoard(board);
                 repaint();
-                logger.info("drawCounter =" + board.drawCounter);
-                logger.info("finished =" + board.finished);
+                logger.info("drawCounter =" + board.drawCounter());
+                logger.info("finished =" + board.hasFinished());
                 stream.close();
                 fileStream.close();
             }

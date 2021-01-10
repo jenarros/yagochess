@@ -105,18 +105,18 @@ class BoardController extends JPanel {
 	}
 
 	void nextMove() {
-		if (board.finished) return;
+		if (board.hasFinished()) return;
 
-		if (board.turn == board.black.setType()) {
-			board.movePlayer(board.black);
+		if (board.currentPlayer() == board.blackPlayer()) {
+			board.movePlayer(board.blackPlayer());
 		} else {
-			board.movePlayer(board.white);
+			board.movePlayer(board.whitePlayer());
 		}
 		update();
 		breath();
 
-		if ((board.turn == board.black.setType() && board.black.isComputer())
-				|| (board.turn == board.white.setType() && board.white.isComputer()))
+		if ((board.currentPlayer() == board.blackPlayer() && board.blackPlayer().isComputer())
+				|| (board.currentPlayer() == board.whitePlayer() && board.whitePlayer().isComputer()))
 			SwingUtilities.invokeLater(this::nextMove);
 	}
 
@@ -154,23 +154,23 @@ class BoardController extends JPanel {
 			logger.info("Type " + game + " chosen");
 
 			if (game == 1) {
-				board.black = new ComputerPlayer("computer", SetType.blackSet, getLevel("computer", 1), PlayerStrategy.F1);
-				board.white = new UserPlayer("user", SetType.whiteSet);
+				board.blackPlayer(new ComputerPlayer("computer", SetType.blackSet, getLevel("computer", 1), PlayerStrategy.F1));
+				board.whitePlayer(new UserPlayer("user", SetType.whiteSet));
 			} else if (game == 2) {
-				board.black = new UserPlayer("user", SetType.blackSet);
-				board.white = new ComputerPlayer("computer", SetType.whiteSet, getLevel("computer", 1), PlayerStrategy.F1);
+				board.blackPlayer(new UserPlayer("user", SetType.blackSet));
+				board.whitePlayer(new ComputerPlayer("computer", SetType.whiteSet, getLevel("computer", 1), PlayerStrategy.F1));
 			} else if (game == 3) {
-				board.black = new ComputerPlayer("computer 1", SetType.blackSet, getLevel("computer 1", 1), PlayerStrategy.F1);
-				board.white = new ComputerPlayer("computer 2", SetType.whiteSet, getLevel("computer 2", 1), PlayerStrategy.F2);
+				board.blackPlayer(new ComputerPlayer("computer 1", SetType.blackSet, getLevel("computer 1", 1), PlayerStrategy.F1));
+				board.whitePlayer(new ComputerPlayer("computer 2", SetType.whiteSet, getLevel("computer 2", 1), PlayerStrategy.F2));
 			} else {
-				board.black = new UserPlayer("user 1", SetType.blackSet);
-				board.white = new UserPlayer("user 2", SetType.whiteSet);
+				board.blackPlayer(new UserPlayer("user 1", SetType.blackSet));
+				board.whitePlayer(new UserPlayer("user 2", SetType.whiteSet));
 			}
 			logger.info("name\ttype\tlevel");
-			logger.info(board.black.toString());
-			logger.info(board.white.toString());
+			logger.info(board.blackPlayer().toString());
+			logger.info(board.whitePlayer().toString());
 			// if the player 2 (whiteSet) is a computer then start automatically
-			if (board.white.isComputer()) {
+			if (board.whitePlayer().isComputer()) {
 				SwingUtilities.invokeLater(this::nextMove);
 			}
 		} catch (Exception exc) {

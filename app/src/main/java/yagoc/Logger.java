@@ -23,6 +23,7 @@ class Logger {
             try {
                 textPanel.getStyledDocument().insertString(textPanel.getStyledDocument().getLength(), message + "\n", info);
                 textPanel.setCaretPosition(textPanel.getDocument().getLength());
+                textPanel.update(textPanel.getGraphics());
             } catch (BadLocationException e) {
                 throw new RuntimeException(e);
             }
@@ -36,6 +37,7 @@ class Logger {
             try {
                 textPanel.getStyledDocument().insertString(textPanel.getStyledDocument().getLength(), message + "\n", warn);
                 textPanel.setCaretPosition(textPanel.getDocument().getLength());
+                textPanel.update(textPanel.getGraphics());
             } catch (BadLocationException e) {
                 throw new RuntimeException(e);
             }

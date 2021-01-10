@@ -4,7 +4,7 @@ class MoveLog {
 	final Move move;
 	final boolean whiteLeftRookMoved, whiteRightRookMoved, whiteKingMoved;
 	final boolean blackLeftRookMoved, blackRightRookMoved, blackKingMoved;
-	final int captura;
+	final int enPassant;
 	final int drawCounter;
 	final int moveCounter;
 
@@ -16,14 +16,14 @@ class MoveLog {
 
 	MoveLog(Board board, Move move) {
 		this.move = move;
-		this.whiteLeftRookMoved = board.whiteLeftRookMoved;
-		this.whiteRightRookMoved = board.whiteRightRookMoved;
-		this.whiteKingMoved = board.whiteKingMoved;
-		this.blackLeftRookMoved = board.blackLeftRookMoved;
-		this.blackRightRookMoved = board.blackRightRookMoved;
-		this.blackKingMoved = board.blackKingMoved;
-		this.drawCounter = board.drawCounter;
-		this.moveCounter = board.moveCounter;
-		this.captura = board.cap[move.to.file];
+		this.whiteLeftRookMoved = board.hasWhiteLeftRookMoved();
+		this.whiteRightRookMoved = board.hasWhiteRightRookMoved();
+		this.whiteKingMoved = board.hasWhiteKingMoved();
+		this.blackLeftRookMoved = board.hasBlackLeftRookMoved();
+		this.blackRightRookMoved = board.hasBlackRightRookMoved();
+		this.blackKingMoved = board.hasBlackKingMoved();
+		this.drawCounter = board.drawCounter();
+		this.moveCounter = board.moveCounter();
+		this.enPassant = board.enPassant(move.to.file);
 	}
 }
