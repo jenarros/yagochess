@@ -2,6 +2,7 @@ package yagoc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Square {
@@ -119,6 +120,20 @@ public class Square {
             acc.add(new Square(rank - distance, file - distance));
         }
         return acc.stream().filter((Square::exists)).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Square square = (Square) o;
+        return rank == square.rank &&
+                file == square.file;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(rank, file);
     }
 
     public List<Square> straightSquares() {

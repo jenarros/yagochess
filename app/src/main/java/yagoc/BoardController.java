@@ -25,6 +25,7 @@ class BoardController extends JPanel {
 	static final String[] FILE_NAMES = {"a", "b", "c", "d", "e", "f", "g", "h"};
 	static final String[] RANK_NAMES = {"8", "7", "6", "5", "4", "3", "2", "1"};
 	static final int COMPUTER_PAUSE_SECONDS = 1;
+	public static final int REFRESH_RATE_MILLISECONDS = 100;
 
 	private final Board board;
 	private final Map<Piece, Image> images;
@@ -40,11 +41,14 @@ class BoardController extends JPanel {
 		setFont(new Font(Font.MONOSPACED, Font.BOLD, getBoardFontSize()));
 
 		addMouseListener(new AccionListener());
+		new Timer(REFRESH_RATE_MILLISECONDS, (actionEvent) -> {
+			repaint();
+		}).start();
 	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		draw(g);
+		paintBoard(g);
 	}
 
 	Board getBoard() {
@@ -61,14 +65,10 @@ class BoardController extends JPanel {
 		return new Point(square.file * getSquareSize() + getBorderSize(), square.rank * getSquareSize() + getBorderSize());
 	}
 
-	void draw(Graphics g) {
-		for (int x = getBorderSize(); x < getBoardSize(); x += getSquareSize() * 2)
-			for (int y = getBorderSize(); y < getBoardSize(); y += getSquareSize() * 2) {
-				drawSquare(g, x, y, lightSquaresColor);
-				drawSquare(g, x + getSquareSize(), y, darkSquaresColor);
-				drawSquare(g, x, y + getSquareSize(), darkSquaresColor);
-				drawSquare(g, x + getSquareSize(), y + getSquareSize(), lightSquaresColor);
-			}
+	void paintBoard(Graphics g) {
+		Square.allSquares.forEach((square) -> {
+			drawSquare(g, square);
+		});
 
 		IntStream.range(0, 8).forEach((file) -> {
 			g.drawString(FILE_NAMES[file], getBorderSize() + (int) (getSquareSize() * 0.4) + file * getSquareSize(), getBoardFontSize());
@@ -79,29 +79,37 @@ class BoardController extends JPanel {
 			g.drawString(RANK_NAMES[rank], (int) (getBorderSize() * 0.25), getBorderSize() + (int) (getSquareSize() * 0.6) + rank * getSquareSize());
 			g.drawString(RANK_NAMES[rank], getBoardSize() + ((int) (getBorderSize() * 1.3)), getBorderSize() + (int) (getSquareSize() * 0.6) + rank * getSquareSize());
 		});
-
-		Square.allSquares.forEach((square) -> {
-			Piece piece = board.pieceAt(square);
-			if (piece != Piece.none) {
-				drawPiece(g, square, piece);
-			}
-		});
 	}
 
-	private void drawSquare(Graphics g, int x, int y, Color color) {
+	Square boardSquare(Point p) {
+		return new Square(Double.valueOf(Math.floor((p.y - getBorderSize()) / getSquareSize())).intValue(), Double.valueOf(Math.floor((p.x - getBorderSize()) / getSquareSize())).intValue());
+	}
+
+	private void drawSquare(Graphics g, Square square) {
+		Piece piece = board.pieceAt(square);
+		Point point = toScreenCoordinates(square);
 		int[] coordX = new int[4];
 		int[] coordY = new int[4];
 
-		g.setColor(color);
-		coordX[0] = x;
-		coordX[1] = x;
-		coordX[2] = x + getSquareSize();
-		coordX[3] = x + getSquareSize();
-		coordY[0] = y;
-		coordY[1] = y + getSquareSize();
-		coordY[2] = y + getSquareSize();
-		coordY[3] = y;
+		g.setColor(squareColor(square));
+		coordX[0] = point.x;
+		coordX[1] = point.x;
+		coordX[2] = point.x + getSquareSize();
+		coordX[3] = point.x + getSquareSize();
+		coordY[0] = point.y;
+		coordY[1] = point.y + getSquareSize();
+		coordY[2] = point.y + getSquareSize();
+		coordY[3] = point.y;
 		g.fillPolygon(coordX, coordY, 4);
+		if (!(piece == Piece.none)) drawPiece(g, square, piece);
+	}
+
+	private Color squareColor(Square square) {
+		if ((square.file % 2 == 0 && square.rank % 2 == 0) || square.file % 2 == 1 && square.rank % 2 == 1) {
+			return lightSquaresColor;
+		} else {
+			return darkSquaresColor;
+		}
 	}
 
 	void nextMove() {
@@ -112,8 +120,8 @@ class BoardController extends JPanel {
 		} else {
 			board.movePlayer(board.whitePlayer());
 		}
-		update();
-		breath();
+
+		if (board.currentPlayer().isComputer()) breath();
 
 		if ((board.currentPlayer() == board.blackPlayer() && board.blackPlayer().isComputer())
 				|| (board.currentPlayer() == board.whitePlayer() && board.whitePlayer().isComputer()))
@@ -128,13 +136,8 @@ class BoardController extends JPanel {
 		}
 	}
 
-	void newBoard(ActionEvent e) {
+	void newBoard(ActionEvent unused) {
 		board.reset();
-		repaint();
-	}
-
-	void update() {
-		update(getGraphics());
 	}
 
 	void configurePlayers(ActionEvent e) {
@@ -225,18 +228,18 @@ class BoardController extends JPanel {
 
 	void resetBoard(Board board) {
 		checkpoints.clear();
-		this.board.resetWith(board);
+		board.resetWith(board);
+		nextMove();
 	}
 
-	void undo(ActionEvent actionEvent) {
+	void undo(ActionEvent unused) {
 		if (!checkpoints.isEmpty()) {
 			this.board.resetWith(checkpoints.remove(checkpoints.size() - 1));
-			repaint();
 		}
 	}
 
 	class AccionListener implements MouseListener {
-		Square from, to;
+		Square from;
 
 		public void mouseClicked(MouseEvent e) {
 		}
@@ -257,14 +260,16 @@ class BoardController extends JPanel {
 			Point position = e.getPoint();
 
 			if (isInsideTheBoard(position)) {
-				to = boardSquare(position);
 				Board copy = board.copy();
 
-				if (board.moveIfPossible(from, to)) {
-					checkpoints.add(copy);
-					update();
-				}
-				nextMove();
+				final boolean hasMoved = board.moveIfPossible(from, boardSquare(position));
+
+				SwingUtilities.invokeLater(() -> {
+					if (hasMoved) {
+						checkpoints.add(copy);
+					}
+					nextMove();
+				});
 			}
 		}
 
@@ -272,10 +277,6 @@ class BoardController extends JPanel {
 		}
 
 		public void mouseExited(MouseEvent e) {
-		}
-
-		Square boardSquare(Point p) {
-			return new Square(Double.valueOf(Math.floor((p.y - getBorderSize()) / getSquareSize())).intValue(), Double.valueOf(Math.floor((p.x - getBorderSize()) / getSquareSize())).intValue());
 		}
 	}
 }
