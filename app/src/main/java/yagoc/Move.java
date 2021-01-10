@@ -13,6 +13,9 @@ class Move {
         this.piece = piece;
         this.from = from;
         this.to = to;
+        if (!this.from.exists() || !this.to.exists()) {
+            throw new IllegalArgumentException("This move contains non-existing squares: " + from + " " + to);
+        }
     }
 
     public String toString() {

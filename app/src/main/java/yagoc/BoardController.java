@@ -81,7 +81,7 @@ class BoardController extends JPanel {
 		});
 
 		Square.allSquares.forEach((square) -> {
-			Piece piece = board.get(square);
+			Piece piece = board.pieceAt(square);
 			if (piece != Piece.none) {
 				drawPiece(g, square, piece);
 			}

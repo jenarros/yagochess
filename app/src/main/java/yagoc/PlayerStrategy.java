@@ -7,7 +7,7 @@ public class PlayerStrategy implements Serializable {
     static PlayerStrategy F1 = new PlayerStrategy((board, set) -> {
         return Square.allSquares.stream().map((square) -> {
             int acc = 0;
-            final Piece piece = board.get(square);
+            final Piece piece = board.pieceAt(square);
 
             if (piece == Piece.none) {
                 // ignore empty squares
@@ -22,7 +22,7 @@ public class PlayerStrategy implements Serializable {
 
                         //Un peón cubierto vale más
                         if (square.nextRank(set).exists() && square.file - 1 > 0 && square.file + 1 < 8
-                                && (board.get(square.nextRankPreviousFile(set)) == piece || board.get(square.nextRankPreviousFile(set)) == piece))
+                                && (board.pieceAt(square.nextRankPreviousFile(set)) == piece || board.pieceAt(square.nextRankPreviousFile(set)) == piece))
                             acc += 30;
                         break;
                     case knight://cuanto más al centro del tablero mejor
@@ -57,7 +57,7 @@ public class PlayerStrategy implements Serializable {
                         else
                             acc -= (7 - square.rank) * 30;
                         if (square.nextRank(set).exists() && square.file - 1 > 0 && square.file + 1 < 8
-                                && (board.get(square.nextRankPreviousFile(set)) == piece || board.get(square.nextRankPreviousFile(set)) == piece))
+                                && (board.pieceAt(square.nextRankPreviousFile(set)) == piece || board.pieceAt(square.nextRankPreviousFile(set)) == piece))
                             acc -= 20;
                         break;
                     case knight:
@@ -83,7 +83,7 @@ public class PlayerStrategy implements Serializable {
     static PlayerStrategy F2 = new PlayerStrategy((board, set) -> {
         return Square.allSquares.stream().map((square) -> {
             int acc = 0;
-            final Piece piece = board.get(square);
+            final Piece piece = board.pieceAt(square);
 
             if (piece == Piece.none) {
                 // ignore empty squares
@@ -171,10 +171,10 @@ public class PlayerStrategy implements Serializable {
     }
 
     static boolean isPieceOurs(Board board, SetType set, Square square) {
-        return board.get(square).set == set;
+        return board.pieceAt(square).set == set;
     }
 
     static boolean isPieceTheirs(Board board, SetType set, Square square) {
-        return board.get(square).set != set;
+        return board.pieceAt(square).set != set;
     }
 }
