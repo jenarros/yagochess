@@ -12,6 +12,8 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import static yagoc.Yagoc.logger;
+
 class YagocUI extends JFrame {
     static final int BOARD_FONT_SIZE = 16;
     static final int MENU_FONT_SIZE = 12;
@@ -23,14 +25,13 @@ class YagocUI extends JFrame {
     static final Color darkSquaresColor = new Color(87, 58, 46);
     static final Color frameColor = Color.DARK_GRAY;
 
-    private final Logger logger;
     private final BoardController boardController;
 
     YagocUI() {
         enableEvents(AWTEvent.WINDOW_EVENT_MASK);
         JTextPane textPane = textpane();
         logger = new Logger(textPane);
-        boardController = new BoardController(images(), logger);
+        boardController = new BoardController(images());
 
         addMenuBar(this, boardController);
 
@@ -77,7 +78,7 @@ class YagocUI extends JFrame {
 
         JMenuItem loadMenuItem = new JMenuItem("Open");
         loadMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, yagocUI.getToolkit().getMenuShortcutKeyMaskEx()));
-        loadMenuItem.addActionListener(yagocUI::load);
+        loadMenuItem.addActionListener(yagocUI::open);
 
         JMenuItem optionsMenuItem = new JMenuItem("Options");
         optionsMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, yagocUI.getToolkit().getMenuShortcutKeyMaskEx()));
@@ -115,7 +116,7 @@ class YagocUI extends JFrame {
         return textPane;
     }
 
-    void load(ActionEvent e) {
+    void open(ActionEvent e) {
         try {
             FileDialog fDialog = new FileDialog(this);
             fDialog.setMode(FileDialog.LOAD);

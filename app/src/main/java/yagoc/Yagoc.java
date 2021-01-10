@@ -3,6 +3,8 @@ package yagoc;
 import javax.swing.*;
 
 public class Yagoc {
+    public static Logger logger = new Logger();
+
     public static void main(String[] args) {
         try {
             System.setProperty("apple.laf.useScreenMenuBar", "true");

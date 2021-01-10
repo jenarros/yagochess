@@ -17,6 +17,7 @@ import static yagoc.Square.castlingQueensideBlackFrom;
 import static yagoc.Square.castlingQueensideBlackTo;
 import static yagoc.Square.castlingQueensideWhiteFrom;
 import static yagoc.Square.castlingQueensideWhiteTo;
+import static yagoc.Yagoc.logger;
 
 // 1 pawn
 // 2 knight
@@ -35,8 +36,6 @@ import static yagoc.Square.castlingQueensideWhiteTo;
 7         4,  2,  3,  5,  6,  3,  2,  4
 */
 class Board implements Serializable {
-    private transient final Logger logger;
-
     private Piece[][] squares;
     int[] cap; //para la captura al paso
     SetType turn;
@@ -47,13 +46,12 @@ class Board implements Serializable {
     int moveCounter;
     Player player1, player2;
 
-    Board(Logger logger) {
-        this.logger = logger;
+    Board() {
         reset();
     }
 
     public Board copy() {
-        Board board = new Board(logger);
+        Board board = new Board();
         board.resetWith(this);
         return board;
     }
@@ -588,7 +586,7 @@ class Board implements Serializable {
     }
 
     void resetWith(Board board) {
-        squares = Arrays.stream(squares).map(Piece[]::clone).toArray(Piece[][]::new);
+        squares = Arrays.stream(board.squares).map(Piece[]::clone).toArray(Piece[][]::new);
         cap = board.cap.clone();
         turn = board.turn;
         whiteLeftRookMoved = board.whiteLeftRookMoved;
@@ -638,7 +636,7 @@ class Board implements Serializable {
             squares[6][file] = Piece.whitePawn;
         }
 
-        player1 = new ComputerPlayer("computer 1", SetType.blackSet, logger, 3, PlayerStrategies.F1);
+        player1 = new ComputerPlayer("computer 1", SetType.blackSet, 3, PlayerStrategy.F1);
         player2 = new UserPlayer("user 1", SetType.whiteSet);
     }
 }

@@ -10,25 +10,37 @@ class Logger {
     private final SimpleAttributeSet info = info();
     private final SimpleAttributeSet warn = warn();
 
+    Logger() {
+        textPanel = null;
+    }
+
     Logger(JTextPane textPanel) {
         this.textPanel = textPanel;
     }
 
     void info(String message) {
-        try {
-            textPanel.getStyledDocument().insertString(textPanel.getStyledDocument().getLength(), message + "\n", info);
-            textPanel.setCaretPosition(textPanel.getDocument().getLength());
-        } catch (BadLocationException e) {
-            throw new RuntimeException(e);
+        if (this.textPanel != null) {
+            try {
+                textPanel.getStyledDocument().insertString(textPanel.getStyledDocument().getLength(), message + "\n", info);
+                textPanel.setCaretPosition(textPanel.getDocument().getLength());
+            } catch (BadLocationException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            System.out.println(message);
         }
     }
 
     void warn(String message) {
-        try {
-            textPanel.getStyledDocument().insertString(textPanel.getStyledDocument().getLength(), message + "\n", warn);
-            textPanel.setCaretPosition(textPanel.getDocument().getLength());
-        } catch (BadLocationException e) {
-            throw new RuntimeException(e);
+        if (this.textPanel != null) {
+            try {
+                textPanel.getStyledDocument().insertString(textPanel.getStyledDocument().getLength(), message + "\n", warn);
+                textPanel.setCaretPosition(textPanel.getDocument().getLength());
+            } catch (BadLocationException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            System.err.println(message);
         }
     }
 

@@ -1,6 +1,8 @@
 package yagoc;
 
-class UserPlayer implements Player {
+import java.io.Serializable;
+
+class UserPlayer implements Player, Serializable {
     private final String name;
     private final SetType set;
 

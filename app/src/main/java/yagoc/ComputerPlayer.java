@@ -2,20 +2,19 @@ package yagoc;
 
 import java.io.Serializable;
 import java.util.LinkedList;
-import java.util.function.BiFunction;
+
+import static yagoc.Yagoc.logger;
 
 class ComputerPlayer implements Player, Serializable {
-    final protected Logger logger;
     final protected SetType set;
     final private String name;
     final private int level;
     int processedMoves;
-    private final BiFunction<Board, SetType, Integer> strategy;
+    private final PlayerStrategy strategy;
 
-    ComputerPlayer(String name, SetType set, Logger logger, int level, BiFunction<Board, SetType, Integer> strategy) {
+    ComputerPlayer(String name, SetType set, int level, PlayerStrategy strategy) {
         this.name = name;
         this.set = set;
-        this.logger = logger;
         this.level = level;
         this.strategy = strategy;
     }

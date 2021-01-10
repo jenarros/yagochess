@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+import static yagoc.Yagoc.logger;
 import static yagoc.YagocUI.BOARD_FONT_SIZE;
 import static yagoc.YagocUI.BORDER_SIZE;
 import static yagoc.YagocUI.IMAGE_SIZE;
@@ -25,13 +26,11 @@ class BoardController extends JPanel {
 
 	private final Board board;
 	private final Map<Piece, Image> images;
-	private final Logger logger;
 	private final ArrayList<Board> checkpoints = new ArrayList<>();
 
-	BoardController(Map<Piece, Image> images, Logger logger) {
+	BoardController(Map<Piece, Image> images) {
 		this.images = images;
-		this.logger = logger;
-		this.board = new Board(logger);
+		this.board = new Board();
 		setLayout(new BorderLayout(0, 0));
 		setBackground(YagocUI.frameColor);
 		setPreferredSize(new Dimension(getBoardAndBorderSize(), getBoardAndBorderSize()));
@@ -159,14 +158,14 @@ class BoardController extends JPanel {
 			logger.info("Type " + game + " chosen");
 
 			if (game == 1) {
-				board.player1 = new ComputerPlayer("computer", SetType.blackSet, logger, getLevel(board.player1, 1), PlayerStrategies.F1);
+				board.player1 = new ComputerPlayer("computer", SetType.blackSet, getLevel(board.player1, 1), PlayerStrategy.F1);
 				board.player2 = new UserPlayer("user", SetType.whiteSet);
 			} else if (game == 2) {
 				board.player1 = new UserPlayer("user", SetType.blackSet);
-				board.player2 = new ComputerPlayer("computer", SetType.whiteSet, logger, getLevel(board.player2, 1), PlayerStrategies.F1);
+				board.player2 = new ComputerPlayer("computer", SetType.whiteSet, getLevel(board.player2, 1), PlayerStrategy.F1);
 			} else if (game == 3) {
-				board.player1 = new ComputerPlayer("computer 1", SetType.blackSet, logger, getLevel(board.player1, 1), PlayerStrategies.F1);
-				board.player2 = new ComputerPlayer("computer 2", SetType.whiteSet, logger, getLevel(board.player2, 1), PlayerStrategies.F2);
+				board.player1 = new ComputerPlayer("computer 1", SetType.blackSet, getLevel(board.player1, 1), PlayerStrategy.F1);
+				board.player2 = new ComputerPlayer("computer 2", SetType.whiteSet, getLevel(board.player2, 1), PlayerStrategy.F2);
 			} else {
 				board.player1 = new UserPlayer("user 1", SetType.blackSet);
 				board.player2 = new UserPlayer("user 2", SetType.whiteSet);
@@ -225,13 +224,14 @@ class BoardController extends JPanel {
 	}
 
 	void resetBoard(Board board) {
+		checkpoints.clear();
 		this.board.resetWith(board);
 	}
 
 	void undo(ActionEvent actionEvent) {
 		if (!checkpoints.isEmpty()) {
 			this.board.resetWith(checkpoints.remove(checkpoints.size() - 1));
-			update();
+			repaint();
 		}
 	}
 

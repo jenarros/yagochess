@@ -1,10 +1,11 @@
 package yagoc;
 
+import java.io.Serializable;
 import java.util.function.BiFunction;
 
-class PlayerStrategies {
-    static BiFunction<Board, SetType, Integer> F1 = (board, set) -> {
-        return (Integer) Square.allSquares.stream().map((square) -> {
+public class PlayerStrategy implements Serializable {
+    static PlayerStrategy F1 = new PlayerStrategy((board, set) -> {
+        return Square.allSquares.stream().map((square) -> {
             int acc = 0;
             final Piece piece = board.get(square);
 
@@ -78,10 +79,9 @@ class PlayerStrategies {
             }
             return acc;
         }).mapToInt(Integer::intValue).sum();
-    };
-
-    static BiFunction<Board, SetType, Integer> F2 = (board, set) -> {
-        return (Integer) Square.allSquares.stream().map((square) -> {
+    });
+    static PlayerStrategy F2 = new PlayerStrategy((board, set) -> {
+        return Square.allSquares.stream().map((square) -> {
             int acc = 0;
             final Piece piece = board.get(square);
 
@@ -154,7 +154,19 @@ class PlayerStrategies {
             }
             return acc;
         }).mapToInt(Integer::intValue).sum();
-    };
+    });
+    private final SerializableBiFunction strategy;
+
+    public PlayerStrategy(SerializableBiFunction strategy) {
+        this.strategy = strategy;
+    }
+
+    public Integer apply(Board board, SetType setType) {
+        return strategy.apply(board, setType);
+    }
+
+    interface SerializableBiFunction extends BiFunction<Board, SetType, Integer>, Serializable {
+    }
 
     static boolean isPieceOurs(Board board, SetType set, Square square) {
         return board.get(square).set == set;
