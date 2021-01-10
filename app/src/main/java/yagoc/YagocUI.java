@@ -3,6 +3,7 @@ package yagoc;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -66,19 +67,28 @@ class YagocUI extends JFrame {
 
     private static void addMenuBar(YagocUI yagocUI, BoardController boardController) {
         JMenuItem restartGameMenuItem = new JMenuItem("Reset");
+        restartGameMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, yagocUI.getToolkit().getMenuShortcutKeyMaskEx()));
         restartGameMenuItem.addActionListener(boardController::newBoard);
 
         JMenuItem saveMenuItem = new JMenuItem("Save");
+        saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, yagocUI.getToolkit().getMenuShortcutKeyMaskEx()));
+
         saveMenuItem.addActionListener(yagocUI::save);
 
-        JMenuItem loadMenuItem = new JMenuItem("Load");
+        JMenuItem loadMenuItem = new JMenuItem("Open");
+        loadMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, yagocUI.getToolkit().getMenuShortcutKeyMaskEx()));
         loadMenuItem.addActionListener(yagocUI::load);
 
         JMenuItem optionsMenuItem = new JMenuItem("Options");
+        optionsMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, yagocUI.getToolkit().getMenuShortcutKeyMaskEx()));
         optionsMenuItem.addActionListener(boardController::configurePlayers);
 
         JMenuItem startGameMenuItem = new JMenuItem("Start Game");
         startGameMenuItem.addActionListener(boardController::startGame);
+
+        JMenuItem undo = new JMenuItem("Undo");
+        undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, yagocUI.getToolkit().getMenuShortcutKeyMaskEx()));
+        undo.addActionListener(boardController::undo);
 
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("File");
@@ -87,6 +97,7 @@ class YagocUI extends JFrame {
         menu.add(optionsMenuItem);
         menu.add(restartGameMenuItem);
         menu.add(startGameMenuItem);
+        menu.add(undo);
 
         menuBar.add(menu);
         yagocUI.setJMenuBar(menuBar);

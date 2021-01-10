@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.IntStream;
 
@@ -25,6 +26,7 @@ class BoardController extends JPanel {
 	private final Board board;
 	private final Map<Piece, Image> images;
 	private final Logger logger;
+	private final ArrayList<Board> checkpoints = new ArrayList<>();
 
 	BoardController(Map<Piece, Image> images, Logger logger) {
 		this.images = images;
@@ -226,6 +228,13 @@ class BoardController extends JPanel {
 		this.board.resetWith(board);
 	}
 
+	void undo(ActionEvent actionEvent) {
+		if (!checkpoints.isEmpty()) {
+			this.board.resetWith(checkpoints.remove(checkpoints.size() - 1));
+			update();
+		}
+	}
+
 	class AccionListener implements MouseListener {
 		Square from, to;
 
@@ -249,7 +258,10 @@ class BoardController extends JPanel {
 
 			if (isInsideTheBoard(position)) {
 				to = boardSquare(position);
+				Board copy = board.copy();
+
 				if (board.moveIfPossible(from, to)) {
+					checkpoints.add(copy);
 					update();
 				}
 			}

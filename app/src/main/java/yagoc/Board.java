@@ -1,7 +1,5 @@
 package yagoc;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -54,7 +52,12 @@ class Board implements Serializable {
         reset();
     }
 
-    @NotNull
+    public Board copy() {
+        Board board = new Board(logger);
+        board.resetWith(this);
+        return board;
+    }
+
     private Piece[][] newTable() {
         Piece[][] pieces = new Piece[8][8];
 
@@ -585,8 +588,8 @@ class Board implements Serializable {
     }
 
     void resetWith(Board board) {
-        squares = board.squares;
-        cap = board.cap;
+        squares = Arrays.stream(squares).map(Piece[]::clone).toArray(Piece[][]::new);
+        cap = board.cap.clone();
         turn = board.turn;
         whiteLeftRookMoved = board.whiteLeftRookMoved;
         whiteRightRookMoved = board.whiteRightRookMoved;
