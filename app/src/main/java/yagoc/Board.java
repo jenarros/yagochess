@@ -44,7 +44,7 @@ class Board implements Serializable {
     boolean finished;
     int drawCounter;
     int moveCounter;
-    Player player1, player2;
+    Player black, white;
 
     Board() {
         reset();
@@ -66,13 +66,15 @@ class Board implements Serializable {
         return pieces;
     }
 
-    void movePlayer1() {
-        if (player1.isComputer()) {
-            Move move = player1.move(this);
+    void movePlayer(Player player) {
+        if (player.isComputer()) {
+            Move move = player.move(this);
 
-            logger.info(player1.name() + " " + move.toString());
+            logger.info(player.name() + " " + move.toString());
 
             play(move);
+            logger.info(move.toString());
+
             ifPawnHasReachedFinalRankReplaceWithQueen(move);
         }
     }
@@ -88,22 +90,11 @@ class Board implements Serializable {
         finished = isFinished();
     }
 
-    void movePlayer2() {
-        if (player2.isComputer()) {
-            Move move = player2.move(this);
-
-            logger.info(player2.name() + " " + move.toString());
-
-            play(move);
-            ifPawnHasReachedFinalRankReplaceWithQueen(move);
-        }
-    }
-
     boolean moveIfPossible(Square from, Square to) {
         Move move = new Move(get(from), from, to);
         if (finished || turn != move.piece.set) {
             return false;
-        } else if ((turn == SetType.blackSet && player1.isUser()) || (turn == SetType.whiteSet && player2.isUser())) {
+        } else if ((turn == SetType.blackSet && black.isUser()) || (turn == SetType.whiteSet && white.isUser())) {
             if (!from.equals(to)
                     && isCorrectMove(move)
                     && moveDoesNotCreateCheck(move)) {
@@ -115,15 +106,9 @@ class Board implements Serializable {
                 }
 
                 finished = isFinished();
-                if (!finished) {
-                    if (move.piece.set == SetType.blackSet) {
-                        logger.info(player1.name() + " " + move.toString());
-                        movePlayer2();
-                    } else {
-                        logger.info(player2.name() + " " + move.toString());
-                        movePlayer1();
-                    }
-                }
+
+                logger.info(move.toString());
+
                 return true;
             }
         }
@@ -262,9 +247,9 @@ class Board implements Serializable {
     boolean isFinished() {
         if (isCheckmate()) {
             if (turn == SetType.blackSet)
-                logger.info("checkmate winner is " + player2.name());
+                logger.info("checkmate winner is " + white.name());
             else
-                logger.info("checkmate winner is " + player1.name());
+                logger.info("checkmate winner is " + black.name());
             return true;
         } else if (isADraw()) {
             logger.info("draw");
@@ -598,8 +583,8 @@ class Board implements Serializable {
         finished = board.finished;
         drawCounter = board.drawCounter;
         moveCounter = board.moveCounter;
-        player1 = board.player1;
-        player2 = board.player2;
+        black = board.black;
+        white = board.white;
     }
 
     public void reset() {
@@ -636,7 +621,7 @@ class Board implements Serializable {
             squares[6][file] = Piece.whitePawn;
         }
 
-        player1 = new ComputerPlayer("computer 1", SetType.blackSet, 3, PlayerStrategy.F1);
-        player2 = new UserPlayer("user 1", SetType.whiteSet);
+        black = new ComputerPlayer("computer 1", SetType.blackSet, 3, PlayerStrategy.F1);
+        white = new UserPlayer("user 1", SetType.whiteSet);
     }
 }

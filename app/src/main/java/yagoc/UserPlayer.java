@@ -11,6 +11,10 @@ class UserPlayer implements Player, Serializable {
         this.set = set;
     }
 
+    public SetType setType() {
+        return set;
+    }
+
     @Override
     public Move move(Board board) {
         throw new RuntimeException(name + " cannot move without user input.");

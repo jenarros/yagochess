@@ -80,12 +80,9 @@ class YagocUI extends JFrame {
         loadMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, yagocUI.getToolkit().getMenuShortcutKeyMaskEx()));
         loadMenuItem.addActionListener(yagocUI::open);
 
-        JMenuItem optionsMenuItem = new JMenuItem("Options");
-        optionsMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, yagocUI.getToolkit().getMenuShortcutKeyMaskEx()));
+        JMenuItem optionsMenuItem = new JMenuItem("Preferences...");
+        optionsMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, yagocUI.getToolkit().getMenuShortcutKeyMaskEx()));
         optionsMenuItem.addActionListener(boardController::configurePlayers);
-
-        JMenuItem startGameMenuItem = new JMenuItem("Start Game");
-        startGameMenuItem.addActionListener(boardController::startGame);
 
         JMenuItem undo = new JMenuItem("Undo");
         undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, yagocUI.getToolkit().getMenuShortcutKeyMaskEx()));
@@ -97,7 +94,6 @@ class YagocUI extends JFrame {
         menu.add(loadMenuItem);
         menu.add(optionsMenuItem);
         menu.add(restartGameMenuItem);
-        menu.add(startGameMenuItem);
         menu.add(undo);
 
         menuBar.add(menu);

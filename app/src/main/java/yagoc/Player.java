@@ -5,6 +5,8 @@ interface Player {
 
     PlayerType type();
 
+    SetType setType();
+
     String name();
 
     default boolean isUser() {

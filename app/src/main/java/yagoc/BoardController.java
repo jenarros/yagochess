@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static yagoc.Yagoc.logger;
@@ -23,6 +24,7 @@ class BoardController extends JPanel {
 	static final Integer[] GAME_OPTIONS = {1, 2, 3, 4};
 	static final String[] FILE_NAMES = {"a", "b", "c", "d", "e", "f", "g", "h"};
 	static final String[] RANK_NAMES = {"8", "7", "6", "5", "4", "3", "2", "1"};
+	static final int COMPUTER_PAUSE_SECONDS = 1;
 
 	private final Board board;
 	private final Map<Piece, Image> images;
@@ -38,7 +40,6 @@ class BoardController extends JPanel {
 		setFont(new Font(Font.MONOSPACED, Font.BOLD, getBoardFontSize()));
 
 		addMouseListener(new AccionListener());
-		startGame();
 	}
 
 	public void paintComponent(Graphics g) {
@@ -103,32 +104,27 @@ class BoardController extends JPanel {
 		g.fillPolygon(coordX, coordY, 4);
 	}
 
-	void startGame(ActionEvent e) {
-		startGame();
+	void nextMove() {
+		if (board.finished) return;
+
+		if (board.turn == board.black.setType()) {
+			board.movePlayer(board.black);
+		} else {
+			board.movePlayer(board.white);
+		}
+		update();
+		breath();
+
+		if ((board.turn == board.black.setType() && board.black.isComputer())
+				|| (board.turn == board.white.setType() && board.white.isComputer()))
+			SwingUtilities.invokeLater(this::nextMove);
 	}
 
-	void startGame() {
-		board.drawCounter = 0;
-		board.finished = false;
-		if (board.player1.isUser() && board.player2.isComputer()) {
-			board.movePlayer2();
-			update();
-
-		} else if (board.player2.isComputer() && board.player1.isComputer()) {
-			while (!board.finished) {
-				try {
-					Thread.sleep(200);
-					board.movePlayer2();
-					update();
-					if (!board.finished) {
-						Thread.sleep(200);
-						board.movePlayer1();
-						update();
-					}
-				} catch (Exception exc) {
-					throw new RuntimeException(exc);
-				}
-			}
+	private void breath() {
+		try {
+			TimeUnit.SECONDS.sleep(COMPUTER_PAUSE_SECONDS);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -158,30 +154,34 @@ class BoardController extends JPanel {
 			logger.info("Type " + game + " chosen");
 
 			if (game == 1) {
-				board.player1 = new ComputerPlayer("computer", SetType.blackSet, getLevel(board.player1, 1), PlayerStrategy.F1);
-				board.player2 = new UserPlayer("user", SetType.whiteSet);
+				board.black = new ComputerPlayer("computer", SetType.blackSet, getLevel("computer", 1), PlayerStrategy.F1);
+				board.white = new UserPlayer("user", SetType.whiteSet);
 			} else if (game == 2) {
-				board.player1 = new UserPlayer("user", SetType.blackSet);
-				board.player2 = new ComputerPlayer("computer", SetType.whiteSet, getLevel(board.player2, 1), PlayerStrategy.F1);
+				board.black = new UserPlayer("user", SetType.blackSet);
+				board.white = new ComputerPlayer("computer", SetType.whiteSet, getLevel("computer", 1), PlayerStrategy.F1);
 			} else if (game == 3) {
-				board.player1 = new ComputerPlayer("computer 1", SetType.blackSet, getLevel(board.player1, 1), PlayerStrategy.F1);
-				board.player2 = new ComputerPlayer("computer 2", SetType.whiteSet, getLevel(board.player2, 1), PlayerStrategy.F2);
+				board.black = new ComputerPlayer("computer 1", SetType.blackSet, getLevel("computer 1", 1), PlayerStrategy.F1);
+				board.white = new ComputerPlayer("computer 2", SetType.whiteSet, getLevel("computer 2", 1), PlayerStrategy.F2);
 			} else {
-				board.player1 = new UserPlayer("user 1", SetType.blackSet);
-				board.player2 = new UserPlayer("user 2", SetType.whiteSet);
+				board.black = new UserPlayer("user 1", SetType.blackSet);
+				board.white = new UserPlayer("user 2", SetType.whiteSet);
 			}
 			logger.info("name\ttype\tlevel");
-			logger.info(board.player1.toString());
-			logger.info(board.player2.toString());
+			logger.info(board.black.toString());
+			logger.info(board.white.toString());
+			// if the player 2 (whiteSet) is a computer then start automatically
+			if (board.white.isComputer()) {
+				SwingUtilities.invokeLater(this::nextMove);
+			}
 		} catch (Exception exc) {
 			logger.info("Error: " + exc);
 			System.exit(-1);
 		}
 	}
 
-	private int getLevel(Player player, Integer defaultOption) {
+	private int getLevel(String playerName, Integer defaultOption) {
 		int level = PLAYER_LEVELS[JOptionPane.showOptionDialog(this,
-				"Select " + player.name() + " level: ",
+				"Select " + playerName + " level: ",
 				"Select player level",
 				JOptionPane.YES_NO_CANCEL_OPTION,
 				JOptionPane.QUESTION_MESSAGE,
@@ -264,6 +264,7 @@ class BoardController extends JPanel {
 					checkpoints.add(copy);
 					update();
 				}
+				nextMove();
 			}
 		}
 

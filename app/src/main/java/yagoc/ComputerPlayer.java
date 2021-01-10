@@ -19,6 +19,10 @@ class ComputerPlayer implements Player, Serializable {
         this.strategy = strategy;
     }
 
+    public SetType setType() {
+        return set;
+    }
+
     @Override
     public PlayerType type() {
         return PlayerType.computer;

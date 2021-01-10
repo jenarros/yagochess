@@ -85,7 +85,9 @@ public class PlayerStrategy implements Serializable {
             int acc = 0;
             final Piece piece = board.get(square);
 
-            if (isPieceOurs(board, set, square)) {
+            if (piece == Piece.none) {
+                // ignore empty squares
+            } else if (isPieceOurs(board, set, square)) {
                 switch (piece.type) {
                     case pawn://cuanto más adelante mejor
                         acc += 100;
