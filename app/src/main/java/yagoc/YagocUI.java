@@ -1,5 +1,8 @@
 package yagoc;
 
+import yagoc.pieces.Piece;
+import yagoc.pieces.Pieces;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -158,18 +161,18 @@ class YagocUI extends JFrame {
         Toolkit t = getToolkit();
         Map<Piece, Image> images = new HashMap<>();
 
-        images.put(Piece.whitePawn, t.getImage("img/peon.gif"));
-        images.put(Piece.whiteKnight, t.getImage("img/caballo.gif"));
-        images.put(Piece.whiteBishop, t.getImage("img/alfil.gif"));
-        images.put(Piece.whiteRook, t.getImage("img/torre.gif"));
-        images.put(Piece.whiteQueen, t.getImage("img/reina.gif"));
-        images.put(Piece.whiteKing, t.getImage("img/rey.gif"));
-        images.put(Piece.blackPawn, t.getImage("img/peonNegro.gif"));
-        images.put(Piece.blackKnight, t.getImage("img/caballoNegro.gif"));
-        images.put(Piece.blackBishop, t.getImage("img/alfilNegro.gif"));
-        images.put(Piece.blackRook, t.getImage("img/torreNegro.gif"));
-        images.put(Piece.blackQueen, t.getImage("img/reinaNegro.gif"));
-        images.put(Piece.blackKing, t.getImage("img/reyNegro.gif"));
+        images.put(Pieces.whitePawn, t.getImage("img/peon.gif"));
+        images.put(Pieces.whiteKnight, t.getImage("img/caballo.gif"));
+        images.put(Pieces.whiteBishop, t.getImage("img/alfil.gif"));
+        images.put(Pieces.whiteRook, t.getImage("img/torre.gif"));
+        images.put(Pieces.whiteQueen, t.getImage("img/reina.gif"));
+        images.put(Pieces.whiteKing, t.getImage("img/rey.gif"));
+        images.put(Pieces.blackPawn, t.getImage("img/peonNegro.gif"));
+        images.put(Pieces.blackKnight, t.getImage("img/caballoNegro.gif"));
+        images.put(Pieces.blackBishop, t.getImage("img/alfilNegro.gif"));
+        images.put(Pieces.blackRook, t.getImage("img/torreNegro.gif"));
+        images.put(Pieces.blackQueen, t.getImage("img/reinaNegro.gif"));
+        images.put(Pieces.blackKing, t.getImage("img/reyNegro.gif"));
 
         return images;
     }

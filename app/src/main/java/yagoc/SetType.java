@@ -1,9 +1,9 @@
 package yagoc;
 
-enum SetType {
+public enum SetType {
     blackSet, whiteSet;
 
-    SetType next() {
+    public SetType next() {
         if (this == blackSet) {
             return whiteSet;
         } else {
@@ -11,7 +11,7 @@ enum SetType {
         }
     }
 
-    SetType previous() {
+    public SetType previous() {
         return next();
     }
 }

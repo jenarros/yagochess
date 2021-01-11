@@ -1,5 +1,5 @@
-package yagoc;
+package yagoc.pieces;
 
-enum PieceType {
+public enum PieceType {
     pawn, rook, knight, bishop, queen, king
 }

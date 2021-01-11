@@ -1,8 +1,10 @@
 package yagoc;
 
+import yagoc.pieces.Piece;
+
 import static yagoc.BoardController.FILE_NAMES;
 import static yagoc.BoardController.RANK_NAMES;
-import static yagoc.PieceType.king;
+import static yagoc.pieces.PieceType.king;
 
 class Move {
     final Piece fromPiece;
@@ -26,14 +28,14 @@ class Move {
      * positive if going ahead, negative if going backwards
      */
     int rankDistance() {
-        return (to.rank - from.rank) * (fromPiece.set == SetType.whiteSet ? -1 : 1);
+        return (to.rank - from.rank) * (fromPiece.setType() == SetType.whiteSet ? -1 : 1);
     }
 
     /**
      * positive if going to the right, negative if going to the left
      */
     int fileDistance() {
-        return (to.file - from.file) * (fromPiece.set == SetType.whiteSet ? 1 : -1);
+        return (to.file - from.file) * (fromPiece.setType() == SetType.whiteSet ? 1 : -1);
     }
 
     int fileDistanceAbs() {
@@ -53,7 +55,7 @@ class Move {
     }
 
     public boolean isCastling() {
-        return fromPiece.type == king && fileDistanceAbs() == 2 && rankDistance() == 0;
+        return fromPiece.pieceType() == king && fileDistanceAbs() == 2 && rankDistance() == 0;
     }
 
     public boolean isCastlingQueenside() {

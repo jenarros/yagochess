@@ -1,5 +1,8 @@
 package yagoc;
 
+import yagoc.pieces.Piece;
+import yagoc.pieces.Pieces;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -101,7 +104,7 @@ class BoardController extends JPanel {
 		coordY[2] = point.y + getSquareSize();
 		coordY[3] = point.y;
 		g.fillPolygon(coordX, coordY, 4);
-		if (!(piece == Piece.none)) drawPiece(g, square, piece);
+		if (!(piece == Pieces.none)) drawPiece(g, square, piece);
 	}
 
 	private Color squareColor(Square square) {

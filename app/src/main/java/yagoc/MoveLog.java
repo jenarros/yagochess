@@ -1,5 +1,7 @@
 package yagoc;
 
+import yagoc.pieces.Piece;
+
 class MoveLog {
 	final Move move;
 	final boolean whiteLeftRookMoved, whiteRightRookMoved, whiteKingMoved;
