@@ -7,9 +7,9 @@ import yagoc.pieces.Pieces;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static yagoc.Square.castlingKingsideBlackFrom;
 import static yagoc.Square.castlingKingsideBlackTo;
@@ -327,13 +327,7 @@ public class Board implements Serializable {
     }
 
     boolean cannotMoveWithoutBeingCheck() {
-        Collection<Move> moves = generateMoves();
-
-        for (Move move : moves) {
-            if (moveDoesNotCreateCheck(move.from(), move.to()))
-                return false;
-        }
-        return true;
+        return generateMoves().stream().noneMatch(this::moveDoesNotCreateCheck);
     }
 
     boolean isCheckmate() {
@@ -384,20 +378,20 @@ public class Board implements Serializable {
     }
 
     Collection<Move> generateMoves() {
-        return Square.allSquares.stream().map((from) -> {
+        return Square.allSquares.stream().flatMap((from) -> {
             if (isPieceOfCurrentPlayer(pieceAt(from))) {
                 return generateMoves(from, (move) -> moveDoesNotCreateCheck(move));
             }
-            return Collections.<Move>emptyList();
-        }).flatMap(Collection::stream).collect(Collectors.toList());
+            return Stream.empty();
+        }).collect(Collectors.toList());
     }
 
-    Collection<Move> generateMoves(Square from) {
+    Stream<Move> generateMoves(Square from) {
         return pieceAt(from).generateMoves(this, from);
     }
 
-    Collection<Move> generateMoves(Square from, Predicate<Move> predicate) {
-        return generateMoves(from).stream().filter(predicate).collect(Collectors.toList());
+    Stream<Move> generateMoves(Square from, Predicate<Move> predicate) {
+        return generateMoves(from).filter(predicate);
     }
 
     void resetWith(Board board) {

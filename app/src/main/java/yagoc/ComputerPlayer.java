@@ -60,7 +60,7 @@ class ComputerPlayer implements Player, Serializable {
         LinkedList<Move> moves = new LinkedList<>(board.generateMoves());
 
         // checkmate
-        if (moves.size() == 0) {
+        if (moves.stream().findAny().isEmpty()) {
             return new MoveValue(Integer.MAX_VALUE - (level - depth + 1));
         }
 

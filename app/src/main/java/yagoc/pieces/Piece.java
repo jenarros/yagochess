@@ -5,8 +5,6 @@ import yagoc.Move;
 import yagoc.PieceColor;
 import yagoc.Square;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 abstract public class Piece {
@@ -61,7 +59,7 @@ abstract public class Piece {
      */
     protected abstract Stream<Move> generateMovesForPiece(Board board, Square from);
 
-    public final Collection<Move> generateMoves(Board board, Square from) {
-        return generateMovesForPiece(board, from).filter((move -> isCorrectMove(board, move))).collect(Collectors.toList());
+    public final Stream<Move> generateMoves(Board board, Square from) {
+        return generateMovesForPiece(board, from).filter((move -> isCorrectMove(board, move)));
     }
 }
