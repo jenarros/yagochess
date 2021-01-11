@@ -1,5 +1,7 @@
 package yagoc.pieces;
 
+import yagoc.Board;
+import yagoc.Move;
 import yagoc.SetType;
 
 import java.util.Collection;
@@ -21,7 +23,12 @@ public class Pieces {
     public static Piece whiteKing = new King(SetType.whiteSet);
     public static Piece whitePawn = new Pawn(SetType.whiteSet);
 
-    public static Piece none = new Piece(null, null);
+    public static Piece none = new Piece(null, null) {
+        @Override
+        public boolean isCorrectMove(Board board, Move move) {
+            return false;
+        }
+    };
 
     public static Collection<Piece> all = Stream.of(
             blackRook,

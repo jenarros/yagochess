@@ -1,8 +1,10 @@
 package yagoc.pieces;
 
+import yagoc.Board;
+import yagoc.Move;
 import yagoc.SetType;
 
-public class Piece {
+abstract public class Piece {
     private final PieceType pieceType;
     private final SetType setType;
 
@@ -24,4 +26,15 @@ public class Piece {
                 .filter((piece) -> type == piece.pieceType && piece.setType == this.setType)
                 .findFirst().orElseThrow();
     }
+
+    @Override
+    public String toString() {
+        if (pieceType == PieceType.Knight) {
+            return "N";
+        } else {
+            return pieceType.name().substring(0, 1);
+        }
+    }
+
+    public abstract boolean isCorrectMove(Board board, Move move);
 }

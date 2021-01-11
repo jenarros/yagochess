@@ -2,7 +2,7 @@ package yagoc;
 
 import yagoc.pieces.Piece;
 
-class MoveLog {
+public class MoveLog {
 	final Move move;
 	final boolean whiteLeftRookMoved, whiteRightRookMoved, whiteKingMoved;
 	final boolean blackLeftRookMoved, blackRightRookMoved, blackKingMoved;
@@ -16,7 +16,7 @@ class MoveLog {
 	Piece pieceB;
 	Piece enPassantPiece;
 
-	MoveLog(Board board, Move move) {
+	public MoveLog(Board board, Move move) {
 		this.move = move;
 		this.whiteLeftRookMoved = board.hasWhiteLeftRookMoved();
 		this.whiteRightRookMoved = board.hasWhiteRightRookMoved();
@@ -26,6 +26,6 @@ class MoveLog {
 		this.blackKingMoved = board.hasBlackKingMoved();
 		this.drawCounter = board.drawCounter();
 		this.moveCounter = board.moveCounter();
-		this.enPassant = board.enPassant(move.to.file);
+		this.enPassant = board.enPassant(move.to().getFile());
 	}
 }

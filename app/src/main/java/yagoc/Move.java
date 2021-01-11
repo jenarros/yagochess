@@ -4,61 +4,79 @@ import yagoc.pieces.Piece;
 
 import static yagoc.BoardController.FILE_NAMES;
 import static yagoc.BoardController.RANK_NAMES;
-import static yagoc.pieces.PieceType.king;
+import static yagoc.pieces.PieceType.King;
+import static yagoc.pieces.Pieces.none;
 
-class Move {
-    final Piece fromPiece;
-    final Square from;
-    final Square to;
+public class Move {
+    private final Piece fromPiece;
+    private final Square from;
+    private final Square to;
 
-    Move(Piece fromPiece, Square from, Square to) {
+    public Move(Piece fromPiece, Square from, Square to) {
         this.fromPiece = fromPiece;
         this.from = from;
         this.to = to;
+
+        if (fromPiece == none) {
+            throw new IllegalArgumentException("Cannot move nothing");
+        }
+
         if (!this.from.exists() || !this.to.exists()) {
             throw new IllegalArgumentException("This move contains non-existing squares: " + from + " " + to);
         }
     }
 
     public String toString() {
-        return fromPiece + " from " + RANK_NAMES[from.rank] + FILE_NAMES[from.file] + " to " + RANK_NAMES[to.rank] + FILE_NAMES[to.file] + " ";
+        return fromPiece + " " + RANK_NAMES[from.getRank()] + FILE_NAMES[from.getFile()] + " " + RANK_NAMES[to.getRank()] + FILE_NAMES[to.getFile()];
     }
 
     /**
      * positive if going ahead, negative if going backwards
      */
-    int rankDistance() {
-        return (to.rank - from.rank) * (fromPiece.setType() == SetType.whiteSet ? -1 : 1);
+    public int rankDistance() {
+        return (to.getRank() - from.getRank()) * (fromPiece.setType() == SetType.whiteSet ? -1 : 1);
     }
 
     /**
      * positive if going to the right, negative if going to the left
      */
-    int fileDistance() {
-        return (to.file - from.file) * (fromPiece.setType() == SetType.whiteSet ? 1 : -1);
+    public int fileDistance() {
+        return (to.getFile() - from.getFile()) * (fromPiece.setType() == SetType.whiteSet ? 1 : -1);
     }
 
-    int fileDistanceAbs() {
+    public int fileDistanceAbs() {
         return Math.abs(fileDistance());
     }
 
-    int rankDistanceAbs() {
+    public int rankDistanceAbs() {
         return Math.abs(rankDistance());
     }
 
-    boolean hasSameFile() {
-        return to.file == from.file;
+    public boolean hasSameFile() {
+        return to.getFile() == from.getFile();
     }
 
     public boolean hasSameRank() {
-        return from.rank == to.rank;
+        return from.getRank() == to.getRank();
     }
 
     public boolean isCastling() {
-        return fromPiece.pieceType() == king && fileDistanceAbs() == 2 && rankDistance() == 0;
+        return fromPiece.pieceType() == King && fileDistanceAbs() == 2 && rankDistance() == 0;
     }
 
     public boolean isCastlingQueenside() {
-        return isCastling() && this.to.file < this.from.file;
+        return isCastling() && this.to.getFile() < this.from.getFile();
+    }
+
+    public Piece fromPiece() {
+        return fromPiece;
+    }
+
+    public Square from() {
+        return from;
+    }
+
+    public Square to() {
+        return to;
     }
 }

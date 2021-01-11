@@ -7,8 +7,9 @@ import java.util.stream.Collectors;
 
 public class Square {
     public static List<Square> allSquares = all();
-    final int rank;
-    final int file;
+
+    private final int rank;
+    private final int file;
 
     public Square(int rank, int file) {
         this.rank = rank;
@@ -158,4 +159,12 @@ public class Square {
 
     static final Square castlingKingsideBlackFrom = new Square(0, 7);
     static final Square castlingKingsideBlackTo = new Square(0, 5);
+
+    public int getRank() {
+        return rank;
+    }
+
+    public int getFile() {
+        return file;
+    }
 }

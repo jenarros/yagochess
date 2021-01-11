@@ -1,5 +1,6 @@
 ## TODO
-- Should restart reset to defaults or to current options
+- Should I have a Set containing each of the sets? 
+- Should restart reset to defaults or to current options?
 - Checkmate due to repeated configuration 3 times
 
 

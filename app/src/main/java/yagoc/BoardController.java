@@ -65,7 +65,7 @@ class BoardController extends JPanel {
 	}
 
 	Point toScreenCoordinates(Square square) {
-		return new Point(square.file * getSquareSize() + getBorderSize(), square.rank * getSquareSize() + getBorderSize());
+		return new Point(square.getFile() * getSquareSize() + getBorderSize(), square.getRank() * getSquareSize() + getBorderSize());
 	}
 
 	void paintBoard(Graphics g) {
@@ -108,7 +108,7 @@ class BoardController extends JPanel {
 	}
 
 	private Color squareColor(Square square) {
-		if ((square.file % 2 == 0 && square.rank % 2 == 0) || square.file % 2 == 1 && square.rank % 2 == 1) {
+		if ((square.getFile() % 2 == 0 && square.getRank() % 2 == 0) || square.getFile() % 2 == 1 && square.getRank() % 2 == 1) {
 			return lightSquaresColor;
 		} else {
 			return darkSquaresColor;
