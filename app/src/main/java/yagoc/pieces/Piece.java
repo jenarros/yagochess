@@ -2,39 +2,66 @@ package yagoc.pieces;
 
 import yagoc.Board;
 import yagoc.Move;
-import yagoc.SetType;
+import yagoc.PieceColor;
+import yagoc.Square;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 abstract public class Piece {
     private final PieceType pieceType;
-    private final SetType setType;
+    private final PieceColor color;
 
-    public Piece(PieceType pieceType, SetType setType) {
+    public Piece(PieceType pieceType, PieceColor color) {
         this.pieceType = pieceType;
-        this.setType = setType;
+        this.color = color;
     }
 
     public PieceType pieceType() {
         return pieceType;
     }
 
-    public SetType setType() {
-        return setType;
+    public PieceColor color() {
+        return color;
     }
 
     public Piece switchTo(PieceType type) {
         return Pieces.all.stream()
-                .filter((piece) -> type == piece.pieceType && piece.setType == this.setType)
+                .filter((piece) -> type == piece.pieceType && piece.color == this.color)
                 .findFirst().orElseThrow();
     }
 
     @Override
     public String toString() {
-        if (pieceType == PieceType.Knight) {
+        if (pieceType == null) {
+            return "";
+        } else if (pieceType == PieceType.Knight) {
             return "N";
         } else {
             return pieceType.name().substring(0, 1);
         }
     }
 
-    public abstract boolean isCorrectMove(Board board, Move move);
+    /**
+     * Can safely assume that general rules have been validated such as:
+     * - the piece is not moving to a square with a piece of the same color
+     */
+    protected abstract boolean isValidForPiece(Board board, Move move);
+
+    public final boolean isCorrectMove(Board board, Move move) {
+        if (board.pieceAt(move.from()).color() == board.pieceAt(move.to()).color()) {
+            return false;
+        }
+        return this.isValidForPiece(board, move);
+    }
+
+    /**
+     * These are all potential moves pre-validation, the resulting moves need to be validated.
+     */
+    protected abstract Stream<Move> generateMovesForPiece(Board board, Square from);
+
+    public final Collection<Move> generateMoves(Board board, Square from) {
+        return generateMovesForPiece(board, from).filter((move -> isCorrectMove(board, move))).collect(Collectors.toList());
+    }
 }

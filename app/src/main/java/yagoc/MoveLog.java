@@ -17,15 +17,15 @@ public class MoveLog {
 	Piece enPassantPiece;
 
 	public MoveLog(Board board, Move move) {
-		this.move = move;
-		this.whiteLeftRookMoved = board.hasWhiteLeftRookMoved();
-		this.whiteRightRookMoved = board.hasWhiteRightRookMoved();
-		this.whiteKingMoved = board.hasWhiteKingMoved();
-		this.blackLeftRookMoved = board.hasBlackLeftRookMoved();
-		this.blackRightRookMoved = board.hasBlackRightRookMoved();
-		this.blackKingMoved = board.hasBlackKingMoved();
-		this.drawCounter = board.drawCounter();
-		this.moveCounter = board.moveCounter();
-		this.enPassant = board.enPassant(move.to().getFile());
-	}
+        this.move = move;
+        this.whiteLeftRookMoved = board.hasWhiteLeftRookMoved();
+        this.whiteRightRookMoved = board.hasWhiteRightRookMoved();
+        this.whiteKingMoved = board.hasWhiteKingMoved();
+        this.blackLeftRookMoved = board.hasBlackLeftRookMoved();
+        this.blackRightRookMoved = board.hasBlackRightRookMoved();
+        this.blackKingMoved = board.hasBlackKingMoved();
+        this.drawCounter = board.drawCounter();
+        this.moveCounter = board.moveCounter();
+        this.enPassant = board.enPassant(move.to().file());
+    }
 }

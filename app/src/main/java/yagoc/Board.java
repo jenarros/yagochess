@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static yagoc.Square.castlingKingsideBlackFrom;
 import static yagoc.Square.castlingKingsideBlackTo;
@@ -132,9 +131,9 @@ public class Board implements Serializable {
 
     private void ifPawnHasReachedFinalRankReplaceWithQueen(Move move) {
         //TODO What if there is already a queen?
-        if ((move.fromPiece() == Pieces.blackPawn && move.to().getRank() == 7)) {
+        if ((move.fromPiece() == Pieces.blackPawn && move.to().rank() == 7)) {
             pieceAt(move.to(), Pieces.blackQueen);
-        } else if (move.fromPiece() == Pieces.whitePawn && move.to().getRank() == 0) {
+        } else if (move.fromPiece() == Pieces.whitePawn && move.to().rank() == 0) {
             pieceAt(move.to(), Pieces.whiteQueen);
         }
 
@@ -142,11 +141,11 @@ public class Board implements Serializable {
     }
 
     boolean isPieceOfCurrentPlayer(Piece piece) {
-        return piece.setType() == currentPlayer.setType();
+        return piece.color() == currentPlayer.pieceColor();
     }
 
     public boolean isPieceOfOppositePlayer(Piece piece) {
-        return piece != Pieces.none && piece.setType() != currentPlayer.setType();
+        return piece != Pieces.none && piece.color() != currentPlayer.pieceColor();
     }
 
     boolean moveIfPossible(Square from, Square to) {
@@ -159,7 +158,7 @@ public class Board implements Serializable {
                     && moveDoesNotCreateCheck(move)) {
 
                 play(move);
-                if ((move.fromPiece() == Pieces.blackPawn && to.getRank() == 7) || (move.fromPiece() == Pieces.whitePawn && to.getRank() == 0)) {
+                if ((move.fromPiece() == Pieces.blackPawn && to.rank() == 7) || (move.fromPiece() == Pieces.whitePawn && to.rank() == 0)) {
                     // TODO Should be able to choose piece instead of always getting a Queen
                     pieceAt(to, move.fromPiece().switchTo(PieceType.Queen));
                 }
@@ -180,16 +179,16 @@ public class Board implements Serializable {
 
         if (move.fromPiece() == Pieces.whiteKing)
             whiteKingMoved = true;
-        else if (move.fromPiece() == Pieces.whiteRook && move.from().getFile() == 0)
+        else if (move.fromPiece() == Pieces.whiteRook && move.from().file() == 0)
             whiteLeftRookMoved = true;
-        else if (move.fromPiece() == Pieces.whiteRook && move.from().getFile() == 7)
+        else if (move.fromPiece() == Pieces.whiteRook && move.from().file() == 7)
             whiteRightRookMoved = true;
 
         if (move.fromPiece() == Pieces.blackKing)
             blackKingMoved = true;
-        else if (move.fromPiece() == Pieces.blackRook && move.from().getFile() == 0)
+        else if (move.fromPiece() == Pieces.blackRook && move.from().file() == 0)
             blackLeftRookMoved = true;
-        else if (move.fromPiece() == Pieces.blackRook && move.from().getFile() == 7)
+        else if (move.fromPiece() == Pieces.blackRook && move.from().file() == 7)
             blackRightRookMoved = true;
 
         if (move.isCastling()) {
@@ -206,17 +205,17 @@ public class Board implements Serializable {
             }
             //si peon avanza dos activar posible captura al paso
             if (move.fromPiece().pieceType() == Pawn && move.rankDistanceAbs() == 2) {
-                enPassant[move.to().getFile()] = moveCounter;
+                enPassant[move.to().file()] = moveCounter;
             }
             //realizar captura al paso
             if (move.fromPiece().pieceType() == Pawn
                     && move.rankDistance() == 1
                     && move.fileDistanceAbs() == 1
-                    && enPassant[move.to().getFile()] == moveCounter - 1) {
+                    && enPassant[move.to().file()] == moveCounter - 1) {
                 moveLog.type = MoveType.enPassant;
                 // i.e. for whites
                 // turn=1, to.x = 2, to.y = 5, squareC = (3,5)
-                moveLog.enPassantSquare = move.to().previousRank(move.fromPiece().setType());
+                moveLog.enPassantSquare = move.to().previousRank(move.fromPiece().color());
                 moveLog.enPassantPiece = pieceAt(moveLog.enPassantSquare);
                 pieceAt(moveLog.enPassantSquare, Pieces.none);
             } else {
@@ -265,7 +264,7 @@ public class Board implements Serializable {
         blackLeftRookMoved = moveLog.blackLeftRookMoved;
         blackRightRookMoved = moveLog.blackRightRookMoved;
         blackKingMoved = moveLog.blackKingMoved;
-        enPassant[moveLog.move.to().getFile()] = moveLog.enPassant;
+        enPassant[moveLog.move.to().file()] = moveLog.enPassant;
         drawCounter = moveLog.drawCounter;
         moveCounter = moveLog.moveCounter;
 
@@ -277,11 +276,6 @@ public class Board implements Serializable {
     }
 
     boolean isCorrectMove(Move move) {
-        // can not capture piece of the same set
-        if (pieceAt(move.from()).setType() == pieceAt(move.to()).setType()) {
-            return false;
-        }
-
         return move.fromPiece().isCorrectMove(this, move);
     }
 
@@ -319,7 +313,9 @@ public class Board implements Serializable {
     boolean isInCheck() {
         Square kingSquare = Square.allSquares.stream()
                 .filter((square) -> pieceAt(square).pieceType() == King && isPieceOfCurrentPlayer(pieceAt(square)))
-                .findAny().orElseThrow();
+                .findAny().orElseThrow(() -> {
+                    return new RuntimeException("Could not find king!");
+                });
 
         nextPlayer();
         boolean kingCaptured = Square.allSquares.stream()
@@ -330,26 +326,26 @@ public class Board implements Serializable {
         return kingCaptured;
     }
 
-    boolean canMoveWithoutBeingCheck() {
+    boolean cannotMoveWithoutBeingCheck() {
         Collection<Move> moves = generateMoves();
 
         for (Move move : moves) {
             if (moveDoesNotCreateCheck(move.from(), move.to()))
-                return true;
+                return false;
         }
-        return false;
+        return true;
     }
 
     boolean isCheckmate() {
         if (isInCheck()) {
-            return !canMoveWithoutBeingCheck();
+            return cannotMoveWithoutBeingCheck();
         } else {
             return false;
         }
     }
 
     boolean isADraw() {
-        if (!isInCheck() && !canMoveWithoutBeingCheck()) {
+        if (!isInCheck() && cannotMoveWithoutBeingCheck()) {
             return true;
         }
 
@@ -358,7 +354,7 @@ public class Board implements Serializable {
 
     void playCastlingExtraMove(MoveLog moveLog) {
         if (moveLog.move.isCastlingQueenside()) {
-            if (moveLog.move.fromPiece().setType() == SetType.whiteSet) {
+            if (moveLog.move.fromPiece().color() == PieceColor.whiteSet) {
                 moveLog.castlingExtraMove = new Move(Pieces.whiteRook, castlingQueensideWhiteFrom, castlingQueensideWhiteTo);
                 pieceAt(castlingQueensideWhiteFrom, Pieces.none);
                 pieceAt(castlingQueensideWhiteTo, Pieces.whiteRook);
@@ -368,7 +364,7 @@ public class Board implements Serializable {
                 pieceAt(castlingQueensideBlackTo, Pieces.blackRook);
             }
 
-        } else if (moveLog.move.fromPiece().setType() == SetType.whiteSet) {
+        } else if (moveLog.move.fromPiece().color() == PieceColor.whiteSet) {
             moveLog.castlingExtraMove = new Move(Pieces.whiteRook, castlingKingsideWhiteFrom, castlingKingsideWhiteTo);
             pieceAt(castlingKingsideWhiteFrom, Pieces.none);
             pieceAt(castlingKingsideWhiteTo, Pieces.whiteRook);
@@ -380,11 +376,11 @@ public class Board implements Serializable {
     }
 
     public Piece pieceAt(Square square) {
-        return squares[square.getRank()][square.getFile()];
+        return squares[square.rank()][square.file()];
     }
 
     void pieceAt(Square square, Piece newPiece) {
-        squares[square.getRank()][square.getFile()] = newPiece;
+        squares[square.rank()][square.file()] = newPiece;
     }
 
     Collection<Move> generateMoves() {
@@ -397,95 +393,11 @@ public class Board implements Serializable {
     }
 
     Collection<Move> generateMoves(Square from) {
-        switch (pieceAt(from).pieceType()) {
-            case Pawn:
-                return generatePawnMoves(from);
-            case Knight:
-                return generateKnightMoves(from);
-            case Bishop:
-                return generateBishopMoves(from);
-            case Rook:
-                return generateRookMoves(from);
-            case Queen:
-                return generateQueenMoves(from);
-            case King:
-                return generateKingMoves(from);
-        }
-        return Collections.emptyList();
+        return pieceAt(from).generateMoves(this, from);
     }
 
     Collection<Move> generateMoves(Square from, Predicate<Move> predicate) {
         return generateMoves(from).stream().filter(predicate).collect(Collectors.toList());
-    }
-
-    Collection<Move> generatePawnMoves(Square from) {
-        Piece piece = pieceAt(from);
-
-        return Stream.of(
-                from.nextRankPreviousFile(currentPlayer.setType()), // left
-                from.nextRank(currentPlayer.setType()),             // ahead
-                from.next2Rank(currentPlayer.setType()),            // ahead 2
-                from.nextRankNextFile(currentPlayer.setType())      // right
-        ).filter(Square::exists)
-                .map((to) -> new Move(piece, from, to))
-                .filter(this::isCorrectMove)
-                .collect(Collectors.toList());
-    }
-
-    Collection<Move> generateKnightMoves(Square from) {
-        Piece piece = pieceAt(from);
-        return Stream.of(
-                from.next2Rank(piece.setType()).nextFile(piece.setType()),
-                from.next2Rank(piece.setType()).previousFile(piece.setType()),
-                from.previous2Rank(piece.setType()).nextFile(piece.setType()),
-                from.previous2Rank(piece.setType()).previousFile(piece.setType()),
-                from.next2File(piece.setType()).nextRank(piece.setType()),
-                from.next2File(piece.setType()).previousRank(piece.setType()),
-                from.previous2File(piece.setType()).nextRank(piece.setType()),
-                from.previous2File(piece.setType()).previousRank(piece.setType())
-        ).filter(Square::exists)
-                .map((to) -> new Move(piece, from, to))
-                .filter(this::isCorrectMove)
-                .collect(Collectors.toList());
-    }
-
-    Collection<Move> generateBishopMoves(Square from) {
-        Piece piece = pieceAt(from);
-
-        return from.diagonalSquares()
-                .stream().map((to) -> new Move(piece, from, to))
-                .filter(this::isCorrectMove)
-                .collect(Collectors.toList());
-    }
-
-    Collection<Move> generateRookMoves(Square from) {
-        Piece piece = pieceAt(from);
-        return from.straightSquares().stream()
-                .map((to) -> new Move(piece, from, to))
-                .filter(this::isCorrectMove)
-                .collect(Collectors.toList());
-    }
-
-    Collection<Move> generateQueenMoves(Square from) {
-        return Stream.concat(generateBishopMoves(from).stream(), generateRookMoves(from).stream())
-                .collect(Collectors.toList());
-    }
-
-    Collection<Move> generateKingMoves(Square from) {
-        Piece piece = pieceAt(from);
-        return Stream.of(
-                from.nextRank(piece.setType()),
-                from.nextRank(piece.setType()).previousFile(piece.setType()),
-                from.nextRank(piece.setType()).nextFile(piece.setType()),
-                from.previousRank(piece.setType()),
-                from.previousRank(piece.setType()).nextFile(piece.setType()),
-                from.previousRank(piece.setType()).previousFile(piece.setType()),
-                from.nextFile(piece.setType()),
-                from.previousFile(piece.setType())
-        ).filter(Square::exists)
-                .map((to) -> new Move(piece, from, to))
-                .filter(this::isCorrectMove)
-                .collect(Collectors.toList());
     }
 
     void resetWith(Board board) {
@@ -513,8 +425,8 @@ public class Board implements Serializable {
             enPassant[k] = -5; //movimiento absurdo
         }
 
-        blackPlayer = new ComputerPlayer("computer 1", SetType.blackSet, 3, PlayerStrategy.F1);
-        whitePlayer = new UserPlayer("user 1", SetType.whiteSet);
+        blackPlayer = new ComputerPlayer("computer 1", PieceColor.blackSet, 3, PlayerStrategy.F1);
+        whitePlayer = new UserPlayer("user 1", PieceColor.whiteSet);
         currentPlayer = whitePlayer;
 
         squares[0][0] = Pieces.blackRook;

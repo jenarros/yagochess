@@ -6,21 +6,21 @@ import java.util.LinkedList;
 import static yagoc.Yagoc.logger;
 
 class ComputerPlayer implements Player, Serializable {
-    final protected SetType set;
+    final protected PieceColor pieceColor;
     final private String name;
     final private int level;
     int processedMoves;
     private final PlayerStrategy strategy;
 
-    ComputerPlayer(String name, SetType set, int level, PlayerStrategy strategy) {
+    ComputerPlayer(String name, PieceColor pieceColor, int level, PlayerStrategy strategy) {
         this.name = name;
-        this.set = set;
+        this.pieceColor = pieceColor;
         this.level = level;
         this.strategy = strategy;
     }
 
-    public SetType setType() {
-        return set;
+    public PieceColor pieceColor() {
+        return pieceColor;
     }
 
     @Override
@@ -35,7 +35,7 @@ class ComputerPlayer implements Player, Serializable {
 
     @Override
     public String toString() {
-        return set + "\t" + name() + "\t" + type() + "\t" + level;
+        return pieceColor + "\t" + name() + "\t" + type() + "\t" + level;
     }
 
     public Move move(Board board) {
@@ -137,6 +137,6 @@ class ComputerPlayer implements Player, Serializable {
     }
 
     protected MoveValue leafMoveValue(Board board) {
-        return new MoveValue(strategy.apply(board, set));
+        return new MoveValue(strategy.apply(board, pieceColor));
     }
 }

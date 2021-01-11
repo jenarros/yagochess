@@ -2,15 +2,18 @@ package yagoc.pieces;
 
 import yagoc.Board;
 import yagoc.Move;
-import yagoc.SetType;
+import yagoc.PieceColor;
+import yagoc.Square;
+
+import java.util.stream.Stream;
 
 public class Pawn extends Piece {
-    public Pawn(SetType setType) {
-        super(PieceType.Pawn, setType);
+    public Pawn(PieceColor pieceColor) {
+        super(PieceType.Pawn, pieceColor);
     }
 
     @Override
-    public boolean isCorrectMove(Board board, Move move) {
+    public boolean isValidForPiece(Board board, Move move) {
         if (move.rankDistance() != 1 && move.rankDistance() != 2) {
             return false;
         }
@@ -19,8 +22,8 @@ public class Pawn extends Piece {
         if (move.hasSameFile() && board.pieceAt(move.to()) == Pieces.none) {
             //si avanzamos dos casillas debemos partir de la posicion
             //inicial y la casilla saltada debe estar vacía
-            if (move.rankDistance() == 2 && board.pieceAt(move.to().previousRank(move.fromPiece().setType())) == Pieces.none &&
-                    ((move.from().getRank() == 6 && board.currentPlayer() == board.whitePlayer()) || (move.from().getRank() == 1 && board.currentPlayer() == board.blackPlayer())))
+            if (move.rankDistance() == 2 && board.pieceAt(move.to().previousRank(move.fromPiece().color())) == Pieces.none &&
+                    ((move.from().rank() == 6 && board.currentPlayer() == board.whitePlayer()) || (move.from().rank() == 1 && board.currentPlayer() == board.blackPlayer())))
                 return true;
 
             if (move.rankDistance() == 1)
@@ -36,9 +39,22 @@ public class Pawn extends Piece {
 
             // en passant
             return board.pieceAt(move.to()) == Pieces.none
-                    && board.enPassant(move.to().getFile()) == board.moveCounter() - 1
-                    && move.from().getRank() == ((board.currentPlayer() == board.whitePlayer()) ? 3 : 4);
+                    && board.enPassant(move.to().file()) == board.moveCounter() - 1
+                    && move.from().rank() == ((board.currentPlayer() == board.whitePlayer()) ? 3 : 4);
         }
         return false;
+    }
+
+    @Override
+    public Stream<Move> generateMovesForPiece(Board board, Square from) {
+        Piece piece = board.pieceAt(from);
+
+        return Stream.of(
+                from.nextRankPreviousFile(board.currentPlayer().pieceColor()), // left
+                from.nextRank(board.currentPlayer().pieceColor()),             // ahead
+                from.next2Rank(board.currentPlayer().pieceColor()),            // ahead 2
+                from.nextRankNextFile(board.currentPlayer().pieceColor())      // right
+        ).filter(Square::exists)
+                .map((to) -> new Move(piece, from, to));
     }
 }

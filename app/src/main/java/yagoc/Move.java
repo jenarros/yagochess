@@ -27,21 +27,21 @@ public class Move {
     }
 
     public String toString() {
-        return fromPiece + " " + RANK_NAMES[from.getRank()] + FILE_NAMES[from.getFile()] + " " + RANK_NAMES[to.getRank()] + FILE_NAMES[to.getFile()];
+        return fromPiece + " " + RANK_NAMES[from.rank()] + FILE_NAMES[from.file()] + " " + RANK_NAMES[to.rank()] + FILE_NAMES[to.file()];
     }
 
     /**
      * positive if going ahead, negative if going backwards
      */
     public int rankDistance() {
-        return (to.getRank() - from.getRank()) * (fromPiece.setType() == SetType.whiteSet ? -1 : 1);
+        return (to.rank() - from.rank()) * (fromPiece.color() == PieceColor.whiteSet ? -1 : 1);
     }
 
     /**
      * positive if going to the right, negative if going to the left
      */
     public int fileDistance() {
-        return (to.getFile() - from.getFile()) * (fromPiece.setType() == SetType.whiteSet ? 1 : -1);
+        return (to.file() - from.file()) * (fromPiece.color() == PieceColor.whiteSet ? 1 : -1);
     }
 
     public int fileDistanceAbs() {
@@ -53,11 +53,11 @@ public class Move {
     }
 
     public boolean hasSameFile() {
-        return to.getFile() == from.getFile();
+        return to.file() == from.file();
     }
 
     public boolean hasSameRank() {
-        return from.getRank() == to.getRank();
+        return from.rank() == to.rank();
     }
 
     public boolean isCastling() {
@@ -65,7 +65,7 @@ public class Move {
     }
 
     public boolean isCastlingQueenside() {
-        return isCastling() && this.to.getFile() < this.from.getFile();
+        return isCastling() && this.to.file() < this.from.file();
     }
 
     public Piece fromPiece() {

@@ -4,14 +4,14 @@ import java.io.Serializable;
 
 class UserPlayer implements Player, Serializable {
     private final String name;
-    private final SetType set;
+    private final PieceColor set;
 
-    UserPlayer(String name, SetType set) {
+    UserPlayer(String name, PieceColor set) {
         this.name = name;
         this.set = set;
     }
 
-    public SetType setType() {
+    public PieceColor pieceColor() {
         return set;
     }
 

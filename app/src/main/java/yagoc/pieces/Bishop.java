@@ -2,30 +2,40 @@ package yagoc.pieces;
 
 import yagoc.Board;
 import yagoc.Move;
-import yagoc.SetType;
+import yagoc.PieceColor;
+import yagoc.Square;
+
+import java.util.stream.Stream;
 
 public class Bishop extends Piece {
-    public Bishop(SetType setType) {
-        super(PieceType.Bishop, setType);
+    public Bishop(PieceColor pieceColor) {
+        super(PieceType.Bishop, pieceColor);
     }
 
-    public static boolean isCorrectMoveForBishop(Board board, Move move) {
+    static Stream<Move> generateMovesForBishop(Board board, Square from) {
+        Piece piece = board.pieceAt(from);
+
+        return from.diagonalSquares()
+                .stream().map((to) -> new Move(piece, from, to));
+    }
+
+    static boolean isCorrectMoveForBishop(Board board, Move move) {
         if (move.rankDistanceAbs() == move.fileDistanceAbs()) {
             //vamos a recorrer el movimiento de izquierda a derecha
-            int ma = Math.max(move.from().getFile(), move.to().getFile()); //y final
+            int ma = Math.max(move.from().file(), move.to().file()); //y final
             int rank, file, direction;
 
             //calculamos la casilla de inicio
-            if (move.from().getFile() < move.to().getFile()) {
-                rank = move.from().getRank();
-                file = move.from().getFile();
+            if (move.from().file() < move.to().file()) {
+                rank = move.from().rank();
+                file = move.from().file();
             } else {
-                rank = move.to().getRank();
-                file = move.to().getFile();
+                rank = move.to().rank();
+                file = move.to().file();
             }
 
             //calculamos el desplazamiento
-            if (rank == Math.min(move.from().getRank(), move.to().getRank()))                 //hacia abajo
+            if (rank == Math.min(move.from().rank(), move.to().rank()))                 //hacia abajo
                 direction = 1;
             else //hacia arriba
                 direction = -1;
@@ -44,7 +54,12 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public boolean isCorrectMove(Board board, Move move) {
+    public boolean isValidForPiece(Board board, Move move) {
         return isCorrectMoveForBishop(board, move);
+    }
+
+    @Override
+    public Stream<Move> generateMovesForPiece(Board board, Square from) {
+        return generateMovesForBishop(board, from);
     }
 }

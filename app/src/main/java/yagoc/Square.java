@@ -28,80 +28,80 @@ public class Square {
         return squares;
     }
 
-    Square nextRank(SetType set) {
-        if (set == SetType.whiteSet) {
+    public Square nextRank(PieceColor pieceColor) {
+        if (pieceColor == PieceColor.whiteSet) {
             return new Square(rank - 1, file);
         } else {
             return new Square(rank + 1, file);
         }
     }
 
-    Square next2Rank(SetType set) {
-        if (set == SetType.whiteSet) {
+    public Square next2Rank(PieceColor pieceColor) {
+        if (pieceColor == PieceColor.whiteSet) {
             return new Square(rank - 2, file);
         } else {
             return new Square(rank + 2, file);
         }
     }
 
-    Square next2File(SetType set) {
-        if (set == SetType.whiteSet) {
+    public Square next2File(PieceColor pieceColor) {
+        if (pieceColor == PieceColor.whiteSet) {
             return new Square(rank, file + 2);
         } else {
             return new Square(rank, file - 2);
         }
     }
 
-    Square previous2File(SetType set) {
-        if (set == SetType.whiteSet) {
+    public Square previous2File(PieceColor pieceColor) {
+        if (pieceColor == PieceColor.whiteSet) {
             return new Square(rank, file - 2);
         } else {
             return new Square(rank, file + 2);
         }
     }
 
-    Square nextRankNextFile(SetType set) {
-        if (set == SetType.whiteSet) {
+    public Square nextRankNextFile(PieceColor pieceColor) {
+        if (pieceColor == PieceColor.whiteSet) {
             return new Square(rank - 1, file + 1);
         } else {
             return new Square(rank + 1, file - 1);
         }
     }
 
-    Square nextRankPreviousFile(SetType set) {
-        if (set == SetType.whiteSet) {
+    public Square nextRankPreviousFile(PieceColor pieceColor) {
+        if (pieceColor == PieceColor.whiteSet) {
             return new Square(rank - 1, file - 1);
         } else {
             return new Square(rank + 1, file + 1);
         }
     }
 
-    Square previousFile(SetType set) {
-        if (set == SetType.whiteSet) {
+    public Square previousFile(PieceColor pieceColor) {
+        if (pieceColor == PieceColor.whiteSet) {
             return new Square(rank, file - 1);
         } else {
             return new Square(rank, file + 1);
         }
     }
 
-    Square nextFile(SetType set) {
-        if (set == SetType.whiteSet) {
+    public Square nextFile(PieceColor pieceColor) {
+        if (pieceColor == PieceColor.whiteSet) {
             return new Square(rank, file + 1);
         } else {
             return new Square(rank, file - 1);
         }
     }
 
-    public Square previousRank(SetType set) {
-        if (set == SetType.whiteSet) {
+    public Square previousRank(PieceColor pieceColor) {
+        if (pieceColor == PieceColor.whiteSet) {
             return new Square(rank + 1, file);
         } else {
             return new Square(rank - 1, file);
         }
     }
 
-    public Square previous2Rank(SetType set) {
-        if (set == SetType.whiteSet) {
+    public Square previous2Rank(PieceColor pieceColor) {
+        if (pieceColor == PieceColor.whiteSet) {
             return new Square(rank + 2, file);
         } else {
             return new Square(rank - 2, file);
@@ -148,6 +148,15 @@ public class Square {
         return acc.stream().filter((Square::exists)).collect(Collectors.toList());
     }
 
+    public int rank() {
+        return rank;
+    }
+
+    public int file() {
+        return file;
+    }
+
+
     static final Square castlingKingsideWhiteFrom = new Square(7, 7);
     static final Square castlingKingsideWhiteTo = new Square(7, 5);
 
@@ -158,13 +167,6 @@ public class Square {
     static final Square castlingQueensideBlackTo = new Square(0, 3);
 
     static final Square castlingKingsideBlackFrom = new Square(0, 7);
+
     static final Square castlingKingsideBlackTo = new Square(0, 5);
-
-    public int getRank() {
-        return rank;
-    }
-
-    public int getFile() {
-        return file;
-    }
 }

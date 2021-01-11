@@ -65,7 +65,7 @@ class BoardController extends JPanel {
 	}
 
 	Point toScreenCoordinates(Square square) {
-		return new Point(square.getFile() * getSquareSize() + getBorderSize(), square.getRank() * getSquareSize() + getBorderSize());
+		return new Point(square.file() * getSquareSize() + getBorderSize(), square.rank() * getSquareSize() + getBorderSize());
 	}
 
 	void paintBoard(Graphics g) {
@@ -108,7 +108,7 @@ class BoardController extends JPanel {
 	}
 
 	private Color squareColor(Square square) {
-		if ((square.getFile() % 2 == 0 && square.getRank() % 2 == 0) || square.getFile() % 2 == 1 && square.getRank() % 2 == 1) {
+		if ((square.file() % 2 == 0 && square.rank() % 2 == 0) || square.file() % 2 == 1 && square.rank() % 2 == 1) {
 			return lightSquaresColor;
 		} else {
 			return darkSquaresColor;
@@ -160,17 +160,17 @@ class BoardController extends JPanel {
 			logger.info("Type " + game + " chosen");
 
 			if (game == 1) {
-				board.blackPlayer(new ComputerPlayer("computer", SetType.blackSet, getLevel("computer", 1), PlayerStrategy.F1));
-				board.whitePlayer(new UserPlayer("user", SetType.whiteSet));
+				board.blackPlayer(new ComputerPlayer("computer", PieceColor.blackSet, getLevel("computer", 1), PlayerStrategy.F1));
+				board.whitePlayer(new UserPlayer("user", PieceColor.whiteSet));
 			} else if (game == 2) {
-				board.blackPlayer(new UserPlayer("user", SetType.blackSet));
-				board.whitePlayer(new ComputerPlayer("computer", SetType.whiteSet, getLevel("computer", 1), PlayerStrategy.F1));
+				board.blackPlayer(new UserPlayer("user", PieceColor.blackSet));
+				board.whitePlayer(new ComputerPlayer("computer", PieceColor.whiteSet, getLevel("computer", 1), PlayerStrategy.F1));
 			} else if (game == 3) {
-				board.blackPlayer(new ComputerPlayer("computer 1", SetType.blackSet, getLevel("computer 1", 1), PlayerStrategy.F1));
-				board.whitePlayer(new ComputerPlayer("computer 2", SetType.whiteSet, getLevel("computer 2", 1), PlayerStrategy.F2));
+				board.blackPlayer(new ComputerPlayer("computer 1", PieceColor.blackSet, getLevel("computer 1", 1), PlayerStrategy.F1));
+				board.whitePlayer(new ComputerPlayer("computer 2", PieceColor.whiteSet, getLevel("computer 2", 1), PlayerStrategy.F2));
 			} else {
-				board.blackPlayer(new UserPlayer("user 1", SetType.blackSet));
-				board.whitePlayer(new UserPlayer("user 2", SetType.whiteSet));
+				board.blackPlayer(new UserPlayer("user 1", PieceColor.blackSet));
+				board.whitePlayer(new UserPlayer("user 2", PieceColor.whiteSet));
 			}
 			logger.info("name\ttype\tlevel");
 			logger.info(board.blackPlayer().toString());

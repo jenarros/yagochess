@@ -18,22 +18,22 @@ public class PlayerStrategy implements Serializable {
                 switch (piece.pieceType()) {
                     case Pawn: // further ahead is better
                         acc += 100;
-                        if (piece.setType() == SetType.blackSet)
-                            acc += square.getRank() * 20;
+                        if (piece.color() == PieceColor.blackSet)
+                            acc += square.rank() * 20;
                         else
-                            acc += (7 - square.getRank()) * 20;
+                            acc += (7 - square.rank()) * 20;
 
                         //Un peón cubierto vale más
-                        if (square.nextRank(set).exists() && square.getFile() - 1 > 0 && square.getFile() + 1 < 8
+                        if (square.nextRank(set).exists() && square.file() - 1 > 0 && square.file() + 1 < 8
                                 && (board.pieceAt(square.nextRankPreviousFile(set)) == piece || board.pieceAt(square.nextRankPreviousFile(set)) == piece))
                             acc += 30;
                         break;
                     case Knight://cuanto más al centro del tablero mejor
-                        acc += 300 + (3.5 - Math.abs(3.5 - square.getFile())) * 20;
-                        if (piece.setType() == SetType.blackSet)
-                            acc += Math.abs(3.5 - square.getRank()) * 10;
+                        acc += 300 + (3.5 - Math.abs(3.5 - square.file())) * 20;
+                        if (piece.color() == PieceColor.blackSet)
+                            acc += Math.abs(3.5 - square.rank()) * 10;
                         else
-                            acc += Math.abs(3.5 - square.getRank()) * 10;
+                            acc += Math.abs(3.5 - square.rank()) * 10;
                         break;
                     case Bishop:
                         acc += 300 + board.generateMoves(square).size() * 10;
@@ -42,11 +42,11 @@ public class PlayerStrategy implements Serializable {
                         acc += 500;
                         break;
                     case Queen://cuanto más al centro mejor
-                        acc += 940 + (3.5 - Math.abs(3.5 - square.getFile())) * 20;
-                        if (piece.setType() == SetType.blackSet)
-                            acc += Math.abs(3.5 - square.getRank()) * 10;
+                        acc += 940 + (3.5 - Math.abs(3.5 - square.file())) * 20;
+                        if (piece.color() == PieceColor.blackSet)
+                            acc += Math.abs(3.5 - square.rank()) * 10;
                         else
-                            acc += Math.abs(3.5 - square.getRank()) * 10;
+                            acc += Math.abs(3.5 - square.rank()) * 10;
                         break;
                     default:
                         break;
@@ -55,16 +55,16 @@ public class PlayerStrategy implements Serializable {
                 switch (piece.pieceType()) {
                     case Pawn: // further ahead is better
                         acc -= 100;
-                        if (piece.setType() == SetType.blackSet)
-                            acc -= square.getRank() * 30;
+                        if (piece.color() == PieceColor.blackSet)
+                            acc -= square.rank() * 30;
                         else
-                            acc -= (7 - square.getRank()) * 30;
-                        if (square.nextRank(set).exists() && square.getFile() - 1 > 0 && square.getFile() + 1 < 8
+                            acc -= (7 - square.rank()) * 30;
+                        if (square.nextRank(set).exists() && square.file() - 1 > 0 && square.file() + 1 < 8
                                 && (board.pieceAt(square.nextRankPreviousFile(set)) == piece || board.pieceAt(square.nextRankPreviousFile(set)) == piece))
                             acc -= 20;
                         break;
                     case Knight:
-                        acc -= 300 + (3.5 - Math.abs(3.5 - square.getFile())) * 20;
+                        acc -= 300 + (3.5 - Math.abs(3.5 - square.file())) * 20;
                         break;
                     case Bishop:
                         acc -= 330 + board.generateMoves(square).size() * 10;
@@ -74,7 +74,7 @@ public class PlayerStrategy implements Serializable {
                         break;
                     case Queen:
                         acc -= 1000;
-                        acc -= Math.abs(3.5 - square.getRank()) * 10;
+                        acc -= Math.abs(3.5 - square.rank()) * 10;
                         break;
                     default:
                         break;
@@ -94,34 +94,34 @@ public class PlayerStrategy implements Serializable {
                 switch (piece.pieceType()) {
                     case Pawn://cuanto más adelante mejor
                         acc += 100;
-                        if (piece.setType() == SetType.blackSet)
-                            acc += square.getRank() * 20;
+                        if (piece.color() == PieceColor.blackSet)
+                            acc += square.rank() * 20;
                         else
-                            acc += (7 - square.getRank()) * 20;
+                            acc += (7 - square.rank()) * 20;
                         break;
                     case Knight://cuanto más al centro del tablero mejor
-                        acc += 300 + (3.5 - Math.abs(3.5 - square.getFile())) * 20;
-                        if (piece.setType() == SetType.blackSet)
-                            acc += Math.abs(3.5 - square.getRank()) * 10;
+                        acc += 300 + (3.5 - Math.abs(3.5 - square.file())) * 20;
+                        if (piece.color() == PieceColor.blackSet)
+                            acc += Math.abs(3.5 - square.rank()) * 10;
                         else
-                            acc += Math.abs(3.5 - square.getRank()) * 10;
+                            acc += Math.abs(3.5 - square.rank()) * 10;
                         break;
                     case Bishop:
                         acc += 330 + board.generateMoves(square).size() * 10;
                         break;
                     case Rook:
                         acc += 500;
-                        if (piece.setType() == SetType.blackSet)
-                            acc += Math.abs(3.5 - square.getRank()) * 15;
+                        if (piece.color() == PieceColor.blackSet)
+                            acc += Math.abs(3.5 - square.rank()) * 15;
                         else
-                            acc += Math.abs(3.5 - square.getRank()) * 15;
+                            acc += Math.abs(3.5 - square.rank()) * 15;
                         break;
                     case Queen://cuanto más al centro del tablero mejor
-                        acc += 940 + (3.5 - Math.abs(3.5 - square.getFile())) * 20;
-                        if (piece.setType() == SetType.blackSet)
-                            acc += Math.abs(3.5 - square.getRank()) * 10;
+                        acc += 940 + (3.5 - Math.abs(3.5 - square.file())) * 20;
+                        if (piece.color() == PieceColor.blackSet)
+                            acc += Math.abs(3.5 - square.rank()) * 10;
                         else
-                            acc += Math.abs(3.5 - square.getRank()) * 10;
+                            acc += Math.abs(3.5 - square.rank()) * 10;
                         break;
                     default:
                 }
@@ -129,30 +129,30 @@ public class PlayerStrategy implements Serializable {
                 switch (piece.pieceType()) {
                     case Pawn:
                         acc -= 100;
-                        if (piece.setType() == SetType.blackSet)
-                            acc -= square.getRank() * 30;
+                        if (piece.color() == PieceColor.blackSet)
+                            acc -= square.rank() * 30;
                         else
-                            acc -= (7 - square.getRank()) * 30;
+                            acc -= (7 - square.rank()) * 30;
                         break;
                     case Knight:
-                        acc -= 300 + (3.5 - Math.abs(3.5 - square.getFile())) * 20;
+                        acc -= 300 + (3.5 - Math.abs(3.5 - square.file())) * 20;
                         break;
                     case Bishop:
                         acc -= 330 + board.generateMoves(square).size() * 10;
-                        if (piece.setType() == SetType.blackSet)
-                            acc -= Math.abs(3.5 - square.getRank()) * 10;
+                        if (piece.color() == PieceColor.blackSet)
+                            acc -= Math.abs(3.5 - square.rank()) * 10;
                         else
-                            acc -= Math.abs(3.5 - square.getRank()) * 10;
+                            acc -= Math.abs(3.5 - square.rank()) * 10;
                         break;
                     case Rook:
                         acc -= 500;
                         break;
                     case King:
-                        acc -= 940 + (3.5 - Math.abs(3.5 - square.getFile())) * 10;
-                        if (piece.setType() == SetType.blackSet)
-                            acc -= Math.abs(3.5 - square.getRank()) * 10;
+                        acc -= 940 + (3.5 - Math.abs(3.5 - square.file())) * 10;
+                        if (piece.color() == PieceColor.blackSet)
+                            acc -= Math.abs(3.5 - square.rank()) * 10;
                         else
-                            acc -= Math.abs(3.5 - square.getRank()) * 10;
+                            acc -= Math.abs(3.5 - square.rank()) * 10;
                         break;
                     default:
                 }
@@ -166,18 +166,18 @@ public class PlayerStrategy implements Serializable {
         this.strategy = strategy;
     }
 
-    public Integer apply(Board board, SetType setType) {
-        return strategy.apply(board, setType);
+    static boolean isPieceOurs(Board board, PieceColor set, Square square) {
+        return board.pieceAt(square).color() == set;
     }
 
-    interface SerializableBiFunction extends BiFunction<Board, SetType, Integer>, Serializable {
+    static boolean isPieceTheirs(Board board, PieceColor set, Square square) {
+        return board.pieceAt(square).color() != set;
     }
 
-    static boolean isPieceOurs(Board board, SetType set, Square square) {
-        return board.pieceAt(square).setType() == set;
+    public Integer apply(Board board, PieceColor pieceColor) {
+        return strategy.apply(board, pieceColor);
     }
 
-    static boolean isPieceTheirs(Board board, SetType set, Square square) {
-        return board.pieceAt(square).setType() != set;
+    interface SerializableBiFunction extends BiFunction<Board, PieceColor, Integer>, Serializable {
     }
 }

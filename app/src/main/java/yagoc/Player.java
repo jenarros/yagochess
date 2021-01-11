@@ -1,11 +1,11 @@
 package yagoc;
 
-interface Player {
+public interface Player {
     Move move(Board board);
 
     PlayerType type();
 
-    SetType setType();
+    PieceColor pieceColor();
 
     String name();
 
