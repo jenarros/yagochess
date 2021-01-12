@@ -1,5 +1,7 @@
 package yagoc;
 
+import yagoc.pieces.PieceColor;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

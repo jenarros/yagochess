@@ -5,20 +5,20 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
-class Logger {
+public class Logger {
     private final JTextPane textPanel;
     private final SimpleAttributeSet info = info();
     private final SimpleAttributeSet warn = warn();
 
-    Logger() {
+    public Logger() {
         textPanel = null;
     }
 
-    Logger(JTextPane textPanel) {
+    public Logger(JTextPane textPanel) {
         this.textPanel = textPanel;
     }
 
-    void info(String message) {
+    public void info(String message) {
         if (this.textPanel != null) {
             try {
                 textPanel.getStyledDocument().insertString(textPanel.getStyledDocument().getLength(), message + "\n", info);
@@ -32,7 +32,7 @@ class Logger {
         }
     }
 
-    void warn(String message) {
+    public void warn(String message) {
         if (this.textPanel != null) {
             try {
                 textPanel.getStyledDocument().insertString(textPanel.getStyledDocument().getLength(), message + "\n", warn);

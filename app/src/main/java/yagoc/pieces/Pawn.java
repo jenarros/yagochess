@@ -2,7 +2,6 @@ package yagoc.pieces;
 
 import yagoc.Board;
 import yagoc.Move;
-import yagoc.PieceColor;
 import yagoc.Square;
 
 import java.util.stream.Stream;

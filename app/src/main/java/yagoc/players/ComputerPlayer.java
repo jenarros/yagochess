@@ -1,18 +1,23 @@
-package yagoc;
+package yagoc.players;
+
+import yagoc.Board;
+import yagoc.Move;
+import yagoc.MoveLog;
+import yagoc.pieces.PieceColor;
 
 import java.io.Serializable;
 import java.util.LinkedList;
 
 import static yagoc.Yagoc.logger;
 
-class ComputerPlayer implements Player, Serializable {
+public class ComputerPlayer implements Player, Serializable {
     final protected PieceColor pieceColor;
     final private String name;
     final private int level;
     int processedMoves;
     private final PlayerStrategy strategy;
 
-    ComputerPlayer(String name, PieceColor pieceColor, int level, PlayerStrategy strategy) {
+    public ComputerPlayer(String name, PieceColor pieceColor, int level, PlayerStrategy strategy) {
         this.name = name;
         this.pieceColor = pieceColor;
         this.level = level;

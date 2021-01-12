@@ -1,13 +1,16 @@
-package yagoc;
+package yagoc.players;
 
+import yagoc.Board;
+import yagoc.Square;
 import yagoc.pieces.Piece;
+import yagoc.pieces.PieceColor;
 import yagoc.pieces.Pieces;
 
 import java.io.Serializable;
 import java.util.function.BiFunction;
 
 public class PlayerStrategy implements Serializable {
-    static PlayerStrategy F1 = new PlayerStrategy((board, set) -> {
+    public static PlayerStrategy F1 = new PlayerStrategy((board, set) -> {
         return Square.allSquares.stream().map((square) -> {
             int acc = 0;
             final Piece piece = board.pieceAt(square);
@@ -83,7 +86,8 @@ public class PlayerStrategy implements Serializable {
             return acc;
         }).mapToInt(Integer::intValue).sum();
     });
-    static PlayerStrategy F2 = new PlayerStrategy((board, set) -> {
+
+    public static PlayerStrategy F2 = new PlayerStrategy((board, set) -> {
         return Square.allSquares.stream().map((square) -> {
             int acc = 0;
             final Piece piece = board.pieceAt(square);

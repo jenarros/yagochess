@@ -1,7 +1,11 @@
 package yagoc;
 
 import yagoc.pieces.Piece;
+import yagoc.pieces.PieceColor;
 import yagoc.pieces.Pieces;
+import yagoc.players.ComputerPlayer;
+import yagoc.players.PlayerStrategy;
+import yagoc.players.UserPlayer;
 
 import javax.swing.*;
 import java.awt.*;

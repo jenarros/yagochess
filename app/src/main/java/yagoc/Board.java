@@ -1,8 +1,13 @@
 package yagoc;
 
 import yagoc.pieces.Piece;
+import yagoc.pieces.PieceColor;
 import yagoc.pieces.PieceType;
 import yagoc.pieces.Pieces;
+import yagoc.players.ComputerPlayer;
+import yagoc.players.Player;
+import yagoc.players.PlayerStrategy;
+import yagoc.players.UserPlayer;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -174,7 +179,7 @@ public class Board implements Serializable {
         return false;
     }
 
-    MoveLog play(Move move) {
+    public MoveLog play(Move move) {
         MoveLog moveLog = new MoveLog(this, move);
 
         if (move.fromPiece() == Pieces.whiteKing)
@@ -222,7 +227,7 @@ public class Board implements Serializable {
                 moveLog.type = MoveType.normal;
             }
         }
-        moveLog.pieceB = pieceAt(move.to());
+        moveLog.toPiece = pieceAt(move.to());
         pieceAt(move.from(), Pieces.none);
         pieceAt(move.to(), move.fromPiece());
         nextPlayer();
@@ -242,19 +247,19 @@ public class Board implements Serializable {
         }
     }
 
-    void undo(MoveLog moveLog) {
+    public void undo(MoveLog moveLog) {
         if (moveLog.type == MoveType.normal) {
             pieceAt(moveLog.move.from(), moveLog.move.fromPiece());
-            pieceAt(moveLog.move.to(), moveLog.pieceB);
+            pieceAt(moveLog.move.to(), moveLog.toPiece);
 
         } else if (moveLog.type == MoveType.enPassant) {
             pieceAt(moveLog.move.from(), moveLog.move.fromPiece());
-            pieceAt(moveLog.move.to(), moveLog.pieceB);
+            pieceAt(moveLog.move.to(), moveLog.toPiece);
             pieceAt(moveLog.enPassantSquare, moveLog.enPassantPiece);
 
         } else if (moveLog.type == MoveType.castling) {
             pieceAt(moveLog.move.from(), moveLog.move.fromPiece());
-            pieceAt(moveLog.move.to(), moveLog.pieceB);
+            pieceAt(moveLog.move.to(), moveLog.toPiece);
             pieceAt(moveLog.castlingExtraMove.from(), moveLog.castlingExtraMove.fromPiece());
             pieceAt(moveLog.castlingExtraMove.to(), Pieces.none);
         }
@@ -285,15 +290,15 @@ public class Board implements Serializable {
 
     public boolean moveDoesNotCreateCheck(Move move) { //can i do this in a sandbox to avoid undo?
         //realizo la jugada, el turno pasa al contrario
-        MoveLog m = play(move);
+        MoveLog moveLog = play(move);
 
         nextPlayer(); //cambio el turno para ver si nosotros estamos en jaque
-        boolean r = isInCheck();
+        boolean inCheck = isInCheck();
         previousPlayer(); //lo dejo como estaba
 
-        undo(m);
+        undo(moveLog);
 
-        return !r;
+        return !inCheck;
     }
 
     private boolean noMoreMovesAllowed() {
@@ -310,7 +315,7 @@ public class Board implements Serializable {
             return false;
     }
 
-    boolean isInCheck() {
+    public boolean isInCheck() {
         Square kingSquare = Square.allSquares.stream()
                 .filter((square) -> pieceAt(square).pieceType() == King && isPieceOfCurrentPlayer(pieceAt(square)))
                 .findAny().orElseThrow(() -> {
@@ -377,7 +382,7 @@ public class Board implements Serializable {
         squares[square.rank()][square.file()] = newPiece;
     }
 
-    Collection<Move> generateMoves() {
+    public Collection<Move> generateMoves() {
         return Square.allSquares.stream().flatMap((from) -> {
             if (isPieceOfCurrentPlayer(pieceAt(from))) {
                 return generateMoves(from, (move) -> moveDoesNotCreateCheck(move));
@@ -386,7 +391,7 @@ public class Board implements Serializable {
         }).collect(Collectors.toList());
     }
 
-    Stream<Move> generateMoves(Square from) {
+    public Stream<Move> generateMoves(Square from) {
         return pieceAt(from).generateMoves(this, from);
     }
 

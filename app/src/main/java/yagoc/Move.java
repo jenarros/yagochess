@@ -1,6 +1,7 @@
 package yagoc;
 
 import yagoc.pieces.Piece;
+import yagoc.pieces.PieceColor;
 
 import static yagoc.BoardController.FILE_NAMES;
 import static yagoc.BoardController.RANK_NAMES;

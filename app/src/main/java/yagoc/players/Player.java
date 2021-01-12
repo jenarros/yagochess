@@ -1,4 +1,8 @@
-package yagoc;
+package yagoc.players;
+
+import yagoc.Board;
+import yagoc.Move;
+import yagoc.pieces.PieceColor;
 
 public interface Player {
     Move move(Board board);

@@ -1,12 +1,16 @@
-package yagoc;
+package yagoc.players;
+
+import yagoc.Board;
+import yagoc.Move;
+import yagoc.pieces.PieceColor;
 
 import java.io.Serializable;
 
-class UserPlayer implements Player, Serializable {
+public class UserPlayer implements Player, Serializable {
     private final String name;
     private final PieceColor set;
 
-    UserPlayer(String name, PieceColor set) {
+    public UserPlayer(String name, PieceColor set) {
         this.name = name;
         this.set = set;
     }
