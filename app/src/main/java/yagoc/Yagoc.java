@@ -1,5 +1,8 @@
 package yagoc;
 
+import yagoc.ui.UserOptionDialog;
+import yagoc.ui.YagocWindow;
+
 import javax.swing.*;
 
 public class Yagoc {
@@ -13,8 +16,9 @@ public class Yagoc {
             System.err.println("Error" + e);
         }
 
-        YagocUI yagocUI = new YagocUI();
-        yagocUI.setTitle("Yet Another Game Of Chess");
-        yagocUI.setVisible(true);
+        Board board = new Board();
+        YagocWindow yagocWindow = new YagocWindow(new Controller(board, new UserOptionDialog()), board);
+        yagocWindow.setTitle("Yet Another Game Of Chess");
+        yagocWindow.setVisible(true);
     }
 }

@@ -1,7 +1,8 @@
-package yagoc;
+package yagoc.ui;
 
-import yagoc.pieces.Piece;
-import yagoc.pieces.Pieces;
+import yagoc.Board;
+import yagoc.Controller;
+import yagoc.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,15 +10,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import static yagoc.Yagoc.logger;
 
-class YagocUI extends JFrame {
+public class YagocWindow extends JFrame {
     static final int BOARD_FONT_SIZE = 16;
     static final int MENU_FONT_SIZE = 12;
     static final int BORDER_SIZE = 20;
@@ -28,22 +25,22 @@ class YagocUI extends JFrame {
     static final Color darkSquaresColor = new Color(87, 58, 46);
     static final Color frameColor = Color.DARK_GRAY;
 
-    private final BoardController boardController;
+    private final BoardPanel boardPanel;
+    private final Controller controller;
 
-    YagocUI() {
+    public YagocWindow(Controller controller, Board board) {
+        this.controller = controller;
         enableEvents(AWTEvent.WINDOW_EVENT_MASK);
         JTextPane textPane = textpane();
         logger = new Logger(textPane);
-        boardController = new BoardController(images());
-
-        addMenuBar(this, boardController);
+        boardPanel = new BoardPanel(controller, board);
 
         centerInScreen();
 
         try {
             JScrollPane scrollPane = new JScrollPane(textPane);
-            scrollPane.setPreferredSize(new Dimension(boardController.getBoardAndBorderSize(), LOG_HEIGHT));
-            scrollPane.setMaximumSize(new Dimension(boardController.getBoardAndBorderSize(), LOG_HEIGHT));
+            scrollPane.setPreferredSize(new Dimension(boardPanel.getBoardAndBorderSize(), LOG_HEIGHT));
+            scrollPane.setMaximumSize(new Dimension(boardPanel.getBoardAndBorderSize(), LOG_HEIGHT));
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
             Container cont = getContentPane();
@@ -52,9 +49,11 @@ class YagocUI extends JFrame {
             UIManager.put("OptionPane.messageFont", new Font(Font.MONOSPACED, Font.PLAIN, getMenuFontSize()));
             UIManager.put("OptionPane.buttonFont", new Font(Font.MONOSPACED, Font.PLAIN, getMenuFontSize()));
 
-            cont.add(boardController, BorderLayout.WEST);
+            cont.add(boardPanel, BorderLayout.WEST);
             cont.add(scrollPane, BorderLayout.SOUTH);
             setResizable(false);
+
+            addMenuBar(this, controller);
 
             pack();
         } catch (Exception e) {
@@ -62,34 +61,27 @@ class YagocUI extends JFrame {
         }
     }
 
-    private void centerInScreen() {
-        Dimension dimension = getToolkit().getScreenSize();
-        int x = (int) ((dimension.getWidth() - this.getWidth()) / 2 - boardController.getBoardAndBorderSize() / 2);
-        int y = (int) ((dimension.getHeight() - this.getHeight()) / 2 - boardController.getBoardAndBorderSize() / 2);
-        this.setLocation(x, y);
-    }
-
-    private static void addMenuBar(YagocUI yagocUI, BoardController boardController) {
+    private static void addMenuBar(YagocWindow yagocWindow, Controller controller) {
         JMenuItem restartGameMenuItem = new JMenuItem("Reset");
-        restartGameMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, yagocUI.getToolkit().getMenuShortcutKeyMaskEx()));
-        restartGameMenuItem.addActionListener(boardController::newBoard);
+        restartGameMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, yagocWindow.getToolkit().getMenuShortcutKeyMaskEx()));
+        restartGameMenuItem.addActionListener(e1 -> controller.newBoard());
 
         JMenuItem saveMenuItem = new JMenuItem("Save");
-        saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, yagocUI.getToolkit().getMenuShortcutKeyMaskEx()));
+        saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, yagocWindow.getToolkit().getMenuShortcutKeyMaskEx()));
 
-        saveMenuItem.addActionListener(yagocUI::save);
+        saveMenuItem.addActionListener(yagocWindow::save);
 
         JMenuItem loadMenuItem = new JMenuItem("Open");
-        loadMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, yagocUI.getToolkit().getMenuShortcutKeyMaskEx()));
-        loadMenuItem.addActionListener(yagocUI::open);
+        loadMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, yagocWindow.getToolkit().getMenuShortcutKeyMaskEx()));
+        loadMenuItem.addActionListener(yagocWindow::open);
 
         JMenuItem optionsMenuItem = new JMenuItem("Preferences...");
-        optionsMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, yagocUI.getToolkit().getMenuShortcutKeyMaskEx()));
-        optionsMenuItem.addActionListener(boardController::configurePlayers);
+        optionsMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, yagocWindow.getToolkit().getMenuShortcutKeyMaskEx()));
+        optionsMenuItem.addActionListener(e1 -> controller.configurePlayers());
 
         JMenuItem undo = new JMenuItem("Undo");
-        undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, yagocUI.getToolkit().getMenuShortcutKeyMaskEx()));
-        undo.addActionListener(boardController::undo);
+        undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, yagocWindow.getToolkit().getMenuShortcutKeyMaskEx()));
+        undo.addActionListener(e -> controller.undo());
 
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("File");
@@ -100,7 +92,14 @@ class YagocUI extends JFrame {
         menu.add(undo);
 
         menuBar.add(menu);
-        yagocUI.setJMenuBar(menuBar);
+        yagocWindow.setJMenuBar(menuBar);
+    }
+
+    private void centerInScreen() {
+        Dimension dimension = getToolkit().getScreenSize();
+        int x = (int) ((dimension.getWidth() - this.getWidth()) / 2 - boardPanel.getBoardAndBorderSize() / 2);
+        int y = (int) ((dimension.getHeight() - this.getHeight()) / 2 - boardPanel.getBoardAndBorderSize() / 2);
+        this.setLocation(x, y);
     }
 
     int getMenuFontSize() {
@@ -126,7 +125,7 @@ class YagocUI extends JFrame {
                 ObjectInputStream stream = new ObjectInputStream(fileStream);
 
                 Board board = (Board) stream.readObject();
-                boardController.resetBoard(board);
+                controller.resetBoard(board);
                 logger.info("drawCounter =" + board.drawCounter());
                 logger.info("finished =" + board.hasFinished());
                 stream.close();
@@ -144,37 +143,12 @@ class YagocUI extends JFrame {
             fDialog.setVisible(true);
             if (fDialog.getFile() != null) {
                 String absolutePath = fDialog.getDirectory() + fDialog.getFile();
-                FileOutputStream fileStream = new FileOutputStream(absolutePath);
-                ObjectOutputStream stream = new ObjectOutputStream(fileStream);
-
-                stream.writeObject(boardController.getBoard());
-                stream.close();
-                fileStream.close();
+                controller.saveBoard(absolutePath);
                 logger.info("Saved game to " + absolutePath);
             }
         } catch (Exception exc) {
             logger.warn("Could not write file:" + exc);
         }
-    }
-
-    private Map<Piece, Image> images() {
-        Toolkit t = getToolkit();
-        Map<Piece, Image> images = new HashMap<>();
-
-        images.put(Pieces.whitePawn, t.getImage("img/peon.gif"));
-        images.put(Pieces.whiteKnight, t.getImage("img/caballo.gif"));
-        images.put(Pieces.whiteBishop, t.getImage("img/alfil.gif"));
-        images.put(Pieces.whiteRook, t.getImage("img/torre.gif"));
-        images.put(Pieces.whiteQueen, t.getImage("img/reina.gif"));
-        images.put(Pieces.whiteKing, t.getImage("img/rey.gif"));
-        images.put(Pieces.blackPawn, t.getImage("img/peonNegro.gif"));
-        images.put(Pieces.blackKnight, t.getImage("img/caballoNegro.gif"));
-        images.put(Pieces.blackBishop, t.getImage("img/alfilNegro.gif"));
-        images.put(Pieces.blackRook, t.getImage("img/torreNegro.gif"));
-        images.put(Pieces.blackQueen, t.getImage("img/reinaNegro.gif"));
-        images.put(Pieces.blackKing, t.getImage("img/reyNegro.gif"));
-
-        return images;
     }
 
     protected void processWindowEvent(WindowEvent e) {

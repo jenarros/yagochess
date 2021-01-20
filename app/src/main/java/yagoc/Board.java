@@ -123,7 +123,7 @@ public class Board implements Serializable {
         return pieces;
     }
 
-    void movePlayer(Player player) {
+    public void movePlayer(Player player) {
         if (player.isComputer()) {
             Move move = player.move(this);
 
@@ -153,7 +153,7 @@ public class Board implements Serializable {
         return piece != Pieces.none && piece.color() != currentPlayer.pieceColor();
     }
 
-    boolean moveIfPossible(Square from, Square to) {
+    public boolean moveIfPossible(Square from, Square to) {
         Move move = new Move(pieceAt(from), from, to);
         if (finished || !isPieceOfCurrentPlayer(move.fromPiece())) {
             return false;
@@ -318,9 +318,7 @@ public class Board implements Serializable {
     public boolean isInCheck() {
         Square kingSquare = Square.allSquares.stream()
                 .filter((square) -> pieceAt(square).pieceType() == King && isPieceOfCurrentPlayer(pieceAt(square)))
-                .findAny().orElseThrow(() -> {
-                    return new RuntimeException("Could not find king!");
-                });
+                .findAny().orElseThrow(() -> new RuntimeException("Could not find king!"));
 
         nextPlayer();
         boolean kingCaptured = Square.allSquares.stream()
@@ -399,7 +397,7 @@ public class Board implements Serializable {
         return generateMoves(from).filter(predicate);
     }
 
-    void resetWith(Board board) {
+    public void resetWith(Board board) {
         squares = Arrays.stream(board.squares).map(Piece[]::clone).toArray(Piece[][]::new);
         enPassant = board.enPassant.clone();
         currentPlayer = board.currentPlayer;

@@ -3,12 +3,13 @@ package yagoc;
 import yagoc.pieces.Piece;
 import yagoc.pieces.PieceColor;
 
-import static yagoc.BoardController.FILE_NAMES;
-import static yagoc.BoardController.RANK_NAMES;
 import static yagoc.pieces.PieceType.King;
 import static yagoc.pieces.Pieces.none;
 
 public class Move {
+    public static final String[] FILE_NAMES = {"a", "b", "c", "d", "e", "f", "g", "h"};
+    public static final String[] RANK_NAMES = {"8", "7", "6", "5", "4", "3", "2", "1"};
+
     private final Piece fromPiece;
     private final Square from;
     private final Square to;
