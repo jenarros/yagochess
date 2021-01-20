@@ -16,5 +16,5 @@ dependencies {
 }
 
 application {
-    mainClass.set("Yagoc")
+    mainClass.set("yagoc.Yagoc")
 }
