@@ -1,5 +1,6 @@
 package yagoc;
 
+import org.jetbrains.annotations.NotNull;
 import yagoc.pieces.Piece;
 import yagoc.pieces.PieceColor;
 import yagoc.pieces.PieceType;
@@ -469,5 +470,10 @@ public class Board implements Serializable {
             throw new IllegalArgumentException("Square " + square + " does not exist.");
         }
         return pieceAt(square);
+    }
+
+    @NotNull
+    public Board parse(@NotNull String strinbBoard) {
+        return null;
     }
 }

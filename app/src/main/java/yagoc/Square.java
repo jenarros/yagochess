@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class Square {
+public class Square implements Comparable {
     public static List<Square> allSquares = all();
 
     private final int rank;
@@ -150,6 +150,11 @@ public class Square {
         return acc.stream().filter((Square::exists)).collect(Collectors.toList());
     }
 
+    @Override
+    public String toString() {
+        return "(" + rank + ", " + file + ')';
+    }
+
     public int rank() {
         return rank;
     }
@@ -171,4 +176,17 @@ public class Square {
     static final Square castlingKingsideBlackFrom = new Square(0, 7);
 
     static final Square castlingKingsideBlackTo = new Square(0, 5);
+
+    public Integer arrayPosition() {
+        return (this.file() * 8) + this.rank();
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if (!(o instanceof Square)) return -1;
+
+        Square other = ((Square) o);
+
+        return this.arrayPosition().compareTo(other.arrayPosition());
+    }
 }

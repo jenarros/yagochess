@@ -50,4 +50,23 @@ public class Pieces {
             whitePawn,
             none)
             .collect(Collectors.toList());
+
+    public static Piece parse(char c) {
+        switch (c) {
+            case 'P':
+                return whitePawn;
+            case 'R':
+                return whiteRook;
+            case 'N':
+                return whiteKnight;
+            case 'B':
+                return whiteBishop;
+            case 'Q':
+                return whiteQueen;
+            case 'K':
+                return whiteKing;
+            default:
+                return none;
+        }
+    }
 }
