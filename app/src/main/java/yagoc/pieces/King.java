@@ -34,7 +34,7 @@ public class King extends Piece {
     private boolean isCorrectCastling(Board board, Move move) {
         if (((move.from().rank() == 7 && move.fromPiece() == Pieces.whiteKing && !board.hasWhiteKingMoved()) ||
                 (move.from().rank() == 0 && move.fromPiece() == Pieces.blackKing && !board.hasBlackKingMoved())) &&
-                move.hasSameRank() && board.isInCheck() &&
+                move.hasSameRank() && !board.isInCheck() &&
                 board.moveDoesNotCreateCheck(move)) {
 
             if (move.to().file() == 2 && board.pieceAt(move.from().rank(), 0) == move.fromPiece().switchTo(PieceType.Rook)) {

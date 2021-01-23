@@ -10,14 +10,14 @@ import java.io.Serializable;
 import java.util.function.BiFunction;
 
 public class PlayerStrategy implements Serializable {
-    public static PlayerStrategy F1 = new PlayerStrategy((board, set) -> {
+    public static PlayerStrategy F1 = new PlayerStrategy((board, color) -> {
         return Square.allSquares.stream().map((square) -> {
             int acc = 0;
             final Piece piece = board.pieceAt(square);
 
             if (piece == Pieces.none) {
                 // ignore empty squares
-            } else if (isPieceOurs(board, set, square)) {
+            } else if (isPieceOurs(board, color, square)) {
                 switch (piece.pieceType()) {
                     case Pawn: // further ahead is better
                         acc += 100;
@@ -26,12 +26,12 @@ public class PlayerStrategy implements Serializable {
                         else
                             acc += (7 - square.rank()) * 20;
 
-                        //Un peón cubierto vale más
-                        if (square.nextRank(set).exists() && square.file() - 1 > 0 && square.file() + 1 < 8
-                                && (board.pieceAt(square.nextRankPreviousFile(set)) == piece || board.pieceAt(square.nextRankPreviousFile(set)) == piece))
+                        // Un peón cubierto vale más
+                        if (square.nextRank(color).exists() && square.file() - 1 > 0 && square.file() + 1 < 8
+                                && (board.pieceAt(square.nextRankPreviousFile(color)) == piece || board.pieceAt(square.nextRankPreviousFile(color)) == piece))
                             acc += 30;
                         break;
-                    case Knight://cuanto más al centro del tablero mejor
+                    case Knight: // middle of the board is better
                         acc += 300 + (3.5 - Math.abs(3.5 - square.file())) * 20;
                         if (piece.color() == PieceColor.blackSet)
                             acc += Math.abs(3.5 - square.rank()) * 10;
@@ -44,7 +44,7 @@ public class PlayerStrategy implements Serializable {
                     case Rook:
                         acc += 500;
                         break;
-                    case Queen://cuanto más al centro mejor
+                    case Queen: // middle of the board is better
                         acc += 940 + (3.5 - Math.abs(3.5 - square.file())) * 20;
                         if (piece.color() == PieceColor.blackSet)
                             acc += Math.abs(3.5 - square.rank()) * 10;
@@ -54,7 +54,7 @@ public class PlayerStrategy implements Serializable {
                     default:
                         break;
                 }
-            } else if (isPieceTheirs(board, set, square)) {
+            } else if (isPieceTheirs(board, color, square)) {
                 switch (piece.pieceType()) {
                     case Pawn: // further ahead is better
                         acc -= 100;
@@ -62,8 +62,8 @@ public class PlayerStrategy implements Serializable {
                             acc -= square.rank() * 30;
                         else
                             acc -= (7 - square.rank()) * 30;
-                        if (square.nextRank(set).exists() && square.file() - 1 > 0 && square.file() + 1 < 8
-                                && (board.pieceAt(square.nextRankPreviousFile(set)) == piece || board.pieceAt(square.nextRankPreviousFile(set)) == piece))
+                        if (square.nextRank(color).exists() && square.file() - 1 > 0 && square.file() + 1 < 8
+                                && (board.pieceAt(square.nextRankPreviousFile(color)) == piece || board.pieceAt(square.nextRankPreviousFile(color)) == piece))
                             acc -= 20;
                         break;
                     case Knight:
@@ -96,14 +96,14 @@ public class PlayerStrategy implements Serializable {
                 // ignore empty squares
             } else if (isPieceOurs(board, set, square)) {
                 switch (piece.pieceType()) {
-                    case Pawn://cuanto más adelante mejor
+                    case Pawn: // further ahead is better
                         acc += 100;
                         if (piece.color() == PieceColor.blackSet)
                             acc += square.rank() * 20;
                         else
                             acc += (7 - square.rank()) * 20;
                         break;
-                    case Knight://cuanto más al centro del tablero mejor
+                    case Knight: // middle of the board is better
                         acc += 300 + (3.5 - Math.abs(3.5 - square.file())) * 20;
                         if (piece.color() == PieceColor.blackSet)
                             acc += Math.abs(3.5 - square.rank()) * 10;
@@ -114,13 +114,9 @@ public class PlayerStrategy implements Serializable {
                         acc += 330 + board.generateMoves(square).count() * 10;
                         break;
                     case Rook:
-                        acc += 500;
-                        if (piece.color() == PieceColor.blackSet)
-                            acc += Math.abs(3.5 - square.rank()) * 15;
-                        else
-                            acc += Math.abs(3.5 - square.rank()) * 15;
+                        acc += Math.abs(3.5 - square.rank()) * 15 + 500;
                         break;
-                    case Queen://cuanto más al centro del tablero mejor
+                    case Queen: // middle of the board is better
                         acc += 940 + (3.5 - Math.abs(3.5 - square.file())) * 20;
                         if (piece.color() == PieceColor.blackSet)
                             acc += Math.abs(3.5 - square.rank()) * 10;

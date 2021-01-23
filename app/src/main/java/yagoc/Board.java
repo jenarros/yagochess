@@ -1,9 +1,7 @@
 package yagoc;
 
-import org.jetbrains.annotations.NotNull;
 import yagoc.pieces.Piece;
 import yagoc.pieces.PieceColor;
-import yagoc.pieces.PieceType;
 import yagoc.pieces.Pieces;
 import yagoc.players.ComputerPlayer;
 import yagoc.players.Player;
@@ -51,7 +49,6 @@ public class Board implements Serializable {
     private Player currentPlayer;
     private boolean whiteLeftRookMoved, whiteRightRookMoved, whiteKingMoved;
     private boolean blackLeftRookMoved, blackRightRookMoved, blackKingMoved;
-    private boolean finished;
     private int drawCounter;
     private int moveCounter;
     private Player blackPlayer, whitePlayer;
@@ -124,60 +121,21 @@ public class Board implements Serializable {
         return pieces;
     }
 
-    public void movePlayer(Player player) {
-        if (player.isComputer()) {
-            Move move = player.move(this);
-
-            play(move);
-            logger.info(move.toString());
-
-            ifPawnHasReachedFinalRankReplaceWithQueen(move);
-        }
-    }
-
-    private void ifPawnHasReachedFinalRankReplaceWithQueen(Move move) {
+    public void ifPawnHasReachedFinalRankReplaceWithQueen(Move move) {
         //TODO What if there is already a queen?
         if ((move.fromPiece() == Pieces.blackPawn && move.to().rank() == 7)) {
             pieceAt(move.to(), Pieces.blackQueen);
         } else if (move.fromPiece() == Pieces.whitePawn && move.to().rank() == 0) {
             pieceAt(move.to(), Pieces.whiteQueen);
         }
-
-        finished = noMoreMovesAllowed();
     }
 
-    boolean isPieceOfCurrentPlayer(Piece piece) {
+    public boolean isPieceOfCurrentPlayer(Piece piece) {
         return piece.color() == currentPlayer.pieceColor();
     }
 
     public boolean isPieceOfOppositePlayer(Piece piece) {
         return piece != Pieces.none && piece.color() != currentPlayer.pieceColor();
-    }
-
-    public boolean moveIfPossible(Square from, Square to) {
-        Move move = new Move(pieceAt(from), from, to);
-        if (finished || !isPieceOfCurrentPlayer(move.fromPiece())) {
-            return false;
-        } else if ((currentPlayer == blackPlayer && blackPlayer.isUser()) || (currentPlayer == whitePlayer && whitePlayer.isUser())) {
-            if (!from.equals(to)
-                    && isCorrectMove(move)
-                    && moveDoesNotCreateCheck(move)) {
-
-                play(move);
-                if ((move.fromPiece() == Pieces.blackPawn && to.rank() == 7) || (move.fromPiece() == Pieces.whitePawn && to.rank() == 0)) {
-                    // TODO Should be able to choose piece instead of always getting a Queen
-                    pieceAt(to, move.fromPiece().switchTo(PieceType.Queen));
-                }
-
-                finished = noMoreMovesAllowed();
-
-                logger.info(move.toString());
-
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public MoveLog play(Move move) {
@@ -302,12 +260,9 @@ public class Board implements Serializable {
         return !inCheck;
     }
 
-    private boolean noMoreMovesAllowed() {
+    public boolean noMoreMovesAllowed() {
         if (isCheckmate()) {
-            if (currentPlayer == blackPlayer)
-                logger.info("checkmate winner is " + whitePlayer.name());
-            else
-                logger.info("checkmate winner is " + blackPlayer.name());
+            logger.info("checkmate winner is " + currentPlayer.name());
             return true;
         } else if (isADraw()) {
             logger.info("draw");
@@ -399,7 +354,11 @@ public class Board implements Serializable {
     }
 
     public void resetWith(Board board) {
-        squares = Arrays.stream(board.squares).map(Piece[]::clone).toArray(Piece[][]::new);
+        Piece[][] pieces = newTable();
+        // use static references so that we can compare pieces using ==, I should really move this to Kotlin
+        Square.allSquares.forEach((square) -> pieces[square.rank()][square.file()] = Pieces.all.stream()
+                .filter((piece -> piece.equals(board.pieceAt(square)))).findAny().orElseThrow());
+        squares = pieces;
         enPassant = board.enPassant.clone();
         currentPlayer = board.currentPlayer;
         whiteLeftRookMoved = board.whiteLeftRookMoved;
@@ -408,7 +367,6 @@ public class Board implements Serializable {
         blackLeftRookMoved = board.blackLeftRookMoved;
         blackRightRookMoved = board.blackRightRookMoved;
         blackKingMoved = board.blackKingMoved;
-        finished = board.finished;
         drawCounter = board.drawCounter;
         moveCounter = board.moveCounter;
         blackPlayer = board.blackPlayer;
@@ -452,10 +410,6 @@ public class Board implements Serializable {
         }
     }
 
-    public boolean hasFinished() {
-        return finished;
-    }
-
     public void whitePlayer(Player player) {
         whitePlayer = player;
     }
@@ -470,10 +424,5 @@ public class Board implements Serializable {
             throw new IllegalArgumentException("Square " + square + " does not exist.");
         }
         return pieceAt(square);
-    }
-
-    @NotNull
-    public Board parse(@NotNull String strinbBoard) {
-        return null;
     }
 }

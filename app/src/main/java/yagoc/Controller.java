@@ -2,6 +2,7 @@ package yagoc;
 
 import yagoc.pieces.PieceColor;
 import yagoc.players.ComputerPlayer;
+import yagoc.players.Player;
 import yagoc.players.PlayerStrategy;
 import yagoc.players.UserPlayer;
 import yagoc.ui.UserOptionDialog;
@@ -20,6 +21,7 @@ public class Controller {
     private final ArrayList<Board> checkpoints = new ArrayList<>();
     private final Board board;
     private final UserOptionDialog userOptions;
+    private boolean finished;
 
     public Controller(Board board, UserOptionDialog userOptions) {
         this.board = board;
@@ -49,24 +51,55 @@ public class Controller {
     public void move(Square from, Square to) {
         Board copy = board.copy();
 
-        boolean hasMoved = board.moveIfPossible(from, to);
+        if (moveIfPossible(from, to)) {
+            checkpoints.add(copy);
+        }
 
-        SwingUtilities.invokeLater(() -> {
-            if (hasMoved) {
-                checkpoints.add(copy);
+        SwingUtilities.invokeLater(this::nextMove);
+    }
+
+    public void movePlayer(Player player) {
+        if (player.isComputer()) {
+            Move move = player.move(board);
+
+            board.play(move);
+            logger.info(move.toString());
+
+            board.ifPawnHasReachedFinalRankReplaceWithQueen(move);
+
+            finished = board.noMoreMovesAllowed();
+        }
+    }
+
+    public boolean moveIfPossible(Square from, Square to) {
+
+        if (finished || !board.isPieceOfCurrentPlayer(board.pieceAt(from))) {
+            return false;
+        } else if (board.currentPlayer().isUser()) {
+            Move move = new Move(board.pieceAt(from), from, to);
+            if (!from.equals(to)
+                    && board.isCorrectMove(move)
+                    && board.moveDoesNotCreateCheck(move)) {
+
+                board.play(move);
+
+                board.ifPawnHasReachedFinalRankReplaceWithQueen(move);
+
+                finished = board.noMoreMovesAllowed();
+
+                logger.info(move.toString());
+
+                return true;
             }
-            nextMove();
-        });
+        }
+
+        return false;
     }
 
     public void nextMove() {
-        if (board.hasFinished()) return;
+        if (finished) return;
 
-        if (board.currentPlayer() == board.blackPlayer()) {
-            board.movePlayer(board.blackPlayer());
-        } else {
-            board.movePlayer(board.whitePlayer());
-        }
+        movePlayer(board.currentPlayer());
 
         if (board.currentPlayer().isComputer()) breath();
 

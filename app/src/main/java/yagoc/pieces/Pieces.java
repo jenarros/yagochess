@@ -49,7 +49,7 @@ public class Pieces {
             whiteKing,
             whitePawn,
             none)
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
 
     public static Piece parse(char c) {
         switch (c) {

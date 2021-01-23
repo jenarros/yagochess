@@ -4,9 +4,11 @@ import yagoc.Board;
 import yagoc.Move;
 import yagoc.Square;
 
+import java.io.Serializable;
+import java.util.Objects;
 import java.util.stream.Stream;
 
-abstract public class Piece {
+abstract public class Piece implements Serializable {
     private final PieceType pieceType;
     private final PieceColor color;
 
@@ -27,6 +29,20 @@ abstract public class Piece {
         return Pieces.all.stream()
                 .filter((piece) -> type == piece.pieceType && piece.color == this.color)
                 .findFirst().orElseThrow();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Piece piece = (Piece) o;
+        return pieceType == piece.pieceType &&
+                color == piece.color;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceType, color);
     }
 
     @Override

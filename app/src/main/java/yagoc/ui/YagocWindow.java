@@ -126,8 +126,6 @@ public class YagocWindow extends JFrame {
 
                 Board board = (Board) stream.readObject();
                 controller.resetBoard(board);
-                logger.info("drawCounter =" + board.drawCounter());
-                logger.info("finished =" + board.hasFinished());
                 stream.close();
                 fileStream.close();
             }
