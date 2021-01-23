@@ -49,7 +49,7 @@ public class Controller {
     }
 
     public void move(Square from, Square to) {
-        Board copy = board.copy();
+        Board copy = board.clone();
 
         if (moveIfPossible(from, to)) {
             checkpoints.add(copy);
@@ -138,11 +138,11 @@ public class Controller {
                 board.blackPlayer(new UserPlayer("user 1", PieceColor.blackSet));
                 board.whitePlayer(new UserPlayer("user 2", PieceColor.whiteSet));
             }
-            logger.info("name\ttype\tlevel");
+            logger.info("name\ttype");
             logger.info(board.blackPlayer().toString());
             logger.info(board.whitePlayer().toString());
             // if the player 2 (whiteSet) is a computer then start automatically
-            if (board.whitePlayer().isComputer()) {
+            if (board.currentPlayer().isComputer()) {
                 SwingUtilities.invokeLater(this::nextMove);
             }
         } catch (Exception exc) {

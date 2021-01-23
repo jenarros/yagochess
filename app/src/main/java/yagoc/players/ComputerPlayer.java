@@ -40,7 +40,7 @@ public class ComputerPlayer implements Player, Serializable {
 
     @Override
     public String toString() {
-        return pieceColor + "\t" + name() + "\t" + type() + "\t" + level;
+        return pieceColor + "\t" + type() + "\t" + level;
     }
 
     public Move move(Board board) {

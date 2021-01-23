@@ -43,7 +43,7 @@ import static yagoc.pieces.PieceType.Pawn;
 6         1,  1,  1,  1,  1,  1,  1,  1,
 7         4,  2,  3,  5,  6,  3,  2,  4
 */
-public class Board implements Serializable {
+public class Board implements Serializable, Cloneable {
     private Piece[][] squares;
     private int[] enPassant;
     private Player currentPlayer;
@@ -105,10 +105,13 @@ public class Board implements Serializable {
         reset();
     }
 
-    public Board copy() {
-        Board board = new Board();
-        board.resetWith(this);
-        return board;
+    public Board(Board board) {
+        resetWith(board);
+    }
+
+    @Override
+    public Board clone() {
+        return new Board(this);
     }
 
     private Piece[][] newTable() {
@@ -354,9 +357,9 @@ public class Board implements Serializable {
     }
 
     public void resetWith(Board board) {
-        Piece[][] pieces = newTable();
+        Piece[][] pieces = new Piece[8][8];
         // use static references so that we can compare pieces using ==, I should really move this to Kotlin
-        Square.allSquares.forEach((square) -> pieces[square.rank()][square.file()] = Pieces.all.stream()
+        Square.allSquares.parallelStream().forEach((square) -> pieces[square.rank()][square.file()] = Pieces.all.stream()
                 .filter((piece -> piece.equals(board.pieceAt(square)))).findAny().orElseThrow());
         squares = pieces;
         enPassant = board.enPassant.clone();
@@ -411,10 +414,16 @@ public class Board implements Serializable {
     }
 
     public void whitePlayer(Player player) {
+        if (currentPlayer == whitePlayer) {
+            currentPlayer = player;
+        }
         whitePlayer = player;
     }
 
     public void blackPlayer(Player player) {
+        if (currentPlayer == blackPlayer) {
+            currentPlayer = player;
+        }
         blackPlayer = player;
     }
 
