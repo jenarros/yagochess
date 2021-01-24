@@ -250,13 +250,10 @@ public class Board implements Serializable, Cloneable {
         return moveDoesNotCreateCheck(new Move(pieceAt(from), from, to));
     }
 
-    public boolean moveDoesNotCreateCheck(Move move) { //can i do this in a sandbox to avoid undo?
-        //realizo la jugada, el turno pasa al contrario
+    public boolean moveDoesNotCreateCheck(Move move) {
         MoveLog moveLog = play(move);
 
-        nextPlayer(); //cambio el turno para ver si nosotros estamos en jaque
-        boolean inCheck = isInCheck();
-        previousPlayer(); //lo dejo como estaba
+        boolean inCheck = isInCheck(move.fromPiece().color());
 
         undo(moveLog);
 
@@ -274,18 +271,13 @@ public class Board implements Serializable, Cloneable {
             return false;
     }
 
-    public boolean isInCheck() {
+    public boolean isInCheck(PieceColor color) {
         Square kingSquare = Square.allSquares.stream()
-                .filter((square) -> pieceAt(square).pieceType() == King && isPieceOfCurrentPlayer(pieceAt(square)))
-                .findAny().orElseThrow(() -> new RuntimeException("Could not find king!"));
+                .filter((square) -> pieceAt(square).pieceType() == King && pieceAt(square).color() == color)
+                .findAny().orElseThrow(() -> new RuntimeException("Could not find " + color + " king!"));
 
-        nextPlayer();
-        boolean kingCaptured = Square.allSquares.stream()
+        return Square.allSquares.stream()
                 .anyMatch((from) -> isPieceOfCurrentPlayer(pieceAt(from)) && isCorrectMove(from, kingSquare));
-
-        previousPlayer();
-
-        return kingCaptured;
     }
 
     boolean cannotMoveWithoutBeingCheck() {
@@ -293,7 +285,7 @@ public class Board implements Serializable, Cloneable {
     }
 
     boolean isCheckmate() {
-        if (isInCheck()) {
+        if (isInCheck(currentPlayer.pieceColor())) {
             return cannotMoveWithoutBeingCheck();
         } else {
             return false;
@@ -301,7 +293,7 @@ public class Board implements Serializable, Cloneable {
     }
 
     boolean isADraw() {
-        if (!isInCheck() && cannotMoveWithoutBeingCheck()) {
+        if (!isInCheck(currentPlayer.pieceColor()) && cannotMoveWithoutBeingCheck()) {
             return true;
         }
 

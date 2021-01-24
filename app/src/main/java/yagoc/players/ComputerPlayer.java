@@ -6,7 +6,8 @@ import yagoc.MoveLog;
 import yagoc.pieces.PieceColor;
 
 import java.io.Serializable;
-import java.util.LinkedList;
+import java.util.Collection;
+import java.util.concurrent.Callable;
 
 import static yagoc.Yagoc.logger;
 
@@ -63,27 +64,34 @@ public class ComputerPlayer implements Player, Serializable {
         }
     }
 
+    public static MoveValue playAndUndo(Board board, Move move, Callable<MoveValue> callable) {
+        MoveLog moveLog = board.play(move);
+        try {
+            MoveValue moveValue = callable.call();
+            board.undo(moveLog);
+            return moveValue;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private MoveValue alphaBetaMin(int depth, Board board, int alpha, int beta) {
-        LinkedList<Move> moves = new LinkedList<>(board.generateMoves());
+        Collection<Move> moves = board.generateMoves();
 
         // checkmate
-        if (moves.stream().findAny().isEmpty()) {
+        if (moves.isEmpty()) {
             return new MoveValue(Integer.MAX_VALUE - (level - depth + 1));
         }
 
         MoveValue betaMoveValue;
-        Move move;
-        MoveLog moveLog;
         MoveValue moveValue = new MoveValue(beta);
 
-        do {
+        for (Move move : moves) {
             processedMoves++;
-            move = moves.removeFirst();
-            moveLog = board.play(move);
 
             // beta = min[beta, AlphaBeta(N_k,alpha,beta)]
-            betaMoveValue = alphaBeta(depth - 1, board, alpha, moveValue.value);
-            board.undo(moveLog);
+            final int v = moveValue.value;
+            betaMoveValue = playAndUndo(board, move, () -> alphaBeta(depth - 1, board, alpha, v));
 
             if (betaMoveValue.value < moveValue.value) {
                 moveValue = new MoveValue(move, betaMoveValue.value); // better
@@ -93,37 +101,37 @@ public class ComputerPlayer implements Player, Serializable {
             if (alpha >= moveValue.value) {
                 return new MoveValue(moveValue.move, alpha);
             }
-        } while (moves.size() != 0);
+        }
 
-        //si pierde MIN en 2 o más movimientos dejamos que juegue hasta entonces
+        // if MIN is going to lose in 2 o more moves, we let it play
         if (moveValue.move == null) {
-            moveValue = new MoveValue(move, moveValue.value);
+            moveValue = new MoveValue(moves.stream().findFirst().orElseThrow(), moveValue.value);
         }
 
         return moveValue;
     }
 
+    protected MoveValue leafMoveValue(Board board) {
+        return new MoveValue(strategy.apply(board, pieceColor));
+    }
+
     private MoveValue alphaBetaMax(int depth, Board board, int alpha, int beta) {
-        LinkedList<Move> moves = new LinkedList<>(board.generateMoves());
+        Collection<Move> moves = board.generateMoves();
 
         // checkmate
-        if (moves.size() == 0) {
+        if (moves.isEmpty()) {
             return new MoveValue(Integer.MIN_VALUE + (level - depth + 1));
         }
 
         MoveValue alphaMoveValue;
-        Move move;
-        MoveLog moveLog;
         MoveValue moveValue = new MoveValue(alpha);
 
-        do {
+        for (Move move : moves) {
             processedMoves++;
-            move = moves.removeFirst();
-            moveLog = board.play(move);
 
             // alpha = max[alpha, AlphaBeta(N_k,alpha,beta)
-            alphaMoveValue = alphaBeta(depth - 1, board, moveValue.value, beta);
-            board.undo(moveLog);
+            final int v = moveValue.value;
+            alphaMoveValue = playAndUndo(board, move, () -> alphaBeta(depth - 1, board, v, beta));
 
             if (alphaMoveValue.value > moveValue.value) {
                 moveValue = new MoveValue(move, alphaMoveValue.value); // better
@@ -133,17 +141,13 @@ public class ComputerPlayer implements Player, Serializable {
             if (moveValue.value >= beta) {
                 return new MoveValue(moveValue.move, beta);
             }
-        } while (moves.size() != 0);
+        }
 
-        //si pierde MAX en 2 o más movimientos dejamos que juegue hasta entonces
+        // if MAX is going to lose in 2 o more moves, we let it play
         if (moveValue.move == null) {
-            moveValue = new MoveValue(move, moveValue.value);
+            moveValue = new MoveValue(moves.stream().findFirst().orElseThrow(), moveValue.value);
         }
 
         return moveValue;
-    }
-
-    protected MoveValue leafMoveValue(Board board) {
-        return new MoveValue(strategy.apply(board, pieceColor));
     }
 }
