@@ -19,7 +19,7 @@ public class Move {
         this.from = from;
         this.to = to;
 
-        if (fromPiece == none) {
+        if (fromPiece.equals(none)) {
             throw new IllegalArgumentException("Cannot move nothing");
         }
 

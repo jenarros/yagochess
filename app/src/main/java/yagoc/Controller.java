@@ -101,11 +101,10 @@ public class Controller {
 
         movePlayer(board.currentPlayer());
 
-        if (board.currentPlayer().isComputer()) breath();
-
-        if ((board.currentPlayer() == board.blackPlayer() && board.blackPlayer().isComputer())
-                || (board.currentPlayer() == board.whitePlayer() && board.whitePlayer().isComputer()))
+        if (board.currentPlayer().isComputer()) {
+            breath();
             SwingUtilities.invokeLater(this::nextMove);
+        }
     }
 
     private void breath() {

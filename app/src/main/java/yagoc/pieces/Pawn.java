@@ -18,11 +18,11 @@ public class Pawn extends Piece {
         }
 
         // straight ahead
-        if (move.hasSameFile() && board.pieceAt(move.to()) == Pieces.none) {
+        if (move.hasSameFile() && board.pieceAt(move.to()).equals(Pieces.none)) {
             //si avanzamos dos casillas debemos partir de la posicion
             //inicial y la casilla saltada debe estar vacía
-            if (move.rankDistance() == 2 && board.pieceAt(move.to().previousRank(move.fromPiece().color())) == Pieces.none &&
-                    ((move.from().rank() == 6 && board.currentPlayer() == board.whitePlayer()) || (move.from().rank() == 1 && board.currentPlayer() == board.blackPlayer())))
+            if (move.rankDistance() == 2 && board.pieceAt(move.to().previousRank(move.fromPiece().color())).equals(Pieces.none) &&
+                    ((move.from().rank() == 6 && board.currentPlayer().equals(board.whitePlayer())) || (move.from().rank() == 1 && board.currentPlayer().equals(board.blackPlayer()))))
                 return true;
 
             if (move.rankDistance() == 1)
@@ -37,9 +37,9 @@ public class Pawn extends Piece {
             }
 
             // en passant
-            return board.pieceAt(move.to()) == Pieces.none
+            return board.pieceAt(move.to()).equals(Pieces.none)
                     && board.enPassant(move.to().file()) == board.moveCounter() - 1
-                    && move.from().rank() == ((board.currentPlayer() == board.whitePlayer()) ? 3 : 4);
+                    && move.from().rank() == ((board.currentPlayer().equals(board.whitePlayer())) ? 3 : 4);
         }
         return false;
     }

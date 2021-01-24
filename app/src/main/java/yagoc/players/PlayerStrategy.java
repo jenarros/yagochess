@@ -15,7 +15,7 @@ public class PlayerStrategy implements Serializable {
             int acc = 0;
             final Piece piece = board.pieceAt(square);
 
-            if (piece == Pieces.none) {
+            if (piece.equals(Pieces.none)) {
                 // ignore empty squares
             } else if (isPieceOurs(board, color, square)) {
                 switch (piece.pieceType()) {
@@ -28,7 +28,7 @@ public class PlayerStrategy implements Serializable {
 
                         // Un peón cubierto vale más
                         if (square.nextRank(color).exists() && square.file() - 1 > 0 && square.file() + 1 < 8
-                                && (board.pieceAt(square.nextRankPreviousFile(color)) == piece || board.pieceAt(square.nextRankPreviousFile(color)) == piece))
+                                && (board.pieceAt(square.nextRankPreviousFile(color)).equals(piece) || board.pieceAt(square.nextRankPreviousFile(color)).equals(piece)))
                             acc += 30;
                         break;
                     case Knight: // middle of the board is better
@@ -63,7 +63,7 @@ public class PlayerStrategy implements Serializable {
                         else
                             acc -= (7 - square.rank()) * 30;
                         if (square.nextRank(color).exists() && square.file() - 1 > 0 && square.file() + 1 < 8
-                                && (board.pieceAt(square.nextRankPreviousFile(color)) == piece || board.pieceAt(square.nextRankPreviousFile(color)) == piece))
+                                && (board.pieceAt(square.nextRankPreviousFile(color)).equals(piece) || board.pieceAt(square.nextRankPreviousFile(color)).equals(piece)))
                             acc -= 20;
                         break;
                     case Knight:
@@ -92,7 +92,7 @@ public class PlayerStrategy implements Serializable {
             int acc = 0;
             final Piece piece = board.pieceAt(square);
 
-            if (piece == Pieces.none) {
+            if (piece.equals(Pieces.none)) {
                 // ignore empty squares
             } else if (isPieceOurs(board, set, square)) {
                 switch (piece.pieceType()) {

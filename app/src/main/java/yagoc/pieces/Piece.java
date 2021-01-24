@@ -27,7 +27,7 @@ abstract public class Piece implements Serializable {
 
     public Piece switchTo(PieceType type) {
         return Pieces.all.stream()
-                .filter((piece) -> type == piece.pieceType && piece.color == this.color)
+                .filter((piece) -> type.equals(piece.pieceType) && piece.color == this.color)
                 .findFirst().orElseThrow();
     }
 
@@ -63,7 +63,7 @@ abstract public class Piece implements Serializable {
     protected abstract boolean isValidForPiece(Board board, Move move);
 
     public final boolean isCorrectMove(Board board, Move move) {
-        if (board.pieceAt(move.from()).color() == board.pieceAt(move.to()).color()) {
+        if (board.pieceAt(move.from()).color().equals(board.pieceAt(move.to()).color())) {
             return false;
         }
         return this.isValidForPiece(board, move);

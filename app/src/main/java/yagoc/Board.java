@@ -126,9 +126,9 @@ public class Board implements Serializable, Cloneable {
 
     public void ifPawnHasReachedFinalRankReplaceWithQueen(Move move) {
         //TODO What if there is already a queen?
-        if ((move.fromPiece() == Pieces.blackPawn && move.to().rank() == 7)) {
+        if ((move.fromPiece().equals(Pieces.blackPawn) && move.to().rank() == 7)) {
             pieceAt(move.to(), Pieces.blackQueen);
-        } else if (move.fromPiece() == Pieces.whitePawn && move.to().rank() == 0) {
+        } else if (move.fromPiece().equals(Pieces.whitePawn) && move.to().rank() == 0) {
             pieceAt(move.to(), Pieces.whiteQueen);
         }
     }
@@ -144,18 +144,18 @@ public class Board implements Serializable, Cloneable {
     public MoveLog play(Move move) {
         MoveLog moveLog = new MoveLog(this, move);
 
-        if (move.fromPiece() == Pieces.whiteKing)
+        if (move.fromPiece().equals(Pieces.whiteKing))
             whiteKingMoved = true;
-        else if (move.fromPiece() == Pieces.whiteRook && move.from().file() == 0)
+        else if (move.fromPiece().equals(Pieces.whiteRook) && move.from().file() == 0)
             whiteLeftRookMoved = true;
-        else if (move.fromPiece() == Pieces.whiteRook && move.from().file() == 7)
+        else if (move.fromPiece().equals(Pieces.whiteRook) && move.from().file() == 7)
             whiteRightRookMoved = true;
 
-        if (move.fromPiece() == Pieces.blackKing)
+        if (move.fromPiece().equals(Pieces.blackKing))
             blackKingMoved = true;
-        else if (move.fromPiece() == Pieces.blackRook && move.from().file() == 0)
+        else if (move.fromPiece().equals(Pieces.blackRook) && move.from().file() == 0)
             blackLeftRookMoved = true;
-        else if (move.fromPiece() == Pieces.blackRook && move.from().file() == 7)
+        else if (move.fromPiece().equals(Pieces.blackRook) && move.from().file() == 7)
             blackRightRookMoved = true;
 
         if (move.isCastling()) {
@@ -202,7 +202,7 @@ public class Board implements Serializable, Cloneable {
     }
 
     private void nextPlayer() {
-        if (currentPlayer == blackPlayer) {
+        if (currentPlayer.equals(blackPlayer)) {
             currentPlayer = whitePlayer;
         } else {
             currentPlayer = blackPlayer;
@@ -342,7 +342,7 @@ public class Board implements Serializable, Cloneable {
     public Collection<Move> generateMoves() {
         return Square.allSquares.stream().flatMap((from) -> {
             if (isPieceOfCurrentPlayer(pieceAt(from))) {
-                return generateMoves(from, (move) -> moveDoesNotCreateCheck(move));
+                return generateMoves(from, this::moveDoesNotCreateCheck);
             }
             return Stream.empty();
         }).collect(Collectors.toList());
@@ -357,11 +357,15 @@ public class Board implements Serializable, Cloneable {
     }
 
     public void resetWith(Board board) {
-        Piece[][] pieces = new Piece[8][8];
+        squares = new Piece[8][8];
         // use static references so that we can compare pieces using ==, I should really move this to Kotlin
-        Square.allSquares.parallelStream().forEach((square) -> pieces[square.rank()][square.file()] = Pieces.all.stream()
-                .filter((piece -> piece.equals(board.pieceAt(square)))).findAny().orElseThrow());
-        squares = pieces;
+//        Square.allSquares.parallelStream().forEach((square) -> pieces[square.rank()][square.file()] = Pieces.all.stream()
+//                .filter((piece -> piece.equals(board.pieceAt(square)))).findAny().orElseThrow());
+//        squares = pieces;
+
+        for (int i = 0; i < 8; i++) {
+            squares[i] = board.squares[i].clone();
+        }
         enPassant = board.enPassant.clone();
         currentPlayer = board.currentPlayer;
         whiteLeftRookMoved = board.whiteLeftRookMoved;
@@ -414,14 +418,14 @@ public class Board implements Serializable, Cloneable {
     }
 
     public void whitePlayer(Player player) {
-        if (currentPlayer == whitePlayer) {
+        if (currentPlayer.equals(whitePlayer)) {
             currentPlayer = player;
         }
         whitePlayer = player;
     }
 
     public void blackPlayer(Player player) {
-        if (currentPlayer == blackPlayer) {
+        if (currentPlayer.equals(blackPlayer)) {
             currentPlayer = player;
         }
         blackPlayer = player;
