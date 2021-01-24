@@ -115,22 +115,19 @@ public class YagocWindow extends JFrame {
     }
 
     void open(ActionEvent e) {
-        try {
-            FileDialog fDialog = new FileDialog(this);
-            fDialog.setMode(FileDialog.LOAD);
-            fDialog.setVisible(true);
-            if (fDialog.getFile() != null) {
-                String absolutePath = fDialog.getDirectory() + fDialog.getFile();
-                FileInputStream fileStream = new FileInputStream(absolutePath);
-                ObjectInputStream stream = new ObjectInputStream(fileStream);
+        FileDialog fDialog = new FileDialog(this);
+        fDialog.setMode(FileDialog.LOAD);
+        fDialog.setVisible(true);
 
+        if (fDialog.getFile() != null) {
+            String absolutePath = fDialog.getDirectory() + fDialog.getFile();
+            try (FileInputStream fileStream = new FileInputStream(absolutePath);
+                 ObjectInputStream stream = new ObjectInputStream(fileStream)) {
                 Board board = (Board) stream.readObject();
                 controller.resetBoard(board);
-                stream.close();
-                fileStream.close();
+            } catch (Exception exc) {
+                logger.warn("Could not read file: " + exc);
             }
-        } catch (Exception exc) {
-            logger.warn("Could not read file: " + exc);
         }
     }
 

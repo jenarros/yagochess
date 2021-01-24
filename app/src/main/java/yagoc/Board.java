@@ -350,10 +350,6 @@ public class Board implements Serializable, Cloneable {
 
     public void resetWith(Board board) {
         squares = new Piece[8][8];
-        // use static references so that we can compare pieces using ==, I should really move this to Kotlin
-//        Square.allSquares.parallelStream().forEach((square) -> pieces[square.rank()][square.file()] = Pieces.all.stream()
-//                .filter((piece -> piece.equals(board.pieceAt(square)))).findAny().orElseThrow());
-//        squares = pieces;
 
         for (int i = 0; i < 8; i++) {
             squares[i] = board.squares[i].clone();

@@ -177,6 +177,9 @@ public class Square implements Comparable {
 
     static final Square castlingKingsideBlackTo = new Square(0, 5);
 
+    /**
+     * position of the square in a sequence from 0 to 63
+     */
     public Integer arrayPosition() {
         return (this.file() * 8) + this.rank();
     }
