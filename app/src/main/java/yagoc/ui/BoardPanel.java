@@ -111,7 +111,7 @@ public class BoardPanel extends JPanel {
 		coordY[3] = point.y;
 		g.fillPolygon(coordX, coordY, 4);
 
-		if (!square.equals(mouseMotionListener.selectedSquare) && piece != Pieces.none) {
+		if (!square.equals(mouseMotionListener.selectedSquare) && !piece.equals(Pieces.none)) {
 			drawPiece(g, square, piece);
 		} else if (square.equals(mouseMotionListener.selectedSquare) && mouseMotionListener.mousePosition != null) {
 			drawPiece(g, toMouseLocation(mouseMotionListener.mousePosition), piece, 0);

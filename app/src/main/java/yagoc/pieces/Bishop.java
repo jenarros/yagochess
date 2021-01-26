@@ -41,7 +41,7 @@ public class Bishop extends Piece {
 
             //recorremos el movimiento
             for (file++, rank += direction; file < ma; ) {
-                if (board.pieceAt(rank, file) != Pieces.none)
+                if (!board.pieceAt(rank, file).equals(Pieces.none))
                     return false;
                 rank += direction;
                 file++;

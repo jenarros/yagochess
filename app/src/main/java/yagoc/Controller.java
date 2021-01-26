@@ -2,7 +2,6 @@ package yagoc;
 
 import yagoc.pieces.PieceColor;
 import yagoc.players.ComputerPlayer;
-import yagoc.players.Player;
 import yagoc.players.PlayerStrategy;
 import yagoc.players.UserPlayer;
 import yagoc.ui.UserOptionDialog;
@@ -14,6 +13,8 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+import static yagoc.Board.moveDoesNotCreateCheck;
+import static yagoc.Board.noMoreMovesAllowed;
 import static yagoc.Yagoc.logger;
 
 public class Controller {
@@ -37,6 +38,7 @@ public class Controller {
     public void undo() {
         if (!checkpoints.isEmpty()) {
             this.board.resetWith(checkpoints.remove(checkpoints.size() - 1));
+            this.finished = false;
         }
     }
 
@@ -58,34 +60,21 @@ public class Controller {
         SwingUtilities.invokeLater(this::nextMove);
     }
 
-    public void movePlayer(Player player) {
-        if (player.isComputer()) {
-            Move move = player.move(board);
-
-            board.play(move);
-            logger.info(move.toString());
-
-            board.ifPawnHasReachedFinalRankReplaceWithQueen(move);
-
-            finished = board.noMoreMovesAllowed();
-        }
-    }
-
     public boolean moveIfPossible(Square from, Square to) {
-
         if (finished || !board.isPieceOfCurrentPlayer(board.pieceAt(from))) {
             return false;
         } else if (board.currentPlayer().isUser()) {
+
             Move move = new Move(board.pieceAt(from), from, to);
             if (!from.equals(to)
                     && board.isCorrectMove(move)
-                    && board.moveDoesNotCreateCheck(move)) {
+                    && moveDoesNotCreateCheck(board, move)) {
 
                 board.play(move);
 
                 board.ifPawnHasReachedFinalRankReplaceWithQueen(move);
 
-                finished = board.noMoreMovesAllowed();
+                finished = noMoreMovesAllowed(board);
 
                 logger.info(move.toString());
 
@@ -99,7 +88,16 @@ public class Controller {
     public void nextMove() {
         if (finished) return;
 
-        movePlayer(board.currentPlayer());
+        if (board.currentPlayer().isComputer()) {
+            Move move = board.currentPlayer().move(board);
+
+            board.play(move);
+            logger.info(move.toString());
+
+            board.ifPawnHasReachedFinalRankReplaceWithQueen(move);
+
+            finished = noMoreMovesAllowed(board);
+        }
 
         if (board.currentPlayer().isComputer()) {
             breath();
@@ -140,7 +138,7 @@ public class Controller {
             logger.info("name\ttype");
             logger.info(board.blackPlayer().toString());
             logger.info(board.whitePlayer().toString());
-            // if the player 2 (whiteSet) is a computer then start automatically
+
             if (board.currentPlayer().isComputer()) {
                 SwingUtilities.invokeLater(this::nextMove);
             }

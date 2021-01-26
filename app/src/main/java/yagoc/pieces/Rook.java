@@ -17,7 +17,7 @@ public class Rook extends Piece {
             int mi = Math.min(move.from().file(), move.to().file()) + 1;
             int ma = Math.max(move.from().file(), move.to().file());
             for (; mi < ma; mi++) {
-                if (board.pieceAt(move.from().rank(), mi) != Pieces.none)
+                if (!board.pieceAt(move.from().rank(), mi).equals(Pieces.none))
                     return false;
             }
             return true;
@@ -26,7 +26,7 @@ public class Rook extends Piece {
             int mi = Math.min(move.from().rank(), move.to().rank()) + 1;
             int ma = Math.max(move.from().rank(), move.to().rank());
             for (; mi < ma; mi++) {
-                if (board.pieceAt(mi, move.from().file()) != Pieces.none)
+                if (!board.pieceAt(mi, move.from().file()).equals(Pieces.none))
                     return false;
             }
             return true;

@@ -2,20 +2,19 @@ package yagoc.players;
 
 import yagoc.Board;
 import yagoc.Move;
-import yagoc.MoveLog;
 import yagoc.pieces.PieceColor;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import static yagoc.Board.playAndUndo;
 import static yagoc.Yagoc.logger;
 
 public class ComputerPlayer implements Player, Serializable {
     final protected PieceColor pieceColor;
     final private String name;
     final private int level;
-    int processedMoves;
     private final PlayerStrategy strategy;
 
     public ComputerPlayer(String name, PieceColor pieceColor, int level, PlayerStrategy strategy) {
@@ -45,37 +44,26 @@ public class ComputerPlayer implements Player, Serializable {
     }
 
     public Move move(Board board) {
-        processedMoves = 0;
+        AtomicInteger processedMoves = new AtomicInteger(0);
         long start = System.currentTimeMillis();
-        MoveValue moveValue = alphaBeta(level, board, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        MoveValue moveValue = alphaBeta(level, board, Integer.MIN_VALUE, Integer.MAX_VALUE, processedMoves);
         long elapsed = System.currentTimeMillis() - start + 1;
-        logger.info("alpha-beta: processed = " + processedMoves + " moves in " + elapsed + "ms " + processedMoves / elapsed + " moves/ms,  minimax = " + moveValue.value);
+        logger.info("alpha-beta: processed = " + processedMoves + " moves in " + elapsed + "ms " + processedMoves.intValue() / elapsed + " moves/ms,  minimax = " + moveValue.value);
 
         return moveValue.move;
     }
 
-    MoveValue alphaBeta(int depth, Board board, int alfa, int beta) {
+    MoveValue alphaBeta(int depth, Board board, int alfa, int beta, AtomicInteger processedMoves) {
         if (depth == 0) {
             return leafMoveValue(board);
         } else if ((level - depth) % 2 == 0) { // maximizing player = current player (as depth = level)
-            return alphaBetaMax(depth, board, alfa, beta);
+            return alphaBetaMax(depth, board, alfa, beta, processedMoves);
         } else {
-            return alphaBetaMin(depth, board, alfa, beta);
+            return alphaBetaMin(depth, board, alfa, beta, processedMoves);
         }
     }
 
-    public static MoveValue playAndUndo(Board board, Move move, Callable<MoveValue> callable) {
-        MoveLog moveLog = board.play(move);
-        try {
-            MoveValue moveValue = callable.call();
-            board.undo(moveLog);
-            return moveValue;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private MoveValue alphaBetaMin(int depth, Board board, int alpha, int beta) {
+    private MoveValue alphaBetaMin(int depth, Board board, int alpha, int beta, AtomicInteger processedMoves) {
         Collection<Move> moves = board.generateMoves();
 
         // checkmate
@@ -87,11 +75,11 @@ public class ComputerPlayer implements Player, Serializable {
         MoveValue moveValue = new MoveValue(beta);
 
         for (Move move : moves) {
-            processedMoves++;
+            processedMoves.getAndIncrement();
 
             // beta = min[beta, AlphaBeta(N_k,alpha,beta)]
             final int v = moveValue.value;
-            betaMoveValue = playAndUndo(board, move, () -> alphaBeta(depth - 1, board, alpha, v));
+            betaMoveValue = playAndUndo(board, move, () -> alphaBeta(depth - 1, board, alpha, v, processedMoves));
 
             if (betaMoveValue.value < moveValue.value) {
                 moveValue = new MoveValue(move, betaMoveValue.value); // better
@@ -115,7 +103,7 @@ public class ComputerPlayer implements Player, Serializable {
         return new MoveValue(strategy.apply(board, pieceColor));
     }
 
-    private MoveValue alphaBetaMax(int depth, Board board, int alpha, int beta) {
+    private MoveValue alphaBetaMax(int depth, Board board, int alpha, int beta, AtomicInteger processedMoves) {
         Collection<Move> moves = board.generateMoves();
 
         // checkmate
@@ -127,11 +115,11 @@ public class ComputerPlayer implements Player, Serializable {
         MoveValue moveValue = new MoveValue(alpha);
 
         for (Move move : moves) {
-            processedMoves++;
+            processedMoves.getAndIncrement();
 
             // alpha = max[alpha, AlphaBeta(N_k,alpha,beta)
             final int v = moveValue.value;
-            alphaMoveValue = playAndUndo(board, move, () -> alphaBeta(depth - 1, board, v, beta));
+            alphaMoveValue = playAndUndo(board, move, () -> alphaBeta(depth - 1, board, v, beta, processedMoves));
 
             if (alphaMoveValue.value > moveValue.value) {
                 moveValue = new MoveValue(move, alphaMoveValue.value); // better

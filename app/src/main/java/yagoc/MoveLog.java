@@ -9,23 +9,24 @@ public class MoveLog {
 	final int enPassant;
 	final int drawCounter;
 	final int moveCounter;
+	final Piece toPiece;
 
 	MoveType type; //2=normal, 3=captura al paso, 4=enroque
 	Square enPassantSquare;
 	Move castlingExtraMove;
-	Piece toPiece;
 	Piece enPassantPiece;
 
-	public MoveLog(Board board, Move move) {
+	public MoveLog(Board board, Move move, Piece toPiece) {
 		this.move = move;
+		this.toPiece = toPiece;
 		this.whiteLeftRookMoved = board.hasWhiteLeftRookMoved();
 		this.whiteRightRookMoved = board.hasWhiteRightRookMoved();
 		this.whiteKingMoved = board.hasWhiteKingMoved();
 		this.blackLeftRookMoved = board.hasBlackLeftRookMoved();
 		this.blackRightRookMoved = board.hasBlackRightRookMoved();
 		this.blackKingMoved = board.hasBlackKingMoved();
-        this.drawCounter = board.drawCounter();
-        this.moveCounter = board.moveCounter();
-        this.enPassant = board.enPassant(move.to().file());
-    }
+		this.drawCounter = board.drawCounter();
+		this.moveCounter = board.moveCounter();
+		this.enPassant = board.enPassant(move.to().file());
+	}
 }

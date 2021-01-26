@@ -6,6 +6,9 @@ import yagoc.Square;
 
 import java.util.stream.Stream;
 
+import static yagoc.Board.isInCheck;
+import static yagoc.Board.moveDoesNotCreateCheck;
+
 public class King extends Piece {
     public King(PieceColor pieceColor) {
         super(PieceType.King, pieceColor);
@@ -34,8 +37,8 @@ public class King extends Piece {
     private boolean isCorrectCastling(Board board, Move move) {
         if (((move.from().rank() == 7 && move.fromPiece().equals(Pieces.whiteKing) && !board.hasWhiteKingMoved()) ||
                 (move.from().rank() == 0 && move.fromPiece().equals(Pieces.blackKing) && !board.hasBlackKingMoved())) &&
-                move.hasSameRank() && !board.isInCheck(move.fromPiece().color()) &&
-                board.moveDoesNotCreateCheck(move)) {
+                move.hasSameRank() && !isInCheck(board, move.fromPiece().color()) &&
+                moveDoesNotCreateCheck(board, move)) {
 
             if (move.to().file() == 2 && board.pieceAt(move.from().rank(), 0).equals(move.fromPiece().switchTo(PieceType.Rook))) {
                 //blancas

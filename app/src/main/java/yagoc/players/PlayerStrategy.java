@@ -170,8 +170,8 @@ public class PlayerStrategy implements Serializable {
         return board.pieceAt(square).color() == set;
     }
 
-    static boolean isPieceTheirs(Board board, PieceColor set, Square square) {
-        return board.pieceAt(square).color() != set;
+    static boolean isPieceTheirs(Board board, PieceColor color, Square square) {
+        return board.pieceAt(square).color() != color;
     }
 
     public Integer apply(Board board, PieceColor pieceColor) {
