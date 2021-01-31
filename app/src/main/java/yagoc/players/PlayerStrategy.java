@@ -4,10 +4,8 @@ import yagoc.Board;
 import yagoc.Square;
 import yagoc.pieces.Piece;
 import yagoc.pieces.PieceColor;
-import yagoc.pieces.Pieces;
 
 import java.io.Serializable;
-import java.util.function.BiFunction;
 
 import static yagoc.BoardRules.generateMoves;
 
@@ -15,11 +13,12 @@ public class PlayerStrategy implements Serializable {
     public static PlayerStrategy F1 = new PlayerStrategy((board, color) -> {
         return Square.allSquares.stream().map((square) -> {
             int acc = 0;
-            final Piece piece = board.pieceAt(square);
 
-            if (piece.equals(Pieces.none)) {
+            if (board.noneAt(square)) {
                 // ignore empty squares
             } else if (isPieceOurs(board, color, square)) {
+                final Piece piece = board.pieceAt(square);
+
                 switch (piece.pieceType()) {
                     case Pawn: // further ahead is better
                         acc += 100;
@@ -57,6 +56,8 @@ public class PlayerStrategy implements Serializable {
                         break;
                 }
             } else if (isPieceTheirs(board, color, square)) {
+                final Piece piece = board.pieceAt(square);
+
                 switch (piece.pieceType()) {
                     case Pawn: // further ahead is better
                         acc -= 100;
@@ -92,11 +93,11 @@ public class PlayerStrategy implements Serializable {
     public static PlayerStrategy F2 = new PlayerStrategy((board, set) -> {
         return Square.allSquares.stream().map((square) -> {
             int acc = 0;
-            final Piece piece = board.pieceAt(square);
 
-            if (piece.equals(Pieces.none)) {
+            if (board.noneAt(square)) {
                 // ignore empty squares
             } else if (isPieceOurs(board, set, square)) {
+                final Piece piece = board.pieceAt(square);
                 switch (piece.pieceType()) {
                     case Pawn: // further ahead is better
                         acc += 100;
@@ -128,6 +129,8 @@ public class PlayerStrategy implements Serializable {
                     default:
                 }
             } else if (isPieceTheirs(board, set, square)) {
+                final Piece piece = board.pieceAt(square);
+
                 switch (piece.pieceType()) {
                     case Pawn:
                         acc -= 100;
@@ -162,6 +165,7 @@ public class PlayerStrategy implements Serializable {
             return acc;
         }).mapToInt(Integer::intValue).sum();
     });
+
     private final SerializableBiFunction strategy;
 
     public PlayerStrategy(SerializableBiFunction strategy) {
@@ -178,8 +182,5 @@ public class PlayerStrategy implements Serializable {
 
     public Integer apply(Board board, PieceColor pieceColor) {
         return strategy.apply(board, pieceColor);
-    }
-
-    interface SerializableBiFunction extends BiFunction<Board, PieceColor, Integer>, Serializable {
     }
 }

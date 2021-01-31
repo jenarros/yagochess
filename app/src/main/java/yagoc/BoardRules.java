@@ -26,10 +26,10 @@ public class BoardRules {
     }
 
     public static <T> T playAndUndo(Board board, Move move, Callable<T> callable) {
-        MoveLog moveLog = board.play(move);
+        board.play(move);
         try {
             T moveValue = callable.call();
-            board.undo(moveLog);
+            board.undo();
             return moveValue;
         } catch (Exception e) {
             throw new RuntimeException(e);

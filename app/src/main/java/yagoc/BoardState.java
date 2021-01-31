@@ -10,12 +10,14 @@ import yagoc.players.UserPlayer;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Stack;
 
 import static yagoc.pieces.Pieces.none;
 
 public class BoardState implements Cloneable, Serializable {
-    protected Piece[][] squares;
-    protected int[] enPassant;
+    protected final Stack<MoveLog> moves = new Stack<>();
+    protected final Piece[][] squares = newTable();
+    protected final int[] enPassant = new int[8];
     protected Player currentPlayer;
     protected boolean whiteLeftRookMoved, whiteRightRookMoved, whiteKingMoved;
     protected boolean blackLeftRookMoved, blackRightRookMoved, blackKingMoved;
@@ -24,12 +26,10 @@ public class BoardState implements Cloneable, Serializable {
     protected Player blackPlayer, whitePlayer;
 
     public void resetWith(BoardState board) {
-        squares = new Piece[8][8];
-
         for (int i = 0; i < 8; i++) {
-            squares[i] = board.squares[i].clone();
+            System.arraycopy(board.squares[i], 0, squares[i], 0, squares[i].length);
         }
-        enPassant = board.enPassant.clone();
+        System.arraycopy(board.enPassant, 0, this.enPassant, 0, this.enPassant.length);
         currentPlayer = board.currentPlayer;
         whiteLeftRookMoved = board.whiteLeftRookMoved;
         whiteRightRookMoved = board.whiteRightRookMoved;
@@ -41,15 +41,12 @@ public class BoardState implements Cloneable, Serializable {
         moveCounter = board.moveCounter;
         blackPlayer = board.blackPlayer;
         whitePlayer = board.whitePlayer;
+        moves.removeAllElements();
+        moves.addAll(board.moves);
     }
 
     public void reset() {
-        squares = newTable();
-        enPassant = new int[8];
-
-        for (int k = 0; k < 8; k++) {
-            enPassant[k] = -5; // not a piece
-        }
+        Arrays.fill(enPassant, -5);
 
         blackPlayer = new ComputerPlayer("computer 1", PieceColor.blackSet, 3, PlayerStrategy.F1);
         whitePlayer = new UserPlayer("user 1", PieceColor.whiteSet);
@@ -63,9 +60,8 @@ public class BoardState implements Cloneable, Serializable {
         squares[0][5] = Pieces.blackBishop;
         squares[0][6] = Pieces.blackKnight;
         squares[0][7] = Pieces.blackRook;
-        for (int file = 0; file < 8; file++) {
-            squares[1][file] = Pieces.blackPawn;
-        }
+
+        Arrays.fill(squares[1], Pieces.blackPawn);
 
         squares[7][0] = Pieces.whiteRook;
         squares[7][1] = Pieces.whiteKnight;
@@ -75,9 +71,8 @@ public class BoardState implements Cloneable, Serializable {
         squares[7][5] = Pieces.whiteBishop;
         squares[7][6] = Pieces.whiteKnight;
         squares[7][7] = Pieces.whiteRook;
-        for (int file = 0; file < 8; file++) {
-            squares[6][file] = Pieces.whitePawn;
-        }
+
+        Arrays.fill(squares[6], Pieces.whitePawn);
     }
 
     private Piece[][] newTable() {

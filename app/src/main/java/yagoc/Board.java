@@ -44,7 +44,7 @@ public class Board extends BoardState {
         return new Board(this);
     }
 
-    public MoveLog play(Move move) {
+    public void play(Move move) {
         MoveLog moveLog = new MoveLog(this, move, pieceAt(move.to()));
 
         if (move.fromPiece().equals(Pieces.whiteKing))
@@ -95,10 +95,12 @@ public class Board extends BoardState {
         pieceAt(move.to(), move.fromPiece());
         togglePlayer();
         moveCounter++;
-        return moveLog;
+        moves.add(moveLog);
     }
 
-    void undo(MoveLog moveLog) {
+    void undo() {
+        MoveLog moveLog = moves.pop();
+
         if (moveLog.type == MoveType.normal) {
             pieceAt(moveLog.move.from(), moveLog.move.fromPiece());
             pieceAt(moveLog.move.to(), moveLog.toPiece);
