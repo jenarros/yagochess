@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static yagoc.Board.playAndUndo;
+import static yagoc.BoardRules.generateMoves;
 import static yagoc.Yagoc.logger;
 
 public class ComputerPlayer implements Player, Serializable {
@@ -64,7 +65,7 @@ public class ComputerPlayer implements Player, Serializable {
     }
 
     private MoveValue alphaBetaMin(int depth, Board board, int alpha, int beta, AtomicInteger processedMoves) {
-        Collection<Move> moves = board.generateMoves();
+        Collection<Move> moves = generateMoves(board);
 
         // checkmate
         if (moves.isEmpty()) {
@@ -104,7 +105,7 @@ public class ComputerPlayer implements Player, Serializable {
     }
 
     private MoveValue alphaBetaMax(int depth, Board board, int alpha, int beta, AtomicInteger processedMoves) {
-        Collection<Move> moves = board.generateMoves();
+        Collection<Move> moves = generateMoves(board);
 
         // checkmate
         if (moves.isEmpty()) {

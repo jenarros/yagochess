@@ -1,6 +1,7 @@
 package yagoc;
 
 import yagoc.pieces.PieceColor;
+import yagoc.pieces.Pieces;
 import yagoc.players.ComputerPlayer;
 import yagoc.players.PlayerStrategy;
 import yagoc.players.UserPlayer;
@@ -13,8 +14,9 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import static yagoc.Board.moveDoesNotCreateCheck;
-import static yagoc.Board.noMoreMovesAllowed;
+import static yagoc.BoardRules.isCorrectMove;
+import static yagoc.BoardRules.moveDoesNotCreateCheck;
+import static yagoc.BoardRules.noMoreMovesAllowed;
 import static yagoc.Yagoc.logger;
 
 public class Controller {
@@ -67,12 +69,12 @@ public class Controller {
 
             Move move = new Move(board.pieceAt(from), from, to);
             if (!from.equals(to)
-                    && board.isCorrectMove(move)
+                    && isCorrectMove(board, move)
                     && moveDoesNotCreateCheck(board, move)) {
 
                 board.play(move);
 
-                board.ifPawnHasReachedFinalRankReplaceWithQueen(move);
+                ifPawnHasReachedFinalRankReplaceWithQueen(board, move);
 
                 finished = noMoreMovesAllowed(board);
 
@@ -85,6 +87,15 @@ public class Controller {
         return false;
     }
 
+    public void ifPawnHasReachedFinalRankReplaceWithQueen(Board board, Move move) {
+        //TODO What if there is already a queen?
+        if ((move.fromPiece().equals(Pieces.blackPawn) && move.to().rank() == 7)) {
+            board.pieceAt(move.to(), Pieces.blackQueen);
+        } else if (move.fromPiece().equals(Pieces.whitePawn) && move.to().rank() == 0) {
+            board.pieceAt(move.to(), Pieces.whiteQueen);
+        }
+    }
+
     public void nextMove() {
         if (finished) return;
 
@@ -94,7 +105,7 @@ public class Controller {
             board.play(move);
             logger.info(move.toString());
 
-            board.ifPawnHasReachedFinalRankReplaceWithQueen(move);
+            ifPawnHasReachedFinalRankReplaceWithQueen(board, move);
 
             finished = noMoreMovesAllowed(board);
         }

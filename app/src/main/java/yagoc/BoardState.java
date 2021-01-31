@@ -89,4 +89,118 @@ public class BoardState implements Cloneable, Serializable {
 
         return pieces;
     }
+
+    public int enPassant(int file) {
+        return enPassant[file];
+    }
+
+    public Player currentPlayer() {
+        return currentPlayer;
+    }
+
+    public boolean hasWhiteLeftRookMoved() {
+        return whiteLeftRookMoved;
+    }
+
+    public boolean hasWhiteRightRookMoved() {
+        return whiteRightRookMoved;
+    }
+
+    public boolean hasWhiteKingMoved() {
+        return whiteKingMoved;
+    }
+
+    public boolean hasBlackLeftRookMoved() {
+        return blackLeftRookMoved;
+    }
+
+    public boolean hasBlackRightRookMoved() {
+        return blackRightRookMoved;
+    }
+
+    public boolean hasBlackKingMoved() {
+        return blackKingMoved;
+    }
+
+    public int drawCounter() {
+        return drawCounter;
+    }
+
+    public int moveCounter() {
+        return moveCounter;
+    }
+
+    public Player blackPlayer() {
+        return blackPlayer;
+    }
+
+    public Player whitePlayer() {
+        return whitePlayer;
+    }
+
+    public void whitePlayer(Player player) {
+        if (currentPlayer.equals(whitePlayer)) {
+            currentPlayer = player;
+        }
+        whitePlayer = player;
+    }
+
+    public boolean isPieceOfOppositePlayer(Piece piece) {
+        return !piece.equals(none) && !piece.color().equals(currentPlayer.pieceColor());
+    }
+
+    public boolean isPieceOfCurrentPlayer(Piece piece) {
+        return piece.color() == currentPlayer.pieceColor();
+    }
+
+    protected void togglePlayer() {
+        if (currentPlayer.equals(blackPlayer)) {
+            currentPlayer = whitePlayer;
+        } else {
+            currentPlayer = blackPlayer;
+        }
+    }
+
+    public void blackPlayer(Player player) {
+        if (currentPlayer.equals(blackPlayer)) {
+            currentPlayer = player;
+        }
+        blackPlayer = player;
+    }
+
+    public Piece pieceAt(int rank, int file) {
+        Square square = new Square(rank, file);
+        if (!square.exists()) {
+            throw new IllegalArgumentException("Square " + square + " does not exist.");
+        }
+        return pieceAt(square);
+    }
+
+    public boolean noneAt(int rank, int file) {
+        Square square = new Square(rank, file);
+        if (!square.exists()) {
+            throw new IllegalArgumentException("Square " + square + " does not exist.");
+        }
+        return noneAt(square);
+    }
+
+    public boolean noneAt(Square square) {
+        return pieceAt(square).equals(none);
+    }
+
+    public Piece pieceAt(Square square) {
+        return squares[square.rank()][square.file()];
+    }
+
+    void pieceAt(Square square, Piece newPiece) {
+        squares[square.rank()][square.file()] = newPiece;
+    }
+
+    public Player oppositePlayer() {
+        if (currentPlayer.equals(whitePlayer)) {
+            return blackPlayer;
+        } else {
+            return whitePlayer;
+        }
+    }
 }

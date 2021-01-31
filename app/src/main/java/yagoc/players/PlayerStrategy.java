@@ -9,6 +9,8 @@ import yagoc.pieces.Pieces;
 import java.io.Serializable;
 import java.util.function.BiFunction;
 
+import static yagoc.BoardRules.generateMoves;
+
 public class PlayerStrategy implements Serializable {
     public static PlayerStrategy F1 = new PlayerStrategy((board, color) -> {
         return Square.allSquares.stream().map((square) -> {
@@ -39,7 +41,7 @@ public class PlayerStrategy implements Serializable {
                             acc += Math.abs(3.5 - square.rank()) * 10;
                         break;
                     case Bishop:
-                        acc += 300 + board.generateMoves(square).count() * 10;
+                        acc += 300 + generateMoves(board, square).count() * 10;
                         break;
                     case Rook:
                         acc += 500;
@@ -70,7 +72,7 @@ public class PlayerStrategy implements Serializable {
                         acc -= 300 + (3.5 - Math.abs(3.5 - square.file())) * 20;
                         break;
                     case Bishop:
-                        acc -= 330 + board.generateMoves(square).count() * 10;
+                        acc -= 330 + generateMoves(board, square).count() * 10;
                         break;
                     case Rook:
                         acc -= 500;
@@ -111,7 +113,7 @@ public class PlayerStrategy implements Serializable {
                             acc += Math.abs(3.5 - square.rank()) * 10;
                         break;
                     case Bishop:
-                        acc += 330 + board.generateMoves(square).count() * 10;
+                        acc += 330 + generateMoves(board, square).count() * 10;
                         break;
                     case Rook:
                         acc += Math.abs(3.5 - square.rank()) * 15 + 500;
@@ -138,7 +140,7 @@ public class PlayerStrategy implements Serializable {
                         acc -= 300 + (3.5 - Math.abs(3.5 - square.file())) * 20;
                         break;
                     case Bishop:
-                        acc -= 330 + board.generateMoves(square).count() * 10;
+                        acc -= 330 + generateMoves(board, square).count() * 10;
                         if (piece.color() == PieceColor.blackSet)
                             acc -= Math.abs(3.5 - square.rank()) * 10;
                         else
