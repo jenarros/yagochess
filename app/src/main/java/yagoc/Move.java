@@ -46,6 +46,10 @@ public class Move {
         return (to.file() - from.file()) * (fromPiece.color() == PieceColor.whiteSet ? 1 : -1);
     }
 
+    public Square enPassantSquare() {
+        return this.to().previousRank(this.fromPiece().color());
+    }
+
     public int fileDistanceAbs() {
         return Math.abs(fileDistance());
     }

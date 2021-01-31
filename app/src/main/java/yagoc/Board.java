@@ -3,8 +3,6 @@ package yagoc;
 import yagoc.pieces.PieceColor;
 import yagoc.pieces.Pieces;
 
-import java.util.concurrent.Callable;
-
 import static yagoc.Square.castlingKingsideBlackFrom;
 import static yagoc.Square.castlingKingsideBlackTo;
 import static yagoc.Square.castlingKingsideWhiteFrom;
@@ -46,17 +44,6 @@ public class Board extends BoardState {
         return new Board(this);
     }
 
-    public static <T> T playAndUndo(Board board, Move move, Callable<T> callable) {
-        MoveLog moveLog = board.play(move);
-        try {
-            T moveValue = callable.call();
-            board.undo(moveLog);
-            return moveValue;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public MoveLog play(Move move) {
         MoveLog moveLog = new MoveLog(this, move, pieceAt(move.to()));
 
@@ -80,17 +67,16 @@ public class Board extends BoardState {
             playCastlingExtraMove(moveLog);
         } else {
             if (!pieceAt(move.to()).equals(none) || move.fromPiece().pieceType() == Pawn) {
-                //reinicio el contador por matar una ficha
-                //o mover un peon
+                // draw counter restarts when we capture a piece or move a pawn
                 drawCounter = 0;
             } else {
                 drawCounter++;
             }
-            //si peon avanza dos activar posible captura al paso
+            // if pawn advances 2 squares, it is possible that next move is a en passant capture
             if (move.fromPiece().pieceType() == Pawn && move.rankDistanceAbs() == 2) {
                 enPassant[move.to().file()] = moveCounter;
             }
-            //realizar captura al paso
+            // en passant capture
             if (move.fromPiece().pieceType() == Pawn
                     && move.rankDistance() == 1
                     && move.fileDistanceAbs() == 1
@@ -98,9 +84,8 @@ public class Board extends BoardState {
                 moveLog.type = MoveType.enPassant;
                 // i.e. for whites
                 // turn=1, to.x = 2, to.y = 5, squareC = (3,5)
-                moveLog.enPassantSquare = move.to().previousRank(move.fromPiece().color());
-                moveLog.enPassantPiece = pieceAt(moveLog.enPassantSquare);
-                pieceAt(moveLog.enPassantSquare, none);
+                moveLog.enPassantPiece = pieceAt(moveLog.move.enPassantSquare());
+                pieceAt(moveLog.move.enPassantSquare(), none);
             } else {
                 moveLog.type = MoveType.normal;
             }
@@ -121,7 +106,7 @@ public class Board extends BoardState {
         } else if (moveLog.type == MoveType.enPassant) {
             pieceAt(moveLog.move.from(), moveLog.move.fromPiece());
             pieceAt(moveLog.move.to(), moveLog.toPiece);
-            pieceAt(moveLog.enPassantSquare, moveLog.enPassantPiece);
+            pieceAt(moveLog.move.enPassantSquare(), moveLog.enPassantPiece);
 
         } else if (moveLog.type == MoveType.castling) {
             pieceAt(moveLog.move.from(), moveLog.move.fromPiece());

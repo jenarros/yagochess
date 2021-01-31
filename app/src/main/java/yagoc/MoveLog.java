@@ -11,8 +11,7 @@ public class MoveLog {
 	final int moveCounter;
 	final Piece toPiece;
 
-	MoveType type; //2=normal, 3=captura al paso, 4=enroque
-	Square enPassantSquare;
+	MoveType type;
 	Move castlingExtraMove;
 	Piece enPassantPiece;
 

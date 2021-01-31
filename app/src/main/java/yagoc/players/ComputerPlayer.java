@@ -8,8 +8,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static yagoc.Board.playAndUndo;
 import static yagoc.BoardRules.generateMoves;
+import static yagoc.BoardRules.playAndUndo;
 import static yagoc.Yagoc.logger;
 
 public class ComputerPlayer implements Player, Serializable {

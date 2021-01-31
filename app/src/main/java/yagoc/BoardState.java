@@ -48,7 +48,7 @@ public class BoardState implements Cloneable, Serializable {
         enPassant = new int[8];
 
         for (int k = 0; k < 8; k++) {
-            enPassant[k] = -5; //movimiento absurdo
+            enPassant[k] = -5; // not a piece
         }
 
         blackPlayer = new ComputerPlayer("computer 1", PieceColor.blackSet, 3, PlayerStrategy.F1);

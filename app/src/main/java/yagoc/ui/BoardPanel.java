@@ -27,7 +27,7 @@ import static yagoc.ui.YagocWindow.lightSquaresColor;
 public class BoardPanel extends JPanel {
 	public static final Integer[] PLAYER_LEVELS = {1, 2, 3, 4, 5};
 	public static final Integer[] GAME_OPTIONS = {1, 2, 3, 4};
-	public static final int REFRESH_RATE_MILLISECONDS = 50;
+	public static final int REFRESH_RATE_MILLISECONDS = 20; // 1000 / rate = fps
 
 	private final Board board;
 	private final Controller controller;

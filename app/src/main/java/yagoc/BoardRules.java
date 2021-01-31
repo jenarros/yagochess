@@ -3,6 +3,7 @@ package yagoc;
 import yagoc.pieces.PieceColor;
 
 import java.util.Collection;
+import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,6 +23,17 @@ public class BoardRules {
 
     static boolean cannotMoveWithoutBeingCheck(Board board) {
         return generateMoves(board).stream().noneMatch((move) -> moveDoesNotCreateCheck(board, move));
+    }
+
+    public static <T> T playAndUndo(Board board, Move move, Callable<T> callable) {
+        MoveLog moveLog = board.play(move);
+        try {
+            T moveValue = callable.call();
+            board.undo(moveLog);
+            return moveValue;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static boolean isInCheck(Board board, PieceColor color) {
@@ -50,13 +62,7 @@ public class BoardRules {
     }
 
     public static boolean moveDoesNotCreateCheck(Board board, Move move) {
-        MoveLog moveLog = board.play(move);
-
-        boolean inCheck = isInCheck(board, move.fromPiece().color());
-
-        board.undo(moveLog);
-
-        return !inCheck;
+        return !playAndUndo(board, move, () -> isInCheck(board, move.fromPiece().color()));
     }
 
     public static boolean moveDoesNotCreateCheck(Board board, Square from, Square to) {
