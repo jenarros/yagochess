@@ -1,4 +1,4 @@
-package yagoc;
+package yagoc.board;
 
 import yagoc.pieces.PieceColor;
 
@@ -13,11 +13,11 @@ import static yagoc.pieces.PieceType.King;
 import static yagoc.pieces.Pieces.none;
 
 public class BoardRules {
-    static boolean isCorrectMove(Board board, Square from, Square to) {
+    public static boolean isCorrectMove(Board board, Square from, Square to) {
         return isCorrectMove(board, new Move(board.pieceAt(from), from, to));
     }
 
-    static boolean isCorrectMove(Board board, Move move) {
+    public static boolean isCorrectMove(Board board, Move move) {
         return move.fromPiece().isCorrectMove(board, move);
     }
 

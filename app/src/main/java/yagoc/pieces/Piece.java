@@ -1,8 +1,8 @@
 package yagoc.pieces;
 
-import yagoc.Board;
-import yagoc.Move;
-import yagoc.Square;
+import yagoc.board.Board;
+import yagoc.board.Move;
+import yagoc.board.Square;
 
 import java.io.Serializable;
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package yagoc;
+package yagoc.board;
 
 import yagoc.pieces.Piece;
 

@@ -1,6 +1,6 @@
 package yagoc.players;
 
-import yagoc.Move;
+import yagoc.board.Move;
 
 class MoveValue {
     final int value;

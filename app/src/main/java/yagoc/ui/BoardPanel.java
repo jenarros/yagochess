@@ -1,8 +1,8 @@
 package yagoc.ui;
 
-import yagoc.Board;
 import yagoc.Controller;
-import yagoc.Square;
+import yagoc.board.Board;
+import yagoc.board.Square;
 import yagoc.pieces.Piece;
 import yagoc.pieces.Pieces;
 
@@ -14,8 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-import static yagoc.Move.FILE_NAMES;
-import static yagoc.Move.RANK_NAMES;
+import static yagoc.board.Move.FILE_NAMES;
+import static yagoc.board.Move.RANK_NAMES;
 import static yagoc.ui.YagocWindow.BOARD_FONT_SIZE;
 import static yagoc.ui.YagocWindow.BORDER_SIZE;
 import static yagoc.ui.YagocWindow.IMAGE_SIZE;

@@ -1,13 +1,13 @@
 package yagoc.players;
 
-import yagoc.Board;
-import yagoc.Square;
+import yagoc.board.Board;
+import yagoc.board.Square;
 import yagoc.pieces.Piece;
 import yagoc.pieces.PieceColor;
 
 import java.io.Serializable;
 
-import static yagoc.BoardRules.generateMoves;
+import static yagoc.board.BoardRules.generateMoves;
 
 public class PlayerStrategy implements Serializable {
     public static PlayerStrategy F1 = new PlayerStrategy((board, color) -> {

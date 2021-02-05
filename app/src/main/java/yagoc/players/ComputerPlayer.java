@@ -1,16 +1,16 @@
 package yagoc.players;
 
-import yagoc.Board;
-import yagoc.Move;
+import yagoc.board.Board;
+import yagoc.board.Move;
 import yagoc.pieces.PieceColor;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static yagoc.BoardRules.generateMoves;
-import static yagoc.BoardRules.playAndUndo;
 import static yagoc.Yagoc.logger;
+import static yagoc.board.BoardRules.generateMoves;
+import static yagoc.board.BoardRules.playAndUndo;
 
 public class ComputerPlayer implements Player, Serializable {
     final protected PieceColor pieceColor;

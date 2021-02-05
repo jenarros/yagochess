@@ -1,5 +1,6 @@
 package yagoc;
 
+import yagoc.board.Board;
 import yagoc.ui.UserOptionDialog;
 import yagoc.ui.YagocWindow;
 

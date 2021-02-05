@@ -1,8 +1,8 @@
 package yagoc.ui;
 
-import yagoc.Board;
 import yagoc.Controller;
 import yagoc.Logger;
+import yagoc.board.Board;
 
 import javax.swing.*;
 import java.awt.*;

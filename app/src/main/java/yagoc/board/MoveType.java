@@ -1,4 +1,4 @@
-package yagoc;
+package yagoc.board;
 
 public enum MoveType {
     normal,

@@ -1,16 +1,16 @@
-package yagoc;
+package yagoc.board;
 
 import yagoc.pieces.PieceColor;
 import yagoc.pieces.Pieces;
 
-import static yagoc.Square.castlingKingsideBlackFrom;
-import static yagoc.Square.castlingKingsideBlackTo;
-import static yagoc.Square.castlingKingsideWhiteFrom;
-import static yagoc.Square.castlingKingsideWhiteTo;
-import static yagoc.Square.castlingQueensideBlackFrom;
-import static yagoc.Square.castlingQueensideBlackTo;
-import static yagoc.Square.castlingQueensideWhiteFrom;
-import static yagoc.Square.castlingQueensideWhiteTo;
+import static yagoc.board.Square.castlingKingsideBlackFrom;
+import static yagoc.board.Square.castlingKingsideBlackTo;
+import static yagoc.board.Square.castlingKingsideWhiteFrom;
+import static yagoc.board.Square.castlingKingsideWhiteTo;
+import static yagoc.board.Square.castlingQueensideBlackFrom;
+import static yagoc.board.Square.castlingQueensideBlackTo;
+import static yagoc.board.Square.castlingQueensideWhiteFrom;
+import static yagoc.board.Square.castlingQueensideWhiteTo;
 import static yagoc.pieces.PieceType.Pawn;
 import static yagoc.pieces.Pieces.none;
 
@@ -146,5 +146,13 @@ public class Board extends BoardState {
             pieceAt(castlingKingsideBlackTo, Pieces.blackRook);
         }
         return MoveLog.castling(this, move, pieceAt(move.to()), castlingExtraMove);
+    }
+
+    public static Board parse(String stringBoard) {
+        Board board = new Board();
+        Square.allSquares.forEach((square) -> {
+            board.pieceAt(square, Pieces.parse(stringBoard.charAt(square.arrayPosition())));
+        });
+        return board;
     }
 }

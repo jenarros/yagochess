@@ -1,4 +1,4 @@
-package yagoc;
+package yagoc.board;
 
 import yagoc.pieces.Piece;
 import yagoc.pieces.PieceColor;
@@ -174,7 +174,7 @@ public class BoardState implements Serializable {
         return squares[square.rank()][square.file()];
     }
 
-    void pieceAt(Square square, Piece newPiece) {
+    public void pieceAt(Square square, Piece newPiece) {
         squares[square.rank()][square.file()] = newPiece;
     }
 

@@ -1,13 +1,13 @@
 package yagoc.pieces;
 
-import yagoc.Board;
-import yagoc.Move;
-import yagoc.Square;
+import yagoc.board.Board;
+import yagoc.board.Move;
+import yagoc.board.Square;
 
 import java.util.stream.Stream;
 
-import static yagoc.BoardRules.isInCheck;
-import static yagoc.BoardRules.moveDoesNotCreateCheck;
+import static yagoc.board.BoardRules.isInCheck;
+import static yagoc.board.BoardRules.moveDoesNotCreateCheck;
 
 public class King extends Piece {
     public King(PieceColor pieceColor) {

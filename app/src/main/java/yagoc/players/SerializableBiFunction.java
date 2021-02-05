@@ -1,6 +1,6 @@
 package yagoc.players;
 
-import yagoc.Board;
+import yagoc.board.Board;
 import yagoc.pieces.PieceColor;
 
 import java.io.Serializable;

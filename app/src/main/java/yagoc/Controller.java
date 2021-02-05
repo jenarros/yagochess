@@ -1,5 +1,8 @@
 package yagoc;
 
+import yagoc.board.Board;
+import yagoc.board.Move;
+import yagoc.board.Square;
 import yagoc.pieces.PieceColor;
 import yagoc.pieces.Pieces;
 import yagoc.players.ComputerPlayer;
@@ -14,10 +17,10 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import static yagoc.BoardRules.isCorrectMove;
-import static yagoc.BoardRules.moveDoesNotCreateCheck;
-import static yagoc.BoardRules.noMoreMovesAllowed;
 import static yagoc.Yagoc.logger;
+import static yagoc.board.BoardRules.isCorrectMove;
+import static yagoc.board.BoardRules.moveDoesNotCreateCheck;
+import static yagoc.board.BoardRules.noMoreMovesAllowed;
 
 public class Controller {
     private static final int COMPUTER_PAUSE_SECONDS = 1;
