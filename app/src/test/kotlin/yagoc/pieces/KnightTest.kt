@@ -7,46 +7,46 @@ import org.junit.Test
 import yagoc.TestBoard
 import yagoc.board.Square
 
-class BishopTest {
+class KnightTest {
     @Test
-    fun `can move diagonally to the end of the board`() {
+    fun `standard 8 squares`() {
         val test = TestBoard(
             """
-            1-----1-
-            -1---1--
-            --1-1---
-            ---B----
+            --------
             --1-1---
             -1---1--
-            1-----1-
-            -------1
+            ---N----
+            -1---1--
+            --1-1---
+            --------
+            --------
         """, Square(3, 3)
         )
 
         test.possibleMoves().run {
-            assertThat(this.size, equalTo(13))
+            assertThat(this.size, equalTo(8))
             assertThat(this, equalTo(test.validSquares()))
         }
     }
 
     @Test
-    fun `can move diagonally to the end of the board or first piece found`() {
+    fun `standard 8 squares if they are empty or have a piece of the other color`() {
         val test = TestBoard(
             """
             --------
-            --------
-            --b-p---
-            ---B----
             --1-1---
-            -1---P--
-            1-------
+            -1---1--
+            ---N----
+            -Q---p--
+            --1-1---
+            --------
             --------
         """, Square(3, 3)
         )
 
         test.possibleMoves().run {
-            assertThat(this.size, equalTo(6))
-            assertThat(this, hasItem(equalTo(Square(2, 2))))
+            assertThat(this.size, equalTo(7))
+            assertThat(this, hasItem(equalTo(Square(4, 5))))
             assertThat(this, equalTo(test.validSquares()))
         }
     }

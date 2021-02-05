@@ -164,18 +164,18 @@ public class BoardPanel extends JPanel {
 		Toolkit t = getToolkit();
 		Map<Piece, Image> images = new HashMap<>();
 
-		images.put(Pieces.whitePawn, t.getImage("img/peon.gif"));
-		images.put(Pieces.whiteKnight, t.getImage("img/caballo.gif"));
-		images.put(Pieces.whiteBishop, t.getImage("img/alfil.gif"));
-		images.put(Pieces.whiteRook, t.getImage("img/torre.gif"));
-		images.put(Pieces.whiteQueen, t.getImage("img/reina.gif"));
-		images.put(Pieces.whiteKing, t.getImage("img/rey.gif"));
-		images.put(Pieces.blackPawn, t.getImage("img/peonNegro.gif"));
-		images.put(Pieces.blackKnight, t.getImage("img/caballoNegro.gif"));
-		images.put(Pieces.blackBishop, t.getImage("img/alfilNegro.gif"));
-		images.put(Pieces.blackRook, t.getImage("img/torreNegro.gif"));
-		images.put(Pieces.blackQueen, t.getImage("img/reinaNegro.gif"));
-		images.put(Pieces.blackKing, t.getImage("img/reyNegro.gif"));
+		images.put(Pieces.whitePawn, t.getImage(this.getClass().getResource("/img/peon.gif")));
+		images.put(Pieces.whiteKnight, t.getImage(this.getClass().getResource("/img/caballo.gif")));
+		images.put(Pieces.whiteBishop, t.getImage(this.getClass().getResource("/img/alfil.gif")));
+		images.put(Pieces.whiteRook, t.getImage(this.getClass().getResource("/img/torre.gif")));
+		images.put(Pieces.whiteQueen, t.getImage(this.getClass().getResource("/img/reina.gif")));
+		images.put(Pieces.whiteKing, t.getImage(this.getClass().getResource("/img/rey.gif")));
+		images.put(Pieces.blackPawn, t.getImage(this.getClass().getResource("/img/peonNegro.gif")));
+		images.put(Pieces.blackKnight, t.getImage(this.getClass().getResource("/img/caballoNegro.gif")));
+		images.put(Pieces.blackBishop, t.getImage(this.getClass().getResource("/img/alfilNegro.gif")));
+		images.put(Pieces.blackRook, t.getImage(this.getClass().getResource("/img/torreNegro.gif")));
+		images.put(Pieces.blackQueen, t.getImage(this.getClass().getResource("/img/reinaNegro.gif")));
+		images.put(Pieces.blackKing, t.getImage(this.getClass().getResource("/img/reyNegro.gif")));
 
 		return images;
 	}

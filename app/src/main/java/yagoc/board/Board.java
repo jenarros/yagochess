@@ -147,12 +147,4 @@ public class Board extends BoardState {
         }
         return MoveLog.castling(this, move, pieceAt(move.to()), castlingExtraMove);
     }
-
-    public static Board parse(String stringBoard) {
-        Board board = new Board();
-        Square.allSquares.forEach((square) -> {
-            board.pieceAt(square, Pieces.parse(stringBoard.charAt(square.arrayPosition())));
-        });
-        return board;
-    }
 }

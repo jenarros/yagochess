@@ -2,49 +2,52 @@ package yagoc.pieces
 
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.hasItem
 import org.junit.Test
 import yagoc.TestBoard
 import yagoc.board.Square
 
-class KingTest {
+class QueenTest {
+
     @Test
-    fun `can move 1 square in all directions`() {
+    fun `like a rook and bishop to the end of the board`() {
         val test = TestBoard(
             """
-            --------
-            --------
+            1--1--1-
+            -1-1-1--
             --111---
-            --1K1---
+            111Q1111
             --111---
-            --------
-            --------
-            --------
+            -1-1-1--
+            1--1--1-
+            ---1---1
         """, Square(3, 3)
         )
 
         test.possibleMoves().run {
-            assertThat(this.size, equalTo(8))
+            assertThat(this.size, equalTo(27))
             assertThat(this, equalTo(test.validSquares()))
         }
     }
 
     @Test
-    fun `can move 1 square in all directions if there isn't a piece of our color`() {
+    fun `like a rook or bishop to the end of the board or first piece found`() {
         val test = TestBoard(
             """
-            --------
-            --------
+            1--1--1-
+            -1-1-1--
             --111---
-            --1Kp---
-            --11P---
-            --------
-            --------
-            --------
+            P11Q1111
+            --111---
+            -1-1-1--
+            1--p--1-
+            -------1
         """, Square(3, 3)
         )
 
         test.possibleMoves().run {
-            assertThat(this.size, equalTo(7))
+            assertThat(this.size, equalTo(25))
+            assertThat(this, hasItem(equalTo(Square(6, 3))))
             assertThat(this, equalTo(test.validSquares()))
         }
     }
