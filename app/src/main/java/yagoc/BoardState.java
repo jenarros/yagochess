@@ -14,16 +14,16 @@ import java.util.Stack;
 
 import static yagoc.pieces.Pieces.none;
 
-public class BoardState implements Cloneable, Serializable {
+public class BoardState implements Serializable {
     protected final Stack<MoveLog> moves = new Stack<>();
-    protected final Piece[][] squares = newTable();
+    protected final Piece[][] squares = new Piece[8][8];
     protected final int[] enPassant = new int[8];
-    protected Player currentPlayer;
+    private Player currentPlayer;
     protected boolean whiteLeftRookMoved, whiteRightRookMoved, whiteKingMoved;
     protected boolean blackLeftRookMoved, blackRightRookMoved, blackKingMoved;
     protected int drawCounter;
     protected int moveCounter;
-    protected Player blackPlayer, whitePlayer;
+    private Player blackPlayer, whitePlayer;
 
     public void resetWith(BoardState board) {
         for (int i = 0; i < 8; i++) {
@@ -46,6 +46,11 @@ public class BoardState implements Cloneable, Serializable {
     }
 
     public void reset() {
+        Arrays.fill(squares[2], none);
+        Arrays.fill(squares[3], none);
+        Arrays.fill(squares[4], none);
+        Arrays.fill(squares[5], none);
+
         Arrays.fill(enPassant, -5);
 
         blackPlayer = new ComputerPlayer("computer 1", PieceColor.blackSet, 3, PlayerStrategy.F1);
@@ -73,16 +78,6 @@ public class BoardState implements Cloneable, Serializable {
         squares[7][7] = Pieces.whiteRook;
 
         Arrays.fill(squares[6], Pieces.whitePawn);
-    }
-
-    private Piece[][] newTable() {
-        Piece[][] pieces = new Piece[8][8];
-
-        for (Piece[] piece : pieces) {
-            Arrays.fill(piece, none);
-        }
-
-        return pieces;
     }
 
     public int enPassant(int file) {
@@ -141,7 +136,7 @@ public class BoardState implements Cloneable, Serializable {
     }
 
     public boolean isPieceOfOppositePlayer(Piece piece) {
-        return !piece.equals(none) && !piece.color().equals(currentPlayer.pieceColor());
+        return piece.notOfSameColor(currentPlayer.pieceColor());
     }
 
     public boolean isPieceOfCurrentPlayer(Piece piece) {
@@ -169,14 +164,6 @@ public class BoardState implements Cloneable, Serializable {
             throw new IllegalArgumentException("Square " + square + " does not exist.");
         }
         return pieceAt(square);
-    }
-
-    public boolean noneAt(int rank, int file) {
-        Square square = new Square(rank, file);
-        if (!square.exists()) {
-            throw new IllegalArgumentException("Square " + square + " does not exist.");
-        }
-        return noneAt(square);
     }
 
     public boolean noneAt(Square square) {

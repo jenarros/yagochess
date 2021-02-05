@@ -3,10 +3,12 @@ package yagoc;
 import yagoc.pieces.Piece;
 import yagoc.pieces.PieceColor;
 
+import java.io.Serializable;
+
 import static yagoc.pieces.PieceType.King;
 import static yagoc.pieces.Pieces.none;
 
-public class Move {
+public class Move implements Serializable {
     public static final String[] FILE_NAMES = {"a", "b", "c", "d", "e", "f", "g", "h"};
     public static final String[] RANK_NAMES = {"8", "7", "6", "5", "4", "3", "2", "1"};
 

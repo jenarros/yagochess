@@ -46,7 +46,7 @@ public class BoardRules {
     }
 
     public static boolean isCheckmate(Board board) {
-        if (isInCheck(board, board.currentPlayer.pieceColor())) {
+        if (isInCheck(board, board.currentPlayer().pieceColor())) {
             return cannotMoveWithoutBeingCheck(board);
         } else {
             return false;
@@ -54,7 +54,7 @@ public class BoardRules {
     }
 
     public static boolean isADraw(Board board) {
-        if (!isInCheck(board, board.currentPlayer.pieceColor()) && cannotMoveWithoutBeingCheck(board)) {
+        if (!isInCheck(board, board.currentPlayer().pieceColor()) && cannotMoveWithoutBeingCheck(board)) {
             return true;
         }
 

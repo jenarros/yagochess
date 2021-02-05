@@ -8,6 +8,8 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import static yagoc.pieces.Pieces.none;
+
 abstract public class Piece implements Serializable {
     private final PieceType pieceType;
     private final PieceColor color;
@@ -76,5 +78,9 @@ abstract public class Piece implements Serializable {
 
     public final Stream<Move> generateMoves(Board board, Square from) {
         return generateMovesForPiece(board, from).filter((move -> isCorrectMove(board, move)));
+    }
+
+    public boolean notOfSameColor(PieceColor pieceColor) {
+        return this != none && this.color != pieceColor;
     }
 }

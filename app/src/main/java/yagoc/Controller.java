@@ -53,7 +53,7 @@ public class Controller {
     }
 
     public void move(Square from, Square to) {
-        Board copy = board.clone();
+        Board copy = new Board(board);
 
         if (moveIfPossible(from, to)) {
             checkpoints.add(copy);

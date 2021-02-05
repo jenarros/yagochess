@@ -2,13 +2,16 @@ package yagoc
 
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers
+import org.hamcrest.Matchers.hasItem
 import org.junit.Test
-import yagoc.pieces.Pieces
+import yagoc.pieces.PieceColor.blackSet
+import yagoc.pieces.Pieces.blackBishop
 import kotlin.streams.toList
 
 class BishopTest {
     @Test
-    fun `can move diagonally`() {
+    fun `can move diagonally to the end of the board`() {
         val test = """
             1-----1-
             -1---1--
@@ -21,29 +24,34 @@ class BishopTest {
         """.trimIndent().replace("\n", "")
 
         val board = test.toBoard()
-        val expected = test.toValidSquares()
+        val expected = test.toValidSquares(blackSet)
 
-        val actual = Pieces.whiteBishop.generateMoves(board, Square(3, 3)).map { it.to() }.sorted().toList()
+        val actual = blackBishop.generateMoves(board, Square(3, 3)).map { it.to() }.sorted().toList()
+
+        assertThat(actual.size, Matchers.equalTo(13))
         assertThat(actual, equalTo(expected))
     }
 
-    private fun String.toValidSquares(): Collection<Square> =
-            Square.allSquares.filter {
-                '1' == (this[it.arrayPosition()])
-            }.sorted().toList()
-
-    private fun String.toBoard(): Board {
-        val board = Board()
-        Square.allSquares.forEach {
-            board.pieceAt(it, Pieces.parse(this[it.arrayPosition()]))
-        }
-        return board
-    }
-
     @Test
-    fun `represent squares in array`() {
-        assertThat(Square(0, 0).arrayPosition(), equalTo(0))
-        assertThat(Square(0, 1).arrayPosition(), equalTo(8))
-        assertThat(Square(7, 7).arrayPosition(), equalTo(63))
+    fun `can move diagonally to the end of the board or first piece found`() {
+        val test = """
+            --------
+            --------
+            --b-p---
+            ---B----
+            --1-1---
+            -1---P--
+            1-------
+            --------
+        """.trimIndent().replace("\n", "")
+
+        val board = test.toBoard()
+        val expected = test.toValidSquares(blackSet)
+
+        val actual = blackBishop.generateMoves(board, Square(3, 3)).map { it.to() }.sorted().toList()
+
+        assertThat(actual.size, Matchers.equalTo(6))
+        assertThat(actual, hasItem(equalTo(Square(2, 2))))
+        assertThat(actual, equalTo(expected))
     }
 }

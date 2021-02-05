@@ -2,12 +2,13 @@ package yagoc;
 
 import yagoc.pieces.PieceColor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class Square implements Comparable {
+public class Square implements Serializable, Comparable {
     public static List<Square> allSquares = all();
 
     private final int rank;
@@ -152,7 +153,7 @@ public class Square implements Comparable {
 
     @Override
     public String toString() {
-        return "(" + rank + ", " + file + ')';
+        return "(" + Move.RANK_NAMES[rank] + ", " + Move.FILE_NAMES[file] + ')';
     }
 
     public int rank() {

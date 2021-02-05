@@ -39,13 +39,8 @@ public class Board extends BoardState {
         resetWith(board);
     }
 
-    @Override
-    public Board clone() {
-        return new Board(this);
-    }
-
     public void play(Move move) {
-        MoveLog moveLog = new MoveLog(this, move, pieceAt(move.to()));
+        final MoveLog moveLog;
 
         if (move.fromPiece().equals(Pieces.whiteKing))
             whiteKingMoved = true;
@@ -63,8 +58,7 @@ public class Board extends BoardState {
 
         if (move.isCastling()) {
             drawCounter++;
-            moveLog.type = MoveType.castling;
-            playCastlingExtraMove(moveLog);
+            moveLog = playCastlingExtraMove(move);
         } else {
             if (!pieceAt(move.to()).equals(none) || move.fromPiece().pieceType() == Pawn) {
                 // draw counter restarts when we capture a piece or move a pawn
@@ -81,13 +75,12 @@ public class Board extends BoardState {
                     && move.rankDistance() == 1
                     && move.fileDistanceAbs() == 1
                     && enPassant[move.to().file()] == moveCounter - 1) {
-                moveLog.type = MoveType.enPassant;
                 // i.e. for whites
                 // turn=1, to.x = 2, to.y = 5, squareC = (3,5)
-                moveLog.enPassantPiece = pieceAt(moveLog.move.enPassantSquare());
+                moveLog = MoveLog.enPassant(this, move, pieceAt(move.to()));
                 pieceAt(moveLog.move.enPassantSquare(), none);
             } else {
-                moveLog.type = MoveType.normal;
+                moveLog = MoveLog.normalMove(this, move, pieceAt(move.to()));
             }
         }
 
@@ -129,26 +122,29 @@ public class Board extends BoardState {
         togglePlayer();
     }
 
-    void playCastlingExtraMove(MoveLog moveLog) {
-        if (moveLog.move.isCastlingQueenside()) {
-            if (moveLog.move.fromPiece().color() == PieceColor.whiteSet) {
-                moveLog.castlingExtraMove = new Move(Pieces.whiteRook, castlingQueensideWhiteFrom, castlingQueensideWhiteTo);
+    MoveLog playCastlingExtraMove(Move move) {
+        final Move castlingExtraMove;
+
+        if (move.isCastlingQueenside()) {
+            if (move.fromPiece().color() == PieceColor.whiteSet) {
+                castlingExtraMove = new Move(Pieces.whiteRook, castlingQueensideWhiteFrom, castlingQueensideWhiteTo);
                 pieceAt(castlingQueensideWhiteFrom, none);
                 pieceAt(castlingQueensideWhiteTo, Pieces.whiteRook);
             } else {
-                moveLog.castlingExtraMove = new Move(Pieces.blackRook, castlingQueensideBlackFrom, castlingQueensideBlackTo);
+                castlingExtraMove = new Move(Pieces.blackRook, castlingQueensideBlackFrom, castlingQueensideBlackTo);
                 pieceAt(castlingQueensideBlackFrom, none);
                 pieceAt(castlingQueensideBlackTo, Pieces.blackRook);
             }
 
-        } else if (moveLog.move.fromPiece().color() == PieceColor.whiteSet) {
-            moveLog.castlingExtraMove = new Move(Pieces.whiteRook, castlingKingsideWhiteFrom, castlingKingsideWhiteTo);
+        } else if (move.fromPiece().color() == PieceColor.whiteSet) {
+            castlingExtraMove = new Move(Pieces.whiteRook, castlingKingsideWhiteFrom, castlingKingsideWhiteTo);
             pieceAt(castlingKingsideWhiteFrom, none);
             pieceAt(castlingKingsideWhiteTo, Pieces.whiteRook);
         } else {
-            moveLog.castlingExtraMove = new Move(Pieces.blackRook, castlingKingsideBlackFrom, castlingKingsideBlackTo);
+            castlingExtraMove = new Move(Pieces.blackRook, castlingKingsideBlackFrom, castlingKingsideBlackTo);
             pieceAt(castlingKingsideBlackFrom, none);
             pieceAt(castlingKingsideBlackTo, Pieces.blackRook);
         }
+        return MoveLog.castling(this, move, pieceAt(move.to()), castlingExtraMove);
     }
 }

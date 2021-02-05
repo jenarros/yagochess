@@ -14,6 +14,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.hamcrest:hamcrest:2.2")
 }
 
 tasks.test {
@@ -27,7 +28,7 @@ application {
     mainClass.set("yagoc.Yagoc")
 }
 
-// config JVM target to 1.8 for kotlin compilation tasks
+// config JVM target to 11 for kotlin compilation tasks
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions.jvmTarget = "11"
 }

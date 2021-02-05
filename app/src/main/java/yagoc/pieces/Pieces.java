@@ -53,18 +53,30 @@ public class Pieces {
 
     public static Piece parse(char c) {
         switch (c) {
-            case 'P':
+            case 'p':
                 return whitePawn;
-            case 'R':
+            case 'r':
                 return whiteRook;
-            case 'N':
+            case 'n':
                 return whiteKnight;
-            case 'B':
+            case 'b':
                 return whiteBishop;
-            case 'Q':
+            case 'q':
                 return whiteQueen;
-            case 'K':
+            case 'k':
                 return whiteKing;
+            case 'P':
+                return blackPawn;
+            case 'R':
+                return blackRook;
+            case 'N':
+                return blackKnight;
+            case 'B':
+                return blackBishop;
+            case 'Q':
+                return blackQueen;
+            case 'K':
+                return blackKing;
             default:
                 return none;
         }
