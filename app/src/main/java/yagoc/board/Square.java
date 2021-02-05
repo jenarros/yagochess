@@ -182,7 +182,7 @@ public class Square implements Serializable, Comparable {
      * position of the square in a sequence from 0 to 63
      */
     public Integer arrayPosition() {
-        return (this.file() * 8) + this.rank();
+        return (this.rank() * 8) + this.file();
     }
 
     @Override

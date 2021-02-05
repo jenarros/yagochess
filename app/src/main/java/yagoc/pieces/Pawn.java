@@ -6,6 +6,9 @@ import yagoc.board.Square;
 
 import java.util.stream.Stream;
 
+import static yagoc.pieces.PieceColor.blackSet;
+import static yagoc.pieces.PieceColor.whiteSet;
+
 public class Pawn extends Piece {
     public Pawn(PieceColor pieceColor) {
         super(PieceType.Pawn, pieceColor);
@@ -19,10 +22,9 @@ public class Pawn extends Piece {
 
         // straight ahead
         if (move.hasSameFile() && board.pieceAt(move.to()).equals(Pieces.none)) {
-            //si avanzamos dos casillas debemos partir de la posicion
-            //inicial y la casilla saltada debe estar vacía
+            // if we move two squares, we should start from the initial position and next rank should be empty
             if (move.rankDistance() == 2 && board.pieceAt(move.to().previousRank(move.fromPiece().color())).equals(Pieces.none) &&
-                    ((move.from().rank() == 6 && board.currentPlayer().equals(board.whitePlayer())) || (move.from().rank() == 1 && board.currentPlayer().equals(board.blackPlayer()))))
+                    (move.from().rank() == 6 && move.fromPiece().color().equals(whiteSet) || (move.from().rank() == 1 && move.fromPiece().color().equals(blackSet))))
                 return true;
 
             if (move.rankDistance() == 1)
@@ -32,7 +34,7 @@ public class Pawn extends Piece {
         // diagonal
         if (move.fileDistanceAbs() == 1 && move.rankDistance() == 1) {
             // capture
-            if (board.isPieceOfOppositePlayer(board.pieceAt(move.to()))) {
+            if (board.pieceAt(move.to()).notOfSameColor(move.fromPiece().color())) {
                 return true;
             }
 
@@ -49,10 +51,10 @@ public class Pawn extends Piece {
         Piece piece = board.pieceAt(from);
 
         return Stream.of(
-                from.nextRankPreviousFile(board.currentPlayer().pieceColor()), // left
-                from.nextRank(board.currentPlayer().pieceColor()),             // ahead
-                from.next2Rank(board.currentPlayer().pieceColor()),            // ahead 2
-                from.nextRankNextFile(board.currentPlayer().pieceColor())      // right
+                from.nextRankPreviousFile(piece.color()), // left
+                from.nextRank(piece.color()),             // ahead
+                from.next2Rank(piece.color()),            // ahead 2
+                from.nextRankNextFile(piece.color())      // right
         ).filter(Square::exists)
                 .map((to) -> new Move(piece, from, to));
     }
