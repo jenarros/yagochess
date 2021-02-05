@@ -14,7 +14,7 @@ import java.util.Stack;
 
 import static yagoc.pieces.Pieces.none;
 
-public class BoardState implements Serializable {
+abstract public class BoardState implements Serializable, BoardReader {
     protected final Stack<MoveLog> moves = new Stack<>();
     protected final Piece[][] squares = new Piece[8][8];
     protected final int[] enPassant = new int[8];
@@ -135,10 +135,6 @@ public class BoardState implements Serializable {
         whitePlayer = player;
     }
 
-    public boolean isPieceOfOppositePlayer(Piece piece) {
-        return piece.notOfSameColor(currentPlayer.pieceColor());
-    }
-
     public boolean isPieceOfCurrentPlayer(Piece piece) {
         return piece.color() == currentPlayer.pieceColor();
     }
@@ -158,6 +154,7 @@ public class BoardState implements Serializable {
         blackPlayer = player;
     }
 
+    @Override
     public Piece pieceAt(int rank, int file) {
         Square square = new Square(rank, file);
         if (!square.exists()) {
@@ -166,10 +163,12 @@ public class BoardState implements Serializable {
         return pieceAt(square);
     }
 
+    @Override
     public boolean noneAt(Square square) {
         return pieceAt(square).equals(none);
     }
 
+    @Override
     public Piece pieceAt(Square square) {
         return squares[square.rank()][square.file()];
     }

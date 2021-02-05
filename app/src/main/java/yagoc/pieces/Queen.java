@@ -1,6 +1,6 @@
 package yagoc.pieces;
 
-import yagoc.board.Board;
+import yagoc.board.BoardReader;
 import yagoc.board.Move;
 import yagoc.board.Square;
 
@@ -17,12 +17,12 @@ public class Queen extends Piece {
     }
 
     @Override
-    public boolean isValidForPiece(Board board, Move move) {
+    public boolean isValidForPiece(BoardReader board, Move move) {
         return (isCorrectMoveForBishop(board, move) || isCorrectMoveForRook(board, move));
     }
 
     @Override
-    public Stream<Move> generateMovesForPiece(Board board, Square from) {
+    public Stream<Move> generateMovesForPiece(BoardReader board, Square from) {
         return Stream.concat(generateMovesForBishop(board, from), generateMovesForRook(board, from));
     }
 }

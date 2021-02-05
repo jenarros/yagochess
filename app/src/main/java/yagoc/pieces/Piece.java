@@ -1,6 +1,6 @@
 package yagoc.pieces;
 
-import yagoc.board.Board;
+import yagoc.board.BoardReader;
 import yagoc.board.Move;
 import yagoc.board.Square;
 
@@ -62,9 +62,9 @@ abstract public class Piece implements Serializable {
      * Can safely assume that general rules have been validated such as:
      * - the piece is not moving to a square with a piece of the same color
      */
-    protected abstract boolean isValidForPiece(Board board, Move move);
+    protected abstract boolean isValidForPiece(BoardReader board, Move move);
 
-    public final boolean isCorrectMove(Board board, Move move) {
+    public final boolean isCorrectMove(BoardReader board, Move move) {
         if (board.pieceAt(move.from()).color().equals(board.pieceAt(move.to()).color())) {
             return false;
         }
@@ -74,9 +74,9 @@ abstract public class Piece implements Serializable {
     /**
      * These are all potential moves pre-validation, the resulting moves need to be validated.
      */
-    protected abstract Stream<Move> generateMovesForPiece(Board board, Square from);
+    protected abstract Stream<Move> generateMovesForPiece(BoardReader board, Square from);
 
-    public final Stream<Move> generateMoves(Board board, Square from) {
+    public final Stream<Move> generateMoves(BoardReader board, Square from) {
         return generateMovesForPiece(board, from).filter((move -> isCorrectMove(board, move)));
     }
 

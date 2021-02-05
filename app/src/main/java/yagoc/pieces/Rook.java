@@ -1,6 +1,6 @@
 package yagoc.pieces;
 
-import yagoc.board.Board;
+import yagoc.board.BoardReader;
 import yagoc.board.Move;
 import yagoc.board.Square;
 
@@ -11,7 +11,7 @@ public class Rook extends Piece {
         super(PieceType.Rook, pieceColor);
     }
 
-    static boolean isCorrectMoveForRook(Board board, Move move) {
+    static boolean isCorrectMoveForRook(BoardReader board, Move move) {
         if (move.hasSameRank()) {
             //movimiento horizontal
             int mi = Math.min(move.from().file(), move.to().file()) + 1;
@@ -34,19 +34,19 @@ public class Rook extends Piece {
             return false;
     }
 
-    static Stream<Move> generateMovesForRook(Board board, Square from) {
+    static Stream<Move> generateMovesForRook(BoardReader board, Square from) {
         Piece piece = board.pieceAt(from);
         return from.straightSquares().stream()
                 .map((to) -> new Move(piece, from, to));
     }
 
     @Override
-    public boolean isValidForPiece(Board board, Move move) {
+    public boolean isValidForPiece(BoardReader board, Move move) {
         return isCorrectMoveForRook(board, move);
     }
 
     @Override
-    public Stream<Move> generateMovesForPiece(Board board, Square from) {
+    public Stream<Move> generateMovesForPiece(BoardReader board, Square from) {
         return generateMovesForRook(board, from);
     }
 }

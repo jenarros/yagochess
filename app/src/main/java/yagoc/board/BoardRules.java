@@ -3,7 +3,6 @@ package yagoc.board;
 import yagoc.pieces.PieceColor;
 
 import java.util.Collection;
-import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -13,11 +12,11 @@ import static yagoc.pieces.PieceType.King;
 import static yagoc.pieces.Pieces.none;
 
 public class BoardRules {
-    public static boolean isCorrectMove(Board board, Square from, Square to) {
+    public static boolean isCorrectMove(BoardReader board, Square from, Square to) {
         return isCorrectMove(board, new Move(board.pieceAt(from), from, to));
     }
 
-    public static boolean isCorrectMove(Board board, Move move) {
+    public static boolean isCorrectMove(BoardReader board, Move move) {
         return move.fromPiece().isCorrectMove(board, move);
     }
 
@@ -25,18 +24,7 @@ public class BoardRules {
         return generateMoves(board).stream().noneMatch((move) -> moveDoesNotCreateCheck(board, move));
     }
 
-    public static <T> T playAndUndo(Board board, Move move, Callable<T> callable) {
-        board.play(move);
-        try {
-            T moveValue = callable.call();
-            board.undo();
-            return moveValue;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static boolean isInCheck(Board board, PieceColor color) {
+    public static boolean isInCheck(BoardReader board, PieceColor color) {
         Square kingSquare = Square.allSquares.stream()
                 .filter((square) -> board.pieceAt(square).pieceType() == King && board.pieceAt(square).color() == color)
                 .findAny().orElseThrow(() -> new RuntimeException("Could not find " + color + " king!"));
@@ -61,11 +49,11 @@ public class BoardRules {
         return board.drawCounter == 50;
     }
 
-    public static boolean moveDoesNotCreateCheck(Board board, Move move) {
-        return !playAndUndo(board, move, () -> isInCheck(board, move.fromPiece().color()));
+    public static boolean moveDoesNotCreateCheck(BoardReader board, Move move) {
+        return !board.playAndUndo(move, () -> isInCheck(board, move.fromPiece().color()));
     }
 
-    public static boolean moveDoesNotCreateCheck(Board board, Square from, Square to) {
+    public static boolean moveDoesNotCreateCheck(BoardReader board, Square from, Square to) {
         return moveDoesNotCreateCheck(board, new Move(board.pieceAt(from), from, to));
     }
 

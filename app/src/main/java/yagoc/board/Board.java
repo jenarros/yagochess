@@ -3,6 +3,8 @@ package yagoc.board;
 import yagoc.pieces.PieceColor;
 import yagoc.pieces.Pieces;
 
+import java.util.concurrent.Callable;
+
 import static yagoc.board.Square.castlingKingsideBlackFrom;
 import static yagoc.board.Square.castlingKingsideBlackTo;
 import static yagoc.board.Square.castlingKingsideWhiteFrom;
@@ -37,6 +39,17 @@ public class Board extends BoardState {
 
     public Board(BoardState board) {
         resetWith(board);
+    }
+
+    public <T> T playAndUndo(Move move, Callable<T> callable) {
+        play(move);
+        try {
+            T moveValue = callable.call();
+            undo();
+            return moveValue;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void play(Move move) {

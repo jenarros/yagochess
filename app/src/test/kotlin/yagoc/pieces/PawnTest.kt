@@ -5,6 +5,7 @@ import org.hamcrest.Matchers.equalTo
 import org.junit.Test
 import yagoc.TestBoard
 import yagoc.board.Square
+import yagoc.pieces.Pieces.blackPawn
 
 class PawnTest {
     @Test
@@ -63,6 +64,27 @@ class PawnTest {
             --------
         """, Square(2, 2)
         )
+
+        test.possibleMoves().run {
+            assertThat(this.size, equalTo(2))
+            assertThat(this, equalTo(test.validSquares()))
+        }
+    }
+
+    @Test
+    fun `en passant`() {
+        val test = TestBoard(
+            """
+            --------
+            --------
+            -11-----
+            -p------
+            --------
+            --------
+            --------
+            --------
+        """, Square(3, 1)
+        ).plusMove(blackPawn, Square(1, 2), Square(3, 2))
 
         test.possibleMoves().run {
             assertThat(this.size, equalTo(2))

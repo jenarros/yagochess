@@ -1,6 +1,6 @@
 package yagoc.pieces;
 
-import yagoc.board.Board;
+import yagoc.board.BoardReader;
 import yagoc.board.Move;
 import yagoc.board.Square;
 
@@ -14,12 +14,12 @@ public class King extends Piece {
         super(PieceType.King, pieceColor);
     }
 
-    public boolean isValidForPiece(Board board, Move move) {
+    public boolean isValidForPiece(BoardReader board, Move move) {
         return (move.fileDistanceAbs() <= 1 && move.rankDistanceAbs() <= 1) || isCorrectCastling(board, move);
     }
 
     @Override
-    public Stream<Move> generateMovesForPiece(Board board, Square from) {
+    public Stream<Move> generateMovesForPiece(BoardReader board, Square from) {
         Piece piece = board.pieceAt(from);
         return Stream.of(
                 from.nextRank(piece.color()),
@@ -34,7 +34,7 @@ public class King extends Piece {
                 .map((to) -> new Move(piece, from, to));
     }
 
-    private boolean isCorrectCastling(Board board, Move move) {
+    private boolean isCorrectCastling(BoardReader board, Move move) {
         if (((move.from().rank() == 7 && move.fromPiece().equals(Pieces.whiteKing) && !board.hasWhiteKingMoved()) ||
                 (move.from().rank() == 0 && move.fromPiece().equals(Pieces.blackKing) && !board.hasBlackKingMoved())) &&
                 move.hasSameRank() && !isInCheck(board, move.fromPiece().color()) &&

@@ -10,7 +10,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static yagoc.Yagoc.logger;
 import static yagoc.board.BoardRules.generateMoves;
-import static yagoc.board.BoardRules.playAndUndo;
 
 public class ComputerPlayer implements Player, Serializable {
     final protected PieceColor pieceColor;
@@ -80,7 +79,7 @@ public class ComputerPlayer implements Player, Serializable {
 
             // beta = min[beta, AlphaBeta(N_k,alpha,beta)]
             final int v = moveValue.value;
-            betaMoveValue = playAndUndo(board, move, () -> alphaBeta(depth - 1, board, alpha, v, processedMoves));
+            betaMoveValue = board.playAndUndo(move, () -> alphaBeta(depth - 1, board, alpha, v, processedMoves));
 
             if (betaMoveValue.value < moveValue.value) {
                 moveValue = new MoveValue(move, betaMoveValue.value); // better
@@ -120,7 +119,7 @@ public class ComputerPlayer implements Player, Serializable {
 
             // alpha = max[alpha, AlphaBeta(N_k,alpha,beta)
             final int v = moveValue.value;
-            alphaMoveValue = playAndUndo(board, move, () -> alphaBeta(depth - 1, board, v, beta, processedMoves));
+            alphaMoveValue = board.playAndUndo(move, () -> alphaBeta(depth - 1, board, v, beta, processedMoves));
 
             if (alphaMoveValue.value > moveValue.value) {
                 moveValue = new MoveValue(move, alphaMoveValue.value); // better
