@@ -1,6 +1,6 @@
 package yagoc.players;
 
-import yagoc.board.Board;
+import yagoc.board.BoardReader;
 import yagoc.board.Move;
 import yagoc.pieces.PieceColor;
 
@@ -43,7 +43,7 @@ public class ComputerPlayer implements Player, Serializable {
         return pieceColor + "\t" + type() + "\t" + level;
     }
 
-    public Move move(Board board) {
+    public Move move(BoardReader board) {
         AtomicInteger processedMoves = new AtomicInteger(0);
         long start = System.currentTimeMillis();
         MoveValue moveValue = alphaBeta(level, board, Integer.MIN_VALUE, Integer.MAX_VALUE, processedMoves);
@@ -53,7 +53,7 @@ public class ComputerPlayer implements Player, Serializable {
         return moveValue.move;
     }
 
-    MoveValue alphaBeta(int depth, Board board, int alfa, int beta, AtomicInteger processedMoves) {
+    MoveValue alphaBeta(int depth, BoardReader board, int alfa, int beta, AtomicInteger processedMoves) {
         if (depth == 0) {
             return leafMoveValue(board);
         } else if ((level - depth) % 2 == 0) { // maximizing player = current player (as depth = level)
@@ -63,7 +63,7 @@ public class ComputerPlayer implements Player, Serializable {
         }
     }
 
-    private MoveValue alphaBetaMin(int depth, Board board, int alpha, int beta, AtomicInteger processedMoves) {
+    private MoveValue alphaBetaMin(int depth, BoardReader board, int alpha, int beta, AtomicInteger processedMoves) {
         Collection<Move> moves = generateMoves(board);
 
         // checkmate
@@ -99,11 +99,11 @@ public class ComputerPlayer implements Player, Serializable {
         return moveValue;
     }
 
-    protected MoveValue leafMoveValue(Board board) {
+    protected MoveValue leafMoveValue(BoardReader board) {
         return new MoveValue(strategy.apply(board, pieceColor));
     }
 
-    private MoveValue alphaBetaMax(int depth, Board board, int alpha, int beta, AtomicInteger processedMoves) {
+    private MoveValue alphaBetaMax(int depth, BoardReader board, int alpha, int beta, AtomicInteger processedMoves) {
         Collection<Move> moves = generateMoves(board);
 
         // checkmate

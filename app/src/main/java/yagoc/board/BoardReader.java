@@ -16,6 +16,10 @@ public interface BoardReader {
 
     Player currentPlayer();
 
+    Player oppositePlayer();
+
+    boolean isPieceOfCurrentPlayer(Piece piece);
+
     boolean hasWhiteLeftRookMoved();
 
     boolean hasWhiteRightRookMoved();

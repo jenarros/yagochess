@@ -17,7 +17,7 @@ public class MoveLog implements Serializable {
 	final Move castlingExtraMove;
 	final Piece enPassantPiece;
 
-	private MoveLog(Board board, Move move, Piece toPiece, MoveType moveType, Move castlingExtraMove) {
+	private MoveLog(BoardReader board, Move move, Piece toPiece, MoveType moveType, Move castlingExtraMove) {
 		this.type = moveType;
 		this.move = move;
 		this.toPiece = toPiece;
@@ -34,15 +34,15 @@ public class MoveLog implements Serializable {
 		this.enPassant = board.enPassant(move.to().file());
 	}
 
-	public static MoveLog enPassant(Board board, Move move, Piece toPiece) {
+	public static MoveLog enPassant(BoardReader board, Move move, Piece toPiece) {
 		return new MoveLog(board, move, toPiece, MoveType.enPassant, null);
 	}
 
-	public static MoveLog castling(Board board, Move move, Piece toPiece, Move castlingExtraMove) {
+	public static MoveLog castling(BoardReader board, Move move, Piece toPiece, Move castlingExtraMove) {
 		return new MoveLog(board, move, toPiece, MoveType.castling, castlingExtraMove);
 	}
 
-	public static MoveLog normalMove(Board board, Move move, Piece toPiece) {
+	public static MoveLog normalMove(BoardReader board, Move move, Piece toPiece) {
 		return new MoveLog(board, move, toPiece, MoveType.normal, null);
 	}
 }

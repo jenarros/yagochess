@@ -1,6 +1,6 @@
 package yagoc.players;
 
-import yagoc.board.Board;
+import yagoc.board.BoardReader;
 import yagoc.board.Move;
 import yagoc.pieces.PieceColor;
 
@@ -20,7 +20,7 @@ public class UserPlayer implements Player, Serializable {
     }
 
     @Override
-    public Move move(Board board) {
+    public Move move(BoardReader board) {
         throw new RuntimeException(name + " cannot move without user input.");
     }
 

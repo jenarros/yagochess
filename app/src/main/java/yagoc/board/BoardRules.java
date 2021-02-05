@@ -20,7 +20,7 @@ public class BoardRules {
         return move.fromPiece().isCorrectMove(board, move);
     }
 
-    static boolean cannotMoveWithoutBeingCheck(Board board) {
+    static boolean cannotMoveWithoutBeingCheck(BoardReader board) {
         return generateMoves(board).stream().noneMatch((move) -> moveDoesNotCreateCheck(board, move));
     }
 
@@ -33,7 +33,7 @@ public class BoardRules {
                 .anyMatch((from) -> !board.pieceAt(from).equals(none) && !board.pieceAt(from).color().equals(color) && isCorrectMove(board, from, kingSquare));
     }
 
-    public static boolean isCheckmate(Board board) {
+    public static boolean isCheckmate(BoardReader board) {
         if (isInCheck(board, board.currentPlayer().pieceColor())) {
             return cannotMoveWithoutBeingCheck(board);
         } else {
@@ -41,12 +41,12 @@ public class BoardRules {
         }
     }
 
-    public static boolean isADraw(Board board) {
+    public static boolean isADraw(BoardReader board) {
         if (!isInCheck(board, board.currentPlayer().pieceColor()) && cannotMoveWithoutBeingCheck(board)) {
             return true;
         }
 
-        return board.drawCounter == 50;
+        return board.drawCounter() == 50;
     }
 
     public static boolean moveDoesNotCreateCheck(BoardReader board, Move move) {
@@ -57,7 +57,7 @@ public class BoardRules {
         return moveDoesNotCreateCheck(board, new Move(board.pieceAt(from), from, to));
     }
 
-    public static boolean noMoreMovesAllowed(Board board) {
+    public static boolean noMoreMovesAllowed(BoardReader board) {
         if (isCheckmate(board)) {
             logger.info("checkmate winner is " + board.oppositePlayer().name());
             return true;
@@ -68,15 +68,15 @@ public class BoardRules {
             return false;
     }
 
-    public static Stream<Move> generateMoves(Board board, Square from) {
+    public static Stream<Move> generateMoves(BoardReader board, Square from) {
         return board.pieceAt(from).generateMoves(board, from);
     }
 
-    public static Stream<Move> generateMoves(Board board, Square from, Predicate<Move> predicate) {
+    public static Stream<Move> generateMoves(BoardReader board, Square from, Predicate<Move> predicate) {
         return generateMoves(board, from).filter(predicate);
     }
 
-    public static Collection<Move> generateMoves(Board board) {
+    public static Collection<Move> generateMoves(BoardReader board) {
         return Square.allSquares.stream().flatMap((from) -> {
             if (board.isPieceOfCurrentPlayer(board.pieceAt(from))) {
                 return generateMoves(board, from, (move) -> moveDoesNotCreateCheck(board, move));

@@ -1,7 +1,7 @@
 package yagoc.ui;
 
 import yagoc.Controller;
-import yagoc.board.Board;
+import yagoc.board.BoardReader;
 import yagoc.board.Square;
 import yagoc.pieces.Piece;
 import yagoc.pieces.Pieces;
@@ -29,12 +29,12 @@ public class BoardPanel extends JPanel {
 	public static final Integer[] GAME_OPTIONS = {1, 2, 3, 4};
 	public static final int REFRESH_RATE_MILLISECONDS = 20; // 1000 / rate = fps
 
-	private final Board board;
+	private final BoardReader board;
 	private final Controller controller;
 	private final Map<Piece, Image> images = images();
 	private final AccionListener mouseMotionListener = new AccionListener();
 
-	public BoardPanel(Controller controller, Board board) {
+	public BoardPanel(Controller controller, BoardReader board) {
 		this.controller = controller;
 		this.board = board;
 		setLayout(new BorderLayout(0, 0));

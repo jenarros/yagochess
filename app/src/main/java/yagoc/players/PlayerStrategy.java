@@ -1,6 +1,6 @@
 package yagoc.players;
 
-import yagoc.board.Board;
+import yagoc.board.BoardReader;
 import yagoc.board.Square;
 import yagoc.pieces.Piece;
 import yagoc.pieces.PieceColor;
@@ -172,15 +172,15 @@ public class PlayerStrategy implements Serializable {
         this.strategy = strategy;
     }
 
-    static boolean isPieceOurs(Board board, PieceColor set, Square square) {
+    static boolean isPieceOurs(BoardReader board, PieceColor set, Square square) {
         return board.pieceAt(square).color() == set;
     }
 
-    static boolean isPieceTheirs(Board board, PieceColor color, Square square) {
+    static boolean isPieceTheirs(BoardReader board, PieceColor color, Square square) {
         return board.pieceAt(square).color() != color;
     }
 
-    public Integer apply(Board board, PieceColor pieceColor) {
+    public Integer apply(BoardReader board, PieceColor pieceColor) {
         return strategy.apply(board, pieceColor);
     }
 }

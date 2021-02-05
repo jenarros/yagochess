@@ -16,22 +16,6 @@ import static yagoc.board.Square.castlingQueensideWhiteTo;
 import static yagoc.pieces.PieceType.Pawn;
 import static yagoc.pieces.Pieces.none;
 
-// 1 pawn
-// 2 knight
-// 3 bishop
-// 4 rook
-// 5 queen
-// 6 king
-/*
-0        -4, -2, -3, -5, -6, -3, -2, -4,
-1        -1, -1, -1, -1, -1, -1, -1, -1,
-2         0,  0,  0,  0,  0,  0,  0,  0,
-3         0,  0,  0,  0,  0,  0,  0,  0,
-4         0,  0,  0,  0,  0,  0,  0,  0,
-5         0,  0,  0,  0,  0,  0,  0,  0,
-6         1,  1,  1,  1,  1,  1,  1,  1,
-7         4,  2,  3,  5,  6,  3,  2,  4
-*/
 public class Board extends BoardState {
     public Board() {
         reset();
