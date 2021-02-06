@@ -17,5 +17,6 @@ class SquaresTest {
     fun `can convert square enum value to array position`() {
         assertThat(Squares.a1.ordinal, equalTo(Squares.a1.legacySquare().arrayPosition()))
         assertThat(Squares.c6.ordinal, equalTo(Squares.c6.legacySquare().arrayPosition()))
+        assertThat(Squares.valueOf(7, 0), equalTo(Squares.a1))
     }
 }

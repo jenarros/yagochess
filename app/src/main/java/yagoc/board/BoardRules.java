@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 import static yagoc.Yagoc.logger;
 import static yagoc.pieces.PieceType.King;
-import static yagoc.pieces.Pieces.none;
 
 public class BoardRules {
     public static boolean isCorrectMove(BoardView board, Square from, Square to) {
@@ -30,7 +29,7 @@ public class BoardRules {
                 .findAny().orElseThrow(() -> new RuntimeException("Could not find " + color + " king!"));
 
         return Square.allSquares.stream()
-                .anyMatch((from) -> !board.pieceAt(from).equals(none) && !board.pieceAt(from).color().equals(color) && isCorrectMove(board, from, kingSquare));
+                .anyMatch((from) -> board.someAt(from) && !board.pieceAt(from).color().equals(color) && isCorrectMove(board, from, kingSquare));
     }
 
     public static boolean isCheckmate(BoardView board) {

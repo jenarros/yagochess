@@ -6,12 +6,24 @@ import yagoc.players.Player;
 import java.io.Serializable;
 import java.util.concurrent.Callable;
 
+import static yagoc.pieces.Pieces.none;
+
 public interface BoardView extends Serializable {
     Piece pieceAt(Square square);
 
-    Piece pieceAt(int rank, int file);
+    Piece pieceAt(Squares squares);
 
-    boolean noneAt(Square square);
+    default boolean noneAt(Square square) {
+        return pieceAt(square).equals(none);
+    }
+
+    default boolean noneAt(Squares squares) {
+        return noneAt(squares.legacySquare());
+    }
+
+    default boolean someAt(Square square) {
+        return !noneAt(square);
+    }
 
     int enPassant(int file);
 

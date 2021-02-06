@@ -23,5 +23,7 @@ enum class Squares {
         private val cache = values()
 
         fun valueOf(ordinal: Int) = cache[ordinal]
+
+        fun valueOf(rank: Int, file: Int) = cache[rank * 8 + file]
     }
 }

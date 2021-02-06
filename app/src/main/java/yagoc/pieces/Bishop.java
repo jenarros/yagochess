@@ -14,8 +14,7 @@ public class Bishop extends Piece {
     static Stream<Move> generateMovesForBishop(BoardView board, Square from) {
         Piece piece = board.pieceAt(from);
 
-        return from.diagonalSquares()
-                .stream().map((to) -> new Move(piece, from, to));
+        return from.diagonalSquares().stream().map((to) -> new Move(piece, from, to));
     }
 
     static boolean isCorrectMoveForBishop(BoardView board, Move move) {
@@ -33,15 +32,18 @@ public class Bishop extends Piece {
                 file = move.to().file();
             }
 
-            //calculamos el desplazamiento
-            if (rank == Math.min(move.from().rank(), move.to().rank()))                 //hacia abajo
+            // calculamos el desplazamiento
+            if (rank == Math.min(move.from().rank(), move.to().rank())) {
+                // down
                 direction = 1;
-            else //hacia arriba
+            } else {
+                // up
                 direction = -1;
+            }
 
-            //recorremos el movimiento
+            // go through the squares
             for (file++, rank += direction; file < ma; ) {
-                if (!board.pieceAt(rank, file).equals(Pieces.none))
+                if (board.someAt(new Square(rank, file)))
                     return false;
                 rank += direction;
                 file++;

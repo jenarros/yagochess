@@ -25,7 +25,7 @@ public class PlayerStrategy implements Serializable {
                         else
                             acc += (7 - square.rank()) * 20;
 
-                        // Un peón cubierto vale más
+                        // covered pawn is better
                         if (square.nextRank(color).exists() && square.file() - 1 > 0 && square.file() + 1 < 8
                                 && (board.pieceAt(square.nextRankPreviousFile(color)).equals(piece) || board.pieceAt(square.nextRankPreviousFile(color)).equals(piece)))
                             acc += 30;

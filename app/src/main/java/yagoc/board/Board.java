@@ -146,17 +146,12 @@ public class Board implements BoardView {
     }
 
     @Override
-    public Piece pieceAt(int rank, int file) {
-        Square square = new Square(rank, file);
+    public Piece pieceAt(Squares squares) {
+        Square square = squares.legacySquare();
         if (!square.exists()) {
             throw new IllegalArgumentException("Square " + square + " does not exist.");
         }
         return pieceAt(square);
-    }
-
-    @Override
-    public boolean noneAt(Square square) {
-        return pieceAt(square).equals(none);
     }
 
     @Override
@@ -326,7 +321,7 @@ public class Board implements BoardView {
             } else {
                 moveLog = MoveLog.normalMove(this, move, pieceAt(move.to()));
             }
-            if (!pieceAt(move.to()).equals(none) || move.fromPiece().pieceType() == Pawn) {
+            if (!noneAt(move.to()) || move.fromPiece().pieceType() == Pawn) {
                 // draw counter restarts when we capture a piece or move a pawn
                 drawCounter = 0;
             } else {
