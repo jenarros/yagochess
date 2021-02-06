@@ -14,9 +14,7 @@ public class PlayerStrategy implements Serializable {
         return Square.allSquares.stream().map((square) -> {
             int acc = 0;
 
-            if (board.noneAt(square)) {
-                // ignore empty squares
-            } else if (isPieceOurs(board, color, square)) {
+            if (isPieceOurs(board, color, square)) {
                 final Piece piece = board.pieceAt(square);
 
                 switch (piece.pieceType()) {
@@ -94,37 +92,23 @@ public class PlayerStrategy implements Serializable {
         return Square.allSquares.stream().map((square) -> {
             int acc = 0;
 
-            if (board.noneAt(square)) {
-                // ignore empty squares
-            } else if (isPieceOurs(board, set, square)) {
+            if (isPieceOurs(board, set, square)) {
                 final Piece piece = board.pieceAt(square);
                 switch (piece.pieceType()) {
                     case Pawn: // further ahead is better
                         acc += 100;
-                        if (piece.color() == PieceColor.blackSet)
-                            acc += square.rank() * 20;
-                        else
-                            acc += (7 - square.rank()) * 20;
                         break;
                     case Knight: // middle of the board is better
-                        acc += 300 + (3.5 - Math.abs(3.5 - square.file())) * 20;
-                        if (piece.color() == PieceColor.blackSet)
-                            acc += Math.abs(3.5 - square.rank()) * 10;
-                        else
-                            acc += Math.abs(3.5 - square.rank()) * 10;
+                        acc += 300;
                         break;
                     case Bishop:
-                        acc += 330 + generateMoves(board, square).count() * 10;
+                        acc += 330;
                         break;
                     case Rook:
-                        acc += Math.abs(3.5 - square.rank()) * 15 + 500;
+                        acc += 500;
                         break;
                     case Queen: // middle of the board is better
-                        acc += 940 + (3.5 - Math.abs(3.5 - square.file())) * 20;
-                        if (piece.color() == PieceColor.blackSet)
-                            acc += Math.abs(3.5 - square.rank()) * 10;
-                        else
-                            acc += Math.abs(3.5 - square.rank()) * 10;
+                        acc += 940;
                         break;
                     default:
                 }
@@ -134,30 +118,18 @@ public class PlayerStrategy implements Serializable {
                 switch (piece.pieceType()) {
                     case Pawn:
                         acc -= 100;
-                        if (piece.color() == PieceColor.blackSet)
-                            acc -= square.rank() * 30;
-                        else
-                            acc -= (7 - square.rank()) * 30;
                         break;
                     case Knight:
-                        acc -= 300 + (3.5 - Math.abs(3.5 - square.file())) * 20;
+                        acc -= 300;
                         break;
                     case Bishop:
-                        acc -= 330 + generateMoves(board, square).count() * 10;
-                        if (piece.color() == PieceColor.blackSet)
-                            acc -= Math.abs(3.5 - square.rank()) * 10;
-                        else
-                            acc -= Math.abs(3.5 - square.rank()) * 10;
+                        acc -= 330;
                         break;
                     case Rook:
                         acc -= 500;
                         break;
                     case King:
-                        acc -= 940 + (3.5 - Math.abs(3.5 - square.file())) * 10;
-                        if (piece.color() == PieceColor.blackSet)
-                            acc -= Math.abs(3.5 - square.rank()) * 10;
-                        else
-                            acc -= Math.abs(3.5 - square.rank()) * 10;
+                        acc -= 940;
                         break;
                     default:
                 }
@@ -177,7 +149,7 @@ public class PlayerStrategy implements Serializable {
     }
 
     static boolean isPieceTheirs(BoardReader board, PieceColor color, Square square) {
-        return board.pieceAt(square).color() != color;
+        return board.pieceAt(square).color() != color && !board.noneAt(square);
     }
 
     public Integer apply(BoardReader board, PieceColor pieceColor) {

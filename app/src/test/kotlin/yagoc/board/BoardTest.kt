@@ -4,6 +4,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 import yagoc.BoardSpec.Companion.toBoard
+import yagoc.board.BoardRules.generateMoves
 
 class BoardTest {
     @Test
@@ -19,6 +20,22 @@ class BoardTest {
             -------k
             """
         assertThat(expected.toBoard().toPrettyString(), equalTo(expected.trimIndent()))
+    }
+
+    @Test
+    fun `can generate all possible moves for a known setup`() {
+        val expected = """
+            ----r---
+            --q-----
+            ------r-
+            -k-b-n-p
+            ---b----
+            ---n----
+            p------p
+            -K------
+        """.toBoard()
+
+        assertThat(generateMoves(expected).size, equalTo(103))
     }
 
     @Test
