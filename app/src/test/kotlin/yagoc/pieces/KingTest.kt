@@ -5,6 +5,7 @@ import org.hamcrest.Matchers.equalTo
 import org.junit.Test
 import yagoc.TestBoard
 import yagoc.board.Square
+import yagoc.pieces.Pieces.*
 
 class KingTest {
     @Test
@@ -71,6 +72,26 @@ class KingTest {
     }
 
     @Test
+    fun `black set castling is not allowed if pieces have been moved`() {
+        val test = TestBoard(
+            """
+            R--1K1-R
+            ---PPP--
+            --------
+            --------
+            --------
+            --------
+            --------
+            --------
+        """, Square(0, 4)
+        )
+
+        assertThat(test.plusMove(blackKing, Square(0, 3), Square(0, 4)).possibleMoves().size, equalTo(2))
+        assertThat(test.plusMove(blackRook, Square(0, 1), Square(0, 0)).possibleMoves().size, equalTo(2))
+        assertThat(test.plusMove(blackRook, Square(0, 6), Square(0, 7)).possibleMoves().size, equalTo(2))
+    }
+
+    @Test
     fun `white set castling`() {
         val test = TestBoard(
             """
@@ -89,5 +110,25 @@ class KingTest {
             assertThat(this.size, equalTo(7))
             assertThat(this, equalTo(test.validSquares()))
         }
+    }
+
+    @Test
+    fun `white set castling is not allowed if pieces have been moved`() {
+        val test = TestBoard(
+            """
+            --------
+            --------
+            --------
+            --------
+            --------
+            --------
+            ---ppp--
+            r--1k1-r
+        """, Square(7, 4)
+        )
+
+        assertThat(test.plusMove(whiteKing, Square(7, 3), Square(7, 4)).possibleMoves().size, equalTo(2))
+        assertThat(test.plusMove(whiteRook, Square(7, 1), Square(7, 0)).possibleMoves().size, equalTo(2))
+        assertThat(test.plusMove(whiteRook, Square(7, 6), Square(7, 7)).possibleMoves().size, equalTo(2))
     }
 }
