@@ -164,18 +164,18 @@ public class BoardPanel extends JPanel {
 		Toolkit t = getToolkit();
 		Map<Piece, Image> images = new HashMap<>();
 
-		images.put(Pieces.whitePawn, t.getImage(this.getClass().getResource("/img/peon.gif")));
-		images.put(Pieces.whiteKnight, t.getImage(this.getClass().getResource("/img/caballo.gif")));
-		images.put(Pieces.whiteBishop, t.getImage(this.getClass().getResource("/img/alfil.gif")));
-		images.put(Pieces.whiteRook, t.getImage(this.getClass().getResource("/img/torre.gif")));
-		images.put(Pieces.whiteQueen, t.getImage(this.getClass().getResource("/img/reina.gif")));
-		images.put(Pieces.whiteKing, t.getImage(this.getClass().getResource("/img/rey.gif")));
-		images.put(Pieces.blackPawn, t.getImage(this.getClass().getResource("/img/peonNegro.gif")));
-		images.put(Pieces.blackKnight, t.getImage(this.getClass().getResource("/img/caballoNegro.gif")));
-		images.put(Pieces.blackBishop, t.getImage(this.getClass().getResource("/img/alfilNegro.gif")));
-		images.put(Pieces.blackRook, t.getImage(this.getClass().getResource("/img/torreNegro.gif")));
-		images.put(Pieces.blackQueen, t.getImage(this.getClass().getResource("/img/reinaNegro.gif")));
-		images.put(Pieces.blackKing, t.getImage(this.getClass().getResource("/img/reyNegro.gif")));
+		images.put(Pieces.whitePawn, t.getImage(this.getClass().getResource("/img/white_pawn.gif")));
+		images.put(Pieces.whiteKnight, t.getImage(this.getClass().getResource("/img/white_knight.gif")));
+		images.put(Pieces.whiteBishop, t.getImage(this.getClass().getResource("/img/white_bishop.gif")));
+		images.put(Pieces.whiteRook, t.getImage(this.getClass().getResource("/img/white_rook.gif")));
+		images.put(Pieces.whiteQueen, t.getImage(this.getClass().getResource("/img/white_queen.gif")));
+		images.put(Pieces.whiteKing, t.getImage(this.getClass().getResource("/img/white_king.gif")));
+		images.put(Pieces.blackPawn, t.getImage(this.getClass().getResource("/img/black_pawn.gif")));
+		images.put(Pieces.blackKnight, t.getImage(this.getClass().getResource("/img/black_knight.gif")));
+		images.put(Pieces.blackBishop, t.getImage(this.getClass().getResource("/img/black_bishop.gif")));
+		images.put(Pieces.blackRook, t.getImage(this.getClass().getResource("/img/black_rook.gif")));
+		images.put(Pieces.blackQueen, t.getImage(this.getClass().getResource("/img/black_queen.gif")));
+		images.put(Pieces.blackKing, t.getImage(this.getClass().getResource("/img/black_king.gif")));
 
 		return images;
 	}

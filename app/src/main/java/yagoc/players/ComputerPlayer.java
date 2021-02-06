@@ -49,7 +49,6 @@ public class ComputerPlayer implements Player, Serializable {
         MoveValue moveValue = alphaBeta(level, board, Integer.MIN_VALUE, Integer.MAX_VALUE, moveCounter);
         long elapsed = System.currentTimeMillis() - start + 1;
         logger.info("alpha-beta: processed = " + moveCounter + " moves in " + elapsed + "ms " + moveCounter.intValue() / elapsed + " moves/ms,  minimax = " + moveValue.value);
-        logger.info(board.toPrettyString());
         return moveValue.move;
     }
 
