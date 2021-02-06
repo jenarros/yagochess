@@ -3,9 +3,10 @@ package yagoc.board;
 import yagoc.pieces.Piece;
 import yagoc.players.Player;
 
+import java.io.Serializable;
 import java.util.concurrent.Callable;
 
-public interface BoardReader {
+public interface BoardView extends Serializable {
     Piece pieceAt(Square square);
 
     Piece pieceAt(int rank, int file);
@@ -38,7 +39,7 @@ public interface BoardReader {
 
     <T> T playAndUndo(Move move, Callable<T> callable);
 
-    BoardReader playAndUndo(Square from, Square to);
+    BoardView playAndUndo(Square from, Square to);
 
     String toPrettyString();
 }

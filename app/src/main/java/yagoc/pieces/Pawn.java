@@ -1,6 +1,6 @@
 package yagoc.pieces;
 
-import yagoc.board.BoardReader;
+import yagoc.board.BoardView;
 import yagoc.board.Move;
 import yagoc.board.Square;
 
@@ -15,7 +15,7 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public boolean isValidForPiece(BoardReader board, Move move) {
+    public boolean isValidForPiece(BoardView board, Move move) {
         if (move.rankDistance() != 1 && move.rankDistance() != 2) {
             return false;
         }
@@ -47,7 +47,7 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public Stream<Move> generateMovesForPiece(BoardReader board, Square from) {
+    public Stream<Move> generateMovesForPiece(BoardView board, Square from) {
         Piece piece = board.pieceAt(from);
 
         return Stream.of(

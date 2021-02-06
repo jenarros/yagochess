@@ -12,19 +12,19 @@ import static yagoc.pieces.PieceType.King;
 import static yagoc.pieces.Pieces.none;
 
 public class BoardRules {
-    public static boolean isCorrectMove(BoardReader board, Square from, Square to) {
+    public static boolean isCorrectMove(BoardView board, Square from, Square to) {
         return isCorrectMove(board, new Move(board.pieceAt(from), from, to));
     }
 
-    public static boolean isCorrectMove(BoardReader board, Move move) {
+    public static boolean isCorrectMove(BoardView board, Move move) {
         return move.fromPiece().isCorrectMove(board, move);
     }
 
-    static boolean cannotMoveWithoutBeingCheck(BoardReader board) {
+    static boolean cannotMoveWithoutBeingCheck(BoardView board) {
         return generateMoves(board).stream().noneMatch((move) -> moveDoesNotCreateCheck(board, move));
     }
 
-    public static boolean isInCheck(BoardReader board, PieceColor color) {
+    public static boolean isInCheck(BoardView board, PieceColor color) {
         Square kingSquare = Square.allSquares.stream()
                 .filter((square) -> board.pieceAt(square).pieceType() == King && board.pieceAt(square).color() == color)
                 .findAny().orElseThrow(() -> new RuntimeException("Could not find " + color + " king!"));
@@ -33,7 +33,7 @@ public class BoardRules {
                 .anyMatch((from) -> !board.pieceAt(from).equals(none) && !board.pieceAt(from).color().equals(color) && isCorrectMove(board, from, kingSquare));
     }
 
-    public static boolean isCheckmate(BoardReader board) {
+    public static boolean isCheckmate(BoardView board) {
         if (isInCheck(board, board.currentPlayer().pieceColor())) {
             return cannotMoveWithoutBeingCheck(board);
         } else {
@@ -41,7 +41,7 @@ public class BoardRules {
         }
     }
 
-    public static boolean isADraw(BoardReader board) {
+    public static boolean isADraw(BoardView board) {
         if (!isInCheck(board, board.currentPlayer().pieceColor()) && cannotMoveWithoutBeingCheck(board)) {
             return true;
         }
@@ -49,15 +49,15 @@ public class BoardRules {
         return board.drawCounter() == 50;
     }
 
-    public static boolean moveDoesNotCreateCheck(BoardReader board, Move move) {
+    public static boolean moveDoesNotCreateCheck(BoardView board, Move move) {
         return !board.playAndUndo(move, () -> isInCheck(board, move.fromPiece().color()));
     }
 
-    public static boolean moveDoesNotCreateCheck(BoardReader board, Square from, Square to) {
+    public static boolean moveDoesNotCreateCheck(BoardView board, Square from, Square to) {
         return moveDoesNotCreateCheck(board, new Move(board.pieceAt(from), from, to));
     }
 
-    public static boolean noMoreMovesAllowed(BoardReader board) {
+    public static boolean noMoreMovesAllowed(BoardView board) {
         if (isCheckmate(board)) {
             logger.info("checkmate winner is " + board.oppositePlayer().name());
             return true;
@@ -68,15 +68,15 @@ public class BoardRules {
             return false;
     }
 
-    public static Stream<Move> generateMoves(BoardReader board, Square from) {
+    public static Stream<Move> generateMoves(BoardView board, Square from) {
         return board.pieceAt(from).generateMoves(board, from);
     }
 
-    public static Stream<Move> generateMoves(BoardReader board, Square from, Predicate<Move> predicate) {
+    public static Stream<Move> generateMoves(BoardView board, Square from, Predicate<Move> predicate) {
         return generateMoves(board, from).filter(predicate);
     }
 
-    public static Collection<Move> generateMoves(BoardReader board) {
+    public static Collection<Move> generateMoves(BoardView board) {
         return Square.allSquares.stream().flatMap((from) -> {
             if (board.isPieceOfCurrentPlayer(board.pieceAt(from))) {
                 return generateMoves(board, from, (move) -> moveDoesNotCreateCheck(board, move));

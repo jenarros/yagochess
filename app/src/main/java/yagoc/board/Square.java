@@ -14,11 +14,6 @@ public class Square implements Serializable, Comparable<Square> {
     private final int rank;
     private final int file;
 
-    public Square(int rank, int file) {
-        this.rank = rank;
-        this.file = file;
-    }
-
     private static List<Square> all() {
         List<Square> squares = new ArrayList<>();
 
@@ -165,24 +160,20 @@ public class Square implements Serializable, Comparable<Square> {
     }
 
 
-    static final Square castlingKingsideWhiteFrom = new Square(7, 7);
-    static final Square castlingKingsideWhiteTo = new Square(7, 5);
-
-    static final Square castlingQueensideWhiteFrom = new Square(7, 0);
-    static final Square castlingQueensideWhiteTo = new Square(7, 3);
-
-    static final Square castlingQueensideBlackFrom = new Square(0, 0);
-    static final Square castlingQueensideBlackTo = new Square(0, 3);
-
-    static final Square castlingKingsideBlackFrom = new Square(0, 7);
-
-    static final Square castlingKingsideBlackTo = new Square(0, 5);
+    public Square(int rank, int file) {
+        this.rank = rank;
+        this.file = file;
+    }
 
     /**
      * position of the square in a sequence from 0 to 63
      */
     public Integer arrayPosition() {
-        return (this.rank() * 8) + this.file();
+        return rank * 8 + file;
+    }
+
+    public Squares toSquares() {
+        return Squares.Companion.valueOf(arrayPosition());
     }
 
     @Override

@@ -1,6 +1,6 @@
 package yagoc.pieces;
 
-import yagoc.board.BoardReader;
+import yagoc.board.BoardView;
 import yagoc.board.Move;
 import yagoc.board.Square;
 
@@ -12,7 +12,7 @@ public class Knight extends Piece {
     }
 
     @Override
-    public boolean isValidForPiece(BoardReader board, Move move) {
+    public boolean isValidForPiece(BoardView board, Move move) {
         if (move.rankDistanceAbs() == 2 && move.fileDistanceAbs() == 1) {
             return true;
         } else {
@@ -21,7 +21,7 @@ public class Knight extends Piece {
     }
 
     @Override
-    public Stream<Move> generateMovesForPiece(BoardReader board, Square from) {
+    public Stream<Move> generateMovesForPiece(BoardView board, Square from) {
         Piece piece = board.pieceAt(from);
         return Stream.of(
                 from.next2Rank(piece.color()).nextFile(piece.color()),

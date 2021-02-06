@@ -3,7 +3,7 @@ package yagoc.ui;
 import yagoc.Controller;
 import yagoc.Logger;
 import yagoc.board.Board;
-import yagoc.board.BoardReader;
+import yagoc.board.BoardView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,7 +29,7 @@ public class YagocWindow extends JFrame {
     private final BoardPanel boardPanel;
     private final Controller controller;
 
-    public YagocWindow(Controller controller, BoardReader board) {
+    public YagocWindow(Controller controller, BoardView board) {
         this.controller = controller;
         enableEvents(AWTEvent.WINDOW_EVENT_MASK);
         JTextPane textPane = textpane();

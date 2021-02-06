@@ -1,11 +1,11 @@
 package yagoc.players;
 
-import yagoc.board.BoardReader;
+import yagoc.board.BoardView;
 import yagoc.board.Move;
 import yagoc.pieces.PieceColor;
 
 public interface Player {
-    Move move(BoardReader board);
+    Move move(BoardView board);
 
     PlayerType type();
 

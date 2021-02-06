@@ -1,6 +1,6 @@
 package yagoc.pieces;
 
-import yagoc.board.BoardReader;
+import yagoc.board.BoardView;
 import yagoc.board.Move;
 import yagoc.board.Square;
 
@@ -11,14 +11,14 @@ public class Bishop extends Piece {
         super(PieceType.Bishop, pieceColor);
     }
 
-    static Stream<Move> generateMovesForBishop(BoardReader board, Square from) {
+    static Stream<Move> generateMovesForBishop(BoardView board, Square from) {
         Piece piece = board.pieceAt(from);
 
         return from.diagonalSquares()
                 .stream().map((to) -> new Move(piece, from, to));
     }
 
-    static boolean isCorrectMoveForBishop(BoardReader board, Move move) {
+    static boolean isCorrectMoveForBishop(BoardView board, Move move) {
         if (move.rankDistanceAbs() == move.fileDistanceAbs()) {
             //vamos a recorrer el movimiento de izquierda a derecha
             int ma = Math.max(move.from().file(), move.to().file()); //y final
@@ -53,12 +53,12 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public boolean isValidForPiece(BoardReader board, Move move) {
+    public boolean isValidForPiece(BoardView board, Move move) {
         return isCorrectMoveForBishop(board, move);
     }
 
     @Override
-    public Stream<Move> generateMovesForPiece(BoardReader board, Square from) {
+    public Stream<Move> generateMovesForPiece(BoardView board, Square from) {
         return generateMovesForBishop(board, from);
     }
 }

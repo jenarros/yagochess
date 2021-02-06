@@ -1,6 +1,6 @@
 package yagoc.pieces;
 
-import yagoc.board.BoardReader;
+import yagoc.board.BoardView;
 import yagoc.board.Move;
 import yagoc.board.Square;
 
@@ -25,12 +25,12 @@ public class Pieces {
 
     public static Piece none = new Piece(null, null) {
         @Override
-        public boolean isValidForPiece(BoardReader board, Move move) {
+        public boolean isValidForPiece(BoardView board, Move move) {
             return false;
         }
 
         @Override
-        public Stream<Move> generateMovesForPiece(BoardReader board, Square from) {
+        public Stream<Move> generateMovesForPiece(BoardView board, Square from) {
             return Stream.empty();
         }
     };
