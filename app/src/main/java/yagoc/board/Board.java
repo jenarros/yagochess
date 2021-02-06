@@ -39,20 +39,6 @@ public class Board extends BoardState {
     public void play(Move move) {
         final MoveLog moveLog;
 
-        if (move.fromPiece().equals(Pieces.whiteKing))
-            whiteKingMoved = true;
-        else if (move.fromPiece().equals(Pieces.whiteRook) && move.from().file() == 0)
-            whiteLeftRookMoved = true;
-        else if (move.fromPiece().equals(Pieces.whiteRook) && move.from().file() == 7)
-            whiteRightRookMoved = true;
-
-        if (move.fromPiece().equals(Pieces.blackKing))
-            blackKingMoved = true;
-        else if (move.fromPiece().equals(Pieces.blackRook) && move.from().file() == 0)
-            blackLeftRookMoved = true;
-        else if (move.fromPiece().equals(Pieces.blackRook) && move.from().file() == 7)
-            blackRightRookMoved = true;
-
         if (move.isCastling()) {
             drawCounter++;
             moveLog = playCastlingExtraMove(move);
@@ -81,11 +67,29 @@ public class Board extends BoardState {
             }
         }
 
+        updateMovedPieces(move);
+
         pieceAt(move.from(), none);
         pieceAt(move.to(), move.fromPiece());
         togglePlayer();
         moveCounter++;
         moves.add(moveLog);
+    }
+
+    private void updateMovedPieces(Move move) {
+        if (move.fromPiece().equals(Pieces.whiteKing))
+            whiteKingMoved = true;
+        else if (move.fromPiece().equals(Pieces.whiteRook) && move.from().file() == 0)
+            whiteLeftRookMoved = true;
+        else if (move.fromPiece().equals(Pieces.whiteRook) && move.from().file() == 7)
+            whiteRightRookMoved = true;
+
+        if (move.fromPiece().equals(Pieces.blackKing))
+            blackKingMoved = true;
+        else if (move.fromPiece().equals(Pieces.blackRook) && move.from().file() == 0)
+            blackLeftRookMoved = true;
+        else if (move.fromPiece().equals(Pieces.blackRook) && move.from().file() == 7)
+            blackRightRookMoved = true;
     }
 
     void undo() {

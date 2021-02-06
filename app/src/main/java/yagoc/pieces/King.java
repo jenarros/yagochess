@@ -22,6 +22,8 @@ public class King extends Piece {
     public Stream<Move> generateMovesForPiece(BoardReader board, Square from) {
         Piece piece = board.pieceAt(from);
         return Stream.of(
+                from.next2File(piece.color()),
+                from.previous2File(piece.color()),
                 from.nextRank(piece.color()),
                 from.nextRank(piece.color()).previousFile(piece.color()),
                 from.nextRank(piece.color()).nextFile(piece.color()),
@@ -40,8 +42,8 @@ public class King extends Piece {
                 move.hasSameRank() && !isInCheck(board, move.fromPiece().color()) &&
                 moveDoesNotCreateCheck(board, move)) {
 
-            if (move.to().file() == 2 && board.pieceAt(move.from().rank(), 0).equals(move.fromPiece().switchTo(PieceType.Rook))) {
-                //blancas
+            if (move.to().file() == 2 && board.pieceAt(move.from().rank(), 0).equals(move.fromPiece().switchTo(PieceType.Rook))) { // queenside
+                // white set
                 if (move.fromPiece().color() == PieceColor.whiteSet && !board.hasWhiteLeftRookMoved() &&
                         board.pieceAt(7, 1).equals(Pieces.none) && board.pieceAt(7, 2).equals(Pieces.none) &&
                         board.pieceAt(7, 3).equals(Pieces.none) &&
@@ -49,21 +51,21 @@ public class King extends Piece {
                         moveDoesNotCreateCheck(board, move.from(), new Square(7, 2))) {
                     return true;
                 }
-                //negras
+                // black set
                 return move.fromPiece().color() == PieceColor.blackSet && !board.hasBlackLeftRookMoved() &&
                         board.pieceAt(0, 1).equals(Pieces.none) && board.pieceAt(0, 2).equals(Pieces.none) &&
-                        board.pieceAt(0, 3).equals(Pieces.none) && board.pieceAt(0, 4).equals(Pieces.none) &&
+                        board.pieceAt(0, 3).equals(Pieces.none) &&
                         moveDoesNotCreateCheck(board, move.from(), new Square(0, 3)) &&
                         moveDoesNotCreateCheck(board, move.from(), new Square(0, 2));
-            } else if (move.to().file() == 6 && board.pieceAt(move.from().rank(), 7).equals(move.fromPiece().switchTo(PieceType.Rook))) { //torre derecha
-                //blancas
+            } else if (move.to().file() == 6 && board.pieceAt(move.from().rank(), 7).equals(move.fromPiece().switchTo(PieceType.Rook))) { // kingside
+                // white set
                 if (move.fromPiece().color() == PieceColor.whiteSet && !board.hasWhiteRightRookMoved() &&
                         board.pieceAt(7, 5).equals(Pieces.none) && board.pieceAt(7, 6).equals(Pieces.none) &&
                         moveDoesNotCreateCheck(board, move.from(), new Square(7, 6)) &&
                         moveDoesNotCreateCheck(board, move.from(), new Square(7, 5))) {
                     return true;
                 }
-                //negras
+                // black set
                 return move.fromPiece().color() == PieceColor.blackSet && !board.hasBlackRightRookMoved() &&
                         board.pieceAt(0, 5).equals(Pieces.none) && board.pieceAt(0, 6).equals(Pieces.none) &&
                         moveDoesNotCreateCheck(board, move.from(), new Square(0, 6)) &&

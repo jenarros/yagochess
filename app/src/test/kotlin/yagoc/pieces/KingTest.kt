@@ -48,4 +48,46 @@ class KingTest {
             assertThat(this, equalTo(test.validSquares()))
         }
     }
+
+    @Test
+    fun `black set castling`() {
+        val test = TestBoard(
+            """
+            R-11K11R
+            ---111--
+            --------
+            --------
+            --------
+            --------
+            --------
+            --------
+        """, Square(0, 4)
+        )
+
+        test.possibleMoves().run {
+            assertThat(this.size, equalTo(7))
+            assertThat(this, equalTo(test.validSquares()))
+        }
+    }
+
+    @Test
+    fun `white set castling`() {
+        val test = TestBoard(
+            """
+            --------
+            --------
+            --------
+            --------
+            --------
+            --------
+            ---111--
+            r-11k11r
+        """, Square(7, 4)
+        )
+
+        test.possibleMoves().run {
+            assertThat(this.size, equalTo(7))
+            assertThat(this, equalTo(test.validSquares()))
+        }
+    }
 }
