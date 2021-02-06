@@ -2,7 +2,7 @@ package yagoc.pieces
 
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import yagoc.TestBoard
 import yagoc.board.Square
 import yagoc.pieces.Pieces.*

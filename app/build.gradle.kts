@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.4.30-M1"
+    id("org.jetbrains.kotlin.jvm") version "1.4.30"
     application
 }
 
@@ -12,8 +12,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
     testImplementation("org.hamcrest:hamcrest:2.2")
 }
 

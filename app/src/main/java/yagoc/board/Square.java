@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class Square implements Serializable, Comparable {
+public class Square implements Serializable, Comparable<Square> {
     public static List<Square> allSquares = all();
 
     private final int rank;
@@ -186,11 +186,7 @@ public class Square implements Serializable, Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
-        if (!(o instanceof Square)) return -1;
-
-        Square other = ((Square) o);
-
-        return this.arrayPosition().compareTo(other.arrayPosition());
+    public int compareTo(Square o) {
+        return this.arrayPosition().compareTo(o.arrayPosition());
     }
 }
