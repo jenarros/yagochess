@@ -4,13 +4,13 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.hasItem
 import org.junit.jupiter.api.Test
-import yagoc.TestBoard
+import yagoc.BoardSpec
 import yagoc.board.Square
 
 class BishopTest {
     @Test
     fun `can move diagonally to the end of the board`() {
-        val test = TestBoard(
+        val test = BoardSpec(
             """
             1-----1-
             -1---1--
@@ -25,13 +25,13 @@ class BishopTest {
 
         test.possibleMoves().run {
             assertThat(this.size, equalTo(13))
-            assertThat(this, equalTo(test.validSquares()))
+            assertThat(this, equalTo(test.validSquares))
         }
     }
 
     @Test
     fun `can move diagonally to the end of the board or first piece found`() {
-        val test = TestBoard(
+        val test = BoardSpec(
             """
             --------
             --------
@@ -47,7 +47,7 @@ class BishopTest {
         test.possibleMoves().run {
             assertThat(this.size, equalTo(6))
             assertThat(this, hasItem(equalTo(Square(2, 2))))
-            assertThat(this, equalTo(test.validSquares()))
+            assertThat(this, equalTo(test.validSquares))
         }
     }
 }

@@ -1,5 +1,6 @@
 package yagoc.board;
 
+import yagoc.pieces.Piece;
 import yagoc.pieces.PieceColor;
 import yagoc.pieces.Pieces;
 
@@ -25,6 +26,15 @@ public class Board extends BoardState {
         resetWith(board);
     }
 
+    public static Board parseBoard(String stringBoard) {
+        String cleanStringBoard = stringBoard.replaceAll(" |\t|\n", "");
+        Board board = new Board();
+        Square.allSquares.forEach((square) -> {
+            board.pieceAt(square, Pieces.parse(cleanStringBoard.charAt(square.arrayPosition())));
+        });
+        return board;
+    }
+
     public <T> T playAndUndo(Move move, Callable<T> callable) {
         play(move);
         try {
@@ -36,44 +46,15 @@ public class Board extends BoardState {
         }
     }
 
-    public void play(Move move) {
-        final MoveLog moveLog;
+    public Board playAndUndo(Square from, Square to) {
+        play(from, to);
+        undo();
 
-        if (move.isCastling()) {
-            drawCounter++;
-            moveLog = playCastlingExtraMove(move);
-        } else {
-            if (!pieceAt(move.to()).equals(none) || move.fromPiece().pieceType() == Pawn) {
-                // draw counter restarts when we capture a piece or move a pawn
-                drawCounter = 0;
-            } else {
-                drawCounter++;
-            }
-            // if pawn advances 2 squares, it is possible that next move is a en passant capture
-            if (move.fromPiece().pieceType() == Pawn && move.rankDistanceAbs() == 2) {
-                enPassant[move.to().file()] = moveCounter;
-            }
-            // en passant capture
-            if (move.fromPiece().pieceType() == Pawn
-                    && move.rankDistance() == 1
-                    && move.fileDistanceAbs() == 1
-                    && enPassant[move.to().file()] == moveCounter - 1) {
-                // i.e. for whites
-                // turn=1, to.x = 2, to.y = 5, squareC = (3,5)
-                moveLog = MoveLog.enPassant(this, move, pieceAt(move.to()));
-                pieceAt(moveLog.move.enPassantSquare(), none);
-            } else {
-                moveLog = MoveLog.normalMove(this, move, pieceAt(move.to()));
-            }
-        }
+        return this;
+    }
 
-        updateMovedPieces(move);
-
-        pieceAt(move.from(), none);
-        pieceAt(move.to(), move.fromPiece());
-        togglePlayer();
-        moveCounter++;
-        moves.add(moveLog);
+    public Board play(Square from, Square to) {
+        return play(new Move(pieceAt(from), from, to));
     }
 
     private void updateMovedPieces(Move move) {
@@ -147,5 +128,58 @@ public class Board extends BoardState {
             pieceAt(castlingKingsideBlackTo, Pieces.blackRook);
         }
         return MoveLog.castling(this, move, pieceAt(move.to()), castlingExtraMove);
+    }
+
+    public Board play(Move move) {
+        final MoveLog moveLog;
+
+        if (move.isCastling()) {
+            moveLog = playCastlingExtraMove(move);
+            drawCounter++;
+        } else {
+            // if pawn advances 2 squares, it is possible that next move is a en passant capture
+            if (move.fromPiece().pieceType() == Pawn && move.rankDistanceAbs() == 2) {
+                enPassant[move.to().file()] = moveCounter;
+            }
+            // en passant capture
+            if (move.fromPiece().pieceType() == Pawn
+                    && move.rankDistance() == 1
+                    && move.fileDistanceAbs() == 1
+                    && enPassant[move.to().file()] == moveCounter - 1) {
+                // i.e. for whites
+                // turn=1, to.x = 2, to.y = 5, squareC = (3,5)
+                moveLog = MoveLog.enPassant(this, move, pieceAt(move.to()));
+                pieceAt(moveLog.move.enPassantSquare(), none);
+            } else {
+                moveLog = MoveLog.normalMove(this, move, pieceAt(move.to()));
+            }
+            if (!pieceAt(move.to()).equals(none) || move.fromPiece().pieceType() == Pawn) {
+                // draw counter restarts when we capture a piece or move a pawn
+                drawCounter = 0;
+            } else {
+                drawCounter++;
+            }
+        }
+
+        updateMovedPieces(move);
+
+        pieceAt(move.from(), none);
+        pieceAt(move.to(), move.fromPiece());
+        togglePlayer();
+        moveCounter++;
+        moves.add(moveLog);
+
+        return this;
+    }
+
+    public String toPrettyString() {
+        StringBuilder buffer = new StringBuilder();
+        Square.allSquares.forEach((square) -> {
+            Piece piece = pieceAt(square);
+            buffer.append(piece.toUniqueChar());
+            if (square.file() % 8 == 7 && square.rank() < 7) buffer.append("\n");
+        });
+
+        return buffer.toString();
     }
 }

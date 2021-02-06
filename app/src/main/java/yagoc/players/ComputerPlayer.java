@@ -44,22 +44,22 @@ public class ComputerPlayer implements Player, Serializable {
     }
 
     public Move move(BoardReader board) {
-        AtomicInteger processedMoves = new AtomicInteger(0);
+        AtomicInteger moveCounter = new AtomicInteger(0);
         long start = System.currentTimeMillis();
-        MoveValue moveValue = alphaBeta(level, board, Integer.MIN_VALUE, Integer.MAX_VALUE, processedMoves);
+        MoveValue moveValue = alphaBeta(level, board, Integer.MIN_VALUE, Integer.MAX_VALUE, moveCounter);
         long elapsed = System.currentTimeMillis() - start + 1;
-        logger.info("alpha-beta: processed = " + processedMoves + " moves in " + elapsed + "ms " + processedMoves.intValue() / elapsed + " moves/ms,  minimax = " + moveValue.value);
-
+        logger.info("alpha-beta: processed = " + moveCounter + " moves in " + elapsed + "ms " + moveCounter.intValue() / elapsed + " moves/ms,  minimax = " + moveValue.value);
+        logger.info(board.toPrettyString());
         return moveValue.move;
     }
 
-    MoveValue alphaBeta(int depth, BoardReader board, int alfa, int beta, AtomicInteger processedMoves) {
+    public MoveValue alphaBeta(int depth, BoardReader board, int alfa, int beta, AtomicInteger moveCounter) {
         if (depth == 0) {
             return leafMoveValue(board);
         } else if ((level - depth) % 2 == 0) { // maximizing player = current player (as depth = level)
-            return alphaBetaMax(depth, board, alfa, beta, processedMoves);
+            return alphaBetaMax(depth, board, alfa, beta, moveCounter);
         } else {
-            return alphaBetaMin(depth, board, alfa, beta, processedMoves);
+            return alphaBetaMin(depth, board, alfa, beta, moveCounter);
         }
     }
 

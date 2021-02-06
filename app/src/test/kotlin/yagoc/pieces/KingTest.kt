@@ -3,14 +3,14 @@ package yagoc.pieces
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
-import yagoc.TestBoard
+import yagoc.BoardSpec
 import yagoc.board.Square
 import yagoc.pieces.Pieces.*
 
 class KingTest {
     @Test
     fun `can move 1 square in all directions`() {
-        val test = TestBoard(
+        val test = BoardSpec(
             """
             --------
             --------
@@ -25,13 +25,13 @@ class KingTest {
 
         test.possibleMoves().run {
             assertThat(this.size, equalTo(8))
-            assertThat(this, equalTo(test.validSquares()))
+            assertThat(this, equalTo(test.validSquares))
         }
     }
 
     @Test
     fun `can move 1 square in all directions if there isn't a piece of our color`() {
-        val test = TestBoard(
+        val test = BoardSpec(
             """
             --------
             --------
@@ -46,13 +46,13 @@ class KingTest {
 
         test.possibleMoves().run {
             assertThat(this.size, equalTo(7))
-            assertThat(this, equalTo(test.validSquares()))
+            assertThat(this, equalTo(test.validSquares))
         }
     }
 
     @Test
     fun `black set castling`() {
-        val test = TestBoard(
+        val test = BoardSpec(
             """
             R-11K11R
             ---111--
@@ -67,13 +67,33 @@ class KingTest {
 
         test.possibleMoves().run {
             assertThat(this.size, equalTo(7))
-            assertThat(this, equalTo(test.validSquares()))
+            assertThat(this, equalTo(test.validSquares))
+        }
+    }
+
+    @Test
+    fun `cannot do castling if there is a piece in between`() {
+        val test = BoardSpec(
+            """
+            R--QKB-R
+            ---PPP--
+            --------
+            --------
+            --------
+            --------
+            --------
+            --------
+        """, Square(0, 4)
+        )
+
+        test.possibleMoves().run {
+            assertThat(this.size, equalTo(0))
         }
     }
 
     @Test
     fun `black set castling is not allowed if pieces have been moved`() {
-        val test = TestBoard(
+        val test = BoardSpec(
             """
             R--1K1-R
             ---PPP--
@@ -93,7 +113,7 @@ class KingTest {
 
     @Test
     fun `white set castling`() {
-        val test = TestBoard(
+        val test = BoardSpec(
             """
             --------
             --------
@@ -108,13 +128,13 @@ class KingTest {
 
         test.possibleMoves().run {
             assertThat(this.size, equalTo(7))
-            assertThat(this, equalTo(test.validSquares()))
+            assertThat(this, equalTo(test.validSquares))
         }
     }
 
     @Test
     fun `white set castling is not allowed if pieces have been moved`() {
-        val test = TestBoard(
+        val test = BoardSpec(
             """
             --------
             --------

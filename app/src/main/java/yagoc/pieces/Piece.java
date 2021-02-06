@@ -8,6 +8,8 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import static yagoc.pieces.PieceColor.blackSet;
+import static yagoc.pieces.PieceColor.whiteSet;
 import static yagoc.pieces.Pieces.none;
 
 abstract public class Piece implements Serializable {
@@ -82,5 +84,14 @@ abstract public class Piece implements Serializable {
 
     public boolean notOfSameColor(PieceColor pieceColor) {
         return this != none && this.color != pieceColor;
+    }
+
+    public char toUniqueChar() {
+        if (blackSet.equals(color())) {
+            return toString().charAt(0);
+        } else if (whiteSet.equals(color())) {
+            return toString().toLowerCase().charAt(0);
+        }
+        return '-';
     }
 }

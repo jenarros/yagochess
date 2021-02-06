@@ -10,6 +10,7 @@ import yagoc.players.UserPlayer;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Stack;
 
 import static yagoc.pieces.Pieces.none;
@@ -139,7 +140,7 @@ abstract public class BoardState implements Serializable, BoardReader {
         return piece.color() == currentPlayer.pieceColor();
     }
 
-    protected void togglePlayer() {
+    public void togglePlayer() {
         if (currentPlayer.equals(blackPlayer)) {
             currentPlayer = whitePlayer;
         } else {
@@ -183,5 +184,41 @@ abstract public class BoardState implements Serializable, BoardReader {
         } else {
             return whitePlayer;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BoardState that = (BoardState) o;
+        return whiteLeftRookMoved == that.whiteLeftRookMoved &&
+                whiteRightRookMoved == that.whiteRightRookMoved &&
+                whiteKingMoved == that.whiteKingMoved &&
+                blackLeftRookMoved == that.blackLeftRookMoved &&
+                blackRightRookMoved == that.blackRightRookMoved &&
+                blackKingMoved == that.blackKingMoved &&
+                drawCounter == that.drawCounter &&
+                moveCounter == that.moveCounter &&
+                moves.equals(that.moves) &&
+                Arrays.equals(squares[0], that.squares[0]) &&
+                Arrays.equals(squares[1], that.squares[1]) &&
+                Arrays.equals(squares[2], that.squares[2]) &&
+                Arrays.equals(squares[3], that.squares[3]) &&
+                Arrays.equals(squares[4], that.squares[4]) &&
+                Arrays.equals(squares[5], that.squares[5]) &&
+                Arrays.equals(squares[6], that.squares[6]) &&
+                Arrays.equals(squares[7], that.squares[7]) &&
+                Arrays.equals(enPassant, that.enPassant) &&
+                currentPlayer.equals(that.currentPlayer) &&
+                blackPlayer.equals(that.blackPlayer) &&
+                whitePlayer.equals(that.whitePlayer);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(moves, currentPlayer, whiteLeftRookMoved, whiteRightRookMoved, whiteKingMoved, blackLeftRookMoved, blackRightRookMoved, blackKingMoved, drawCounter, moveCounter, blackPlayer, whitePlayer);
+        result = 31 * result + Arrays.hashCode(squares);
+        result = 31 * result + Arrays.hashCode(enPassant);
+        return result;
     }
 }

@@ -4,13 +4,13 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.hasItem
 import org.junit.jupiter.api.Test
-import yagoc.TestBoard
+import yagoc.BoardSpec
 import yagoc.board.Square
 
 class KnightTest {
     @Test
     fun `standard 8 squares`() {
-        val test = TestBoard(
+        val test = BoardSpec(
             """
             --------
             --1-1---
@@ -25,13 +25,13 @@ class KnightTest {
 
         test.possibleMoves().run {
             assertThat(this.size, equalTo(8))
-            assertThat(this, equalTo(test.validSquares()))
+            assertThat(this, equalTo(test.validSquares))
         }
     }
 
     @Test
     fun `standard 8 squares if they are empty or have a piece of the other color`() {
-        val test = TestBoard(
+        val test = BoardSpec(
             """
             --------
             --1-1---
@@ -47,7 +47,7 @@ class KnightTest {
         test.possibleMoves().run {
             assertThat(this.size, equalTo(7))
             assertThat(this, hasItem(equalTo(Square(4, 5))))
-            assertThat(this, equalTo(test.validSquares()))
+            assertThat(this, equalTo(test.validSquares))
         }
     }
 }

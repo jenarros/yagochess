@@ -37,4 +37,8 @@ public interface BoardReader {
     int moveCounter();
 
     <T> T playAndUndo(Move move, Callable<T> callable);
+
+    BoardReader playAndUndo(Square from, Square to);
+
+    String toPrettyString();
 }
