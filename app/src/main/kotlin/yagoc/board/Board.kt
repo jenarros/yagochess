@@ -1,349 +1,336 @@
-package yagoc.board;
+package yagoc.board
 
-import yagoc.pieces.Piece;
-import yagoc.pieces.PieceColor;
-import yagoc.pieces.Pieces;
-import yagoc.players.ComputerPlayer;
-import yagoc.players.Player;
-import yagoc.players.PlayerStrategy;
-import yagoc.players.UserPlayer;
+import yagoc.board.MoveLog.Companion.castling
+import yagoc.board.MoveLog.Companion.enPassant
+import yagoc.board.MoveLog.Companion.normalMove
+import yagoc.pieces.Piece
+import yagoc.pieces.PieceColor
+import yagoc.pieces.PieceType
+import yagoc.pieces.Pieces
+import yagoc.players.ComputerPlayer
+import yagoc.players.Player
+import yagoc.players.PlayerStrategy
+import yagoc.players.UserPlayer
+import java.util.*
+import java.util.concurrent.Callable
+import java.util.function.Consumer
 
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Stack;
-import java.util.concurrent.Callable;
+class Board : BoardView {
+    private val moves = Stack<MoveLog>()
+    private val squareBoard = SquareBoard()
+    private val enPassant = IntArray(8)
+    private var whiteLeftRookMoved = false
+    private var whiteRightRookMoved = false
+    private var whiteKingMoved = false
+    private var blackLeftRookMoved = false
+    private var blackRightRookMoved = false
+    private var blackKingMoved = false
+    private var drawCounter = 0
+    private var moveCounter = 0
+    private var blackPlayer: Player = ComputerPlayer("computer 1", PieceColor.blackSet, 3, PlayerStrategy.F1)
+    private var whitePlayer: Player = UserPlayer("user 1", PieceColor.whiteSet)
+    private var currentPlayer: Player = whitePlayer
 
-import static yagoc.board.SquaresKt.a1Square;
-import static yagoc.board.SquaresKt.a8Square;
-import static yagoc.board.SquaresKt.d1Square;
-import static yagoc.board.SquaresKt.d8Square;
-import static yagoc.board.SquaresKt.f1Square;
-import static yagoc.board.SquaresKt.f8Square;
-import static yagoc.board.SquaresKt.h1Square;
-import static yagoc.board.SquaresKt.h8Square;
-import static yagoc.pieces.PieceType.Pawn;
-import static yagoc.pieces.Pieces.none;
-
-public class Board implements BoardView {
-    private final Stack<MoveLog> moves = new Stack<>();
-    private final SquareBoard squareBoard = new SquareBoard();
-    private final int[] enPassant = new int[8];
-    private boolean whiteLeftRookMoved, whiteRightRookMoved, whiteKingMoved;
-    private boolean blackLeftRookMoved, blackRightRookMoved, blackKingMoved;
-    private int drawCounter;
-    private int moveCounter;
-    private Player currentPlayer;
-    private Player blackPlayer, whitePlayer;
-
-    public Board() {
-        reset();
+    constructor() {
+        reset()
     }
 
-    public Board(Board board) {
-        resetWith(board);
+    constructor(board: Board) {
+        resetWith(board)
     }
 
-    public static Board parseBoard(String stringBoard) {
-        String cleanStringBoard = stringBoard.replaceAll(" |\t|\n", "");
-        Board board = new Board();
-        Square.allSquares.forEach((square) -> {
-            board.pieceAt(square, Pieces.parse(cleanStringBoard.charAt(square.arrayPosition())));
-        });
-        return board;
+    fun resetWith(board: Board) {
+        System.arraycopy(board.squareBoard.pieces, 0, squareBoard.pieces, 0, squareBoard.pieces.size)
+        System.arraycopy(board.enPassant, 0, enPassant, 0, enPassant.size)
+        currentPlayer = board.currentPlayer
+        whiteLeftRookMoved = board.whiteLeftRookMoved
+        whiteRightRookMoved = board.whiteRightRookMoved
+        whiteKingMoved = board.whiteKingMoved
+        blackLeftRookMoved = board.blackLeftRookMoved
+        blackRightRookMoved = board.blackRightRookMoved
+        blackKingMoved = board.blackKingMoved
+        drawCounter = board.drawCounter
+        moveCounter = board.moveCounter
+        blackPlayer = board.blackPlayer
+        whitePlayer = board.whitePlayer
+        moves.removeAllElements()
+        moves.addAll(board.moves)
     }
 
-    public void resetWith(Board board) {
-        System.arraycopy(board.squareBoard.getPieces(), 0, squareBoard.getPieces(), 0, squareBoard.getPieces().length);
-        System.arraycopy(board.enPassant, 0, this.enPassant, 0, this.enPassant.length);
-        currentPlayer = board.currentPlayer;
-        whiteLeftRookMoved = board.whiteLeftRookMoved;
-        whiteRightRookMoved = board.whiteRightRookMoved;
-        whiteKingMoved = board.whiteKingMoved;
-        blackLeftRookMoved = board.blackLeftRookMoved;
-        blackRightRookMoved = board.blackRightRookMoved;
-        blackKingMoved = board.blackKingMoved;
-        drawCounter = board.drawCounter;
-        moveCounter = board.moveCounter;
-        blackPlayer = board.blackPlayer;
-        whitePlayer = board.whitePlayer;
-        moves.removeAllElements();
-        moves.addAll(board.moves);
+    fun reset() {
+        Arrays.fill(enPassant, -5)
+        blackPlayer = ComputerPlayer("computer 1", PieceColor.blackSet, 3, PlayerStrategy.F1)
+        whitePlayer = UserPlayer("user 1", PieceColor.whiteSet)
+        currentPlayer = whitePlayer
+        squareBoard.reset()
     }
 
-    public void reset() {
-        Arrays.fill(enPassant, -5);
-
-        blackPlayer = new ComputerPlayer("computer 1", PieceColor.blackSet, 3, PlayerStrategy.F1);
-        whitePlayer = new UserPlayer("user 1", PieceColor.whiteSet);
-        currentPlayer = whitePlayer;
-        squareBoard.reset();
+    override fun enPassant(file: Int): Int {
+        return enPassant[file]
     }
 
-    public int enPassant(int file) {
-        return enPassant[file];
+    override fun currentPlayer(): Player {
+        return currentPlayer
     }
 
-    public Player currentPlayer() {
-        return currentPlayer;
+    override fun hasWhiteLeftRookMoved(): Boolean {
+        return whiteLeftRookMoved
     }
 
-    public boolean hasWhiteLeftRookMoved() {
-        return whiteLeftRookMoved;
+    override fun hasWhiteRightRookMoved(): Boolean {
+        return whiteRightRookMoved
     }
 
-    public boolean hasWhiteRightRookMoved() {
-        return whiteRightRookMoved;
+    override fun hasWhiteKingMoved(): Boolean {
+        return whiteKingMoved
     }
 
-    public boolean hasWhiteKingMoved() {
-        return whiteKingMoved;
+    override fun hasBlackLeftRookMoved(): Boolean {
+        return blackLeftRookMoved
     }
 
-    public boolean hasBlackLeftRookMoved() {
-        return blackLeftRookMoved;
+    override fun hasBlackRightRookMoved(): Boolean {
+        return blackRightRookMoved
     }
 
-    public boolean hasBlackRightRookMoved() {
-        return blackRightRookMoved;
+    override fun hasBlackKingMoved(): Boolean {
+        return blackKingMoved
     }
 
-    public boolean hasBlackKingMoved() {
-        return blackKingMoved;
+    override fun drawCounter(): Int {
+        return drawCounter
     }
 
-    public int drawCounter() {
-        return drawCounter;
+    override fun moveCounter(): Int {
+        return moveCounter
     }
 
-    public int moveCounter() {
-        return moveCounter;
+    fun blackPlayer(): Player {
+        return blackPlayer
     }
 
-    public Player blackPlayer() {
-        return blackPlayer;
+    fun whitePlayer(): Player {
+        return whitePlayer
     }
 
-    public Player whitePlayer() {
-        return whitePlayer;
-    }
-
-    public void whitePlayer(Player player) {
-        if (currentPlayer.equals(whitePlayer)) {
-            currentPlayer = player;
+    fun whitePlayer(player: Player) {
+        if (currentPlayer == whitePlayer) {
+            currentPlayer = player
         }
-        whitePlayer = player;
+        whitePlayer = player
     }
 
-    public boolean isPieceOfCurrentPlayer(Piece piece) {
-        return piece.color() == currentPlayer.pieceColor();
+    override fun isPieceOfCurrentPlayer(piece: Piece): Boolean {
+        return piece.color() == currentPlayer.pieceColor()
     }
 
-    public void togglePlayer() {
-        if (currentPlayer.equals(blackPlayer)) {
-            currentPlayer = whitePlayer;
+    fun togglePlayer() {
+        currentPlayer = if (currentPlayer == blackPlayer) {
+            whitePlayer
         } else {
-            currentPlayer = blackPlayer;
+            blackPlayer
         }
     }
 
-    public void blackPlayer(Player player) {
-        if (currentPlayer.equals(blackPlayer)) {
-            currentPlayer = player;
+    fun blackPlayer(player: Player) {
+        if (currentPlayer == blackPlayer) {
+            currentPlayer = player
         }
-        blackPlayer = player;
+        blackPlayer = player
     }
 
-    @Override
-    public Piece pieceAt(Square square) {
-        return squareBoard.get(square.arrayPosition());
+    override fun pieceAt(square: Square): Piece {
+        return squareBoard[square.arrayPosition()]
     }
 
-    public void pieceAt(Square square, Piece newPiece) {
-        squareBoard.set(square.arrayPosition(), newPiece);
+    fun pieceAt(square: Square, newPiece: Piece) {
+        squareBoard[square.arrayPosition()] = newPiece
     }
 
-    public Player oppositePlayer() {
-        if (currentPlayer.equals(whitePlayer)) {
-            return blackPlayer;
+    override fun oppositePlayer(): Player {
+        return if (currentPlayer == whitePlayer) {
+            blackPlayer
         } else {
-            return whitePlayer;
+            whitePlayer
         }
     }
 
-    public String toPrettyString() {
-        StringBuilder buffer = new StringBuilder();
-        Square.allSquares.forEach((square) -> {
-            Piece piece = pieceAt(square);
-            buffer.append(piece.toUniqueChar());
-            if (square.file() % 8 == 7 && square.rank() < 7) buffer.append("\n");
-        });
-
-        return buffer.toString();
+    override fun toPrettyString(): String {
+        val buffer = StringBuilder()
+        Square.allSquares.forEach(Consumer { square: Square ->
+            val piece = pieceAt(square)
+            buffer.append(piece.toUniqueChar())
+            if (square.file() % 8 == 7 && square.rank() < 7) buffer.append("\n")
+        })
+        return buffer.toString()
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Board that = (Board) o;
-        return whiteLeftRookMoved == that.whiteLeftRookMoved &&
-                whiteRightRookMoved == that.whiteRightRookMoved &&
-                whiteKingMoved == that.whiteKingMoved &&
-                blackLeftRookMoved == that.blackLeftRookMoved &&
-                blackRightRookMoved == that.blackRightRookMoved &&
-                blackKingMoved == that.blackKingMoved &&
-                drawCounter == that.drawCounter &&
-                moveCounter == that.moveCounter &&
-                moves.equals(that.moves) &&
-                squareBoard.equals(that.squareBoard) &&
-                Arrays.equals(enPassant, that.enPassant) &&
-                currentPlayer.equals(that.currentPlayer) &&
-                blackPlayer.equals(that.blackPlayer) &&
-                whitePlayer.equals(that.whitePlayer);
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val that = other as Board
+        return whiteLeftRookMoved == that.whiteLeftRookMoved && whiteRightRookMoved == that.whiteRightRookMoved && whiteKingMoved == that.whiteKingMoved && blackLeftRookMoved == that.blackLeftRookMoved && blackRightRookMoved == that.blackRightRookMoved && blackKingMoved == that.blackKingMoved && drawCounter == that.drawCounter && moveCounter == that.moveCounter && moves == that.moves &&
+                squareBoard == that.squareBoard &&
+                enPassant.contentEquals(that.enPassant) && currentPlayer == that.currentPlayer && blackPlayer == that.blackPlayer && whitePlayer == that.whitePlayer
     }
 
-    public <T> T playAndUndo(Move move, Callable<T> callable) {
-        play(move);
-        try {
-            T moveValue = callable.call();
-            undo();
-            return moveValue;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    override fun <T> playAndUndo(move: Move, callable: Callable<T>): T {
+        play(move)
+        return try {
+            val moveValue = callable.call()
+            undo()
+            moveValue
+        } catch (e: Exception) {
+            throw RuntimeException(e)
         }
     }
 
-    public Board playAndUndo(Square from, Square to) {
-        play(from, to);
-        undo();
-
-        return this;
+    override fun playAndUndo(from: Square, to: Square): Board {
+        play(from, to)
+        undo()
+        return this
     }
 
-    public Board play(Square from, Square to) {
-        return play(new Move(pieceAt(from), from, to));
+    fun play(from: Square, to: Square): Board {
+        return play(Move(pieceAt(from), from, to))
     }
 
-    private void updateMovedPieces(Move move) {
-        if (move.fromPiece().equals(Pieces.whiteKing))
-            whiteKingMoved = true;
-        else if (move.fromPiece().equals(Pieces.whiteRook) && move.from().file() == 0)
-            whiteLeftRookMoved = true;
-        else if (move.fromPiece().equals(Pieces.whiteRook) && move.from().file() == 7)
-            whiteRightRookMoved = true;
-
-        if (move.fromPiece().equals(Pieces.blackKing))
-            blackKingMoved = true;
-        else if (move.fromPiece().equals(Pieces.blackRook) && move.from().file() == 0)
-            blackLeftRookMoved = true;
-        else if (move.fromPiece().equals(Pieces.blackRook) && move.from().file() == 7)
-            blackRightRookMoved = true;
+    private fun updateMovedPieces(move: Move) {
+        if (move.fromPiece() == Pieces.whiteKing) whiteKingMoved =
+            true else if (move.fromPiece() == Pieces.whiteRook && move.from().file() == 0) whiteLeftRookMoved =
+            true else if (move.fromPiece() == Pieces.whiteRook && move.from().file() == 7) whiteRightRookMoved = true
+        if (move.fromPiece() == Pieces.blackKing) blackKingMoved =
+            true else if (move.fromPiece() == Pieces.blackRook && move.from().file() == 0) blackLeftRookMoved =
+            true else if (move.fromPiece() == Pieces.blackRook && move.from().file() == 7) blackRightRookMoved = true
     }
 
-    void undo() {
-        MoveLog moveLog = moves.pop();
-
-        if (moveLog.type == MoveType.normal) {
-            pieceAt(moveLog.move.from(), moveLog.move.fromPiece());
-            pieceAt(moveLog.move.to(), moveLog.toPiece);
-
-        } else if (moveLog.type == MoveType.enPassant) {
-            pieceAt(moveLog.move.from(), moveLog.move.fromPiece());
-            pieceAt(moveLog.move.to(), moveLog.toPiece);
-            pieceAt(moveLog.move.enPassantSquare(), moveLog.enPassantPiece);
-
-        } else if (moveLog.type == MoveType.castling) {
-            pieceAt(moveLog.move.from(), moveLog.move.fromPiece());
-            pieceAt(moveLog.move.to(), moveLog.toPiece);
-            pieceAt(moveLog.castlingExtraMove.from(), moveLog.castlingExtraMove.fromPiece());
-            pieceAt(moveLog.castlingExtraMove.to(), none);
-        }
-        whiteLeftRookMoved = moveLog.whiteLeftRookMoved;
-        whiteRightRookMoved = moveLog.whiteRightRookMoved;
-        whiteKingMoved = moveLog.whiteKingMoved;
-        blackLeftRookMoved = moveLog.blackLeftRookMoved;
-        blackRightRookMoved = moveLog.blackRightRookMoved;
-        blackKingMoved = moveLog.blackKingMoved;
-        enPassant[moveLog.move.to().file()] = moveLog.enPassant;
-        drawCounter = moveLog.drawCounter;
-        moveCounter = moveLog.moveCounter;
-
-        togglePlayer();
-    }
-
-    MoveLog playCastlingExtraMove(Move move) {
-        final Move castlingExtraMove;
-
-        if (move.isCastlingQueenside()) {
-            if (move.fromPiece().color() == PieceColor.whiteSet) {
-                castlingExtraMove = new Move(Pieces.whiteRook, a1Square, d1Square);
-                pieceAt(a1Square, none);
-                pieceAt(d1Square, Pieces.whiteRook);
-            } else {
-                castlingExtraMove = new Move(Pieces.blackRook, a8Square, d8Square);
-                pieceAt(a8Square, none);
-                pieceAt(d8Square, Pieces.blackRook);
+    fun undo() {
+        val moveLog = moves.pop()
+        when {
+            moveLog.type === MoveType.normal -> {
+                pieceAt(moveLog.move.from(), moveLog.move.fromPiece())
+                pieceAt(moveLog.move.to(), moveLog.toPiece)
             }
-
-        } else if (move.fromPiece().color() == PieceColor.whiteSet) {
-            castlingExtraMove = new Move(Pieces.whiteRook, h1Square, f1Square);
-            pieceAt(h1Square, none);
-            pieceAt(f1Square, Pieces.whiteRook);
-        } else {
-            castlingExtraMove = new Move(Pieces.blackRook, h8Square, f8Square);
-            pieceAt(h8Square, none);
-            pieceAt(f8Square, Pieces.blackRook);
+            moveLog.type === MoveType.enPassant -> {
+                pieceAt(moveLog.move.from(), moveLog.move.fromPiece())
+                pieceAt(moveLog.move.to(), moveLog.toPiece)
+                moveLog.enPassantPiece?.let { pieceAt(moveLog.move.enPassantSquare(), it) }
+            }
+            moveLog.type === MoveType.castling -> {
+                pieceAt(moveLog.move.from(), moveLog.move.fromPiece())
+                pieceAt(moveLog.move.to(), moveLog.toPiece)
+                moveLog.castlingExtraMove?.let {
+                    pieceAt(moveLog.castlingExtraMove.from(), moveLog.castlingExtraMove.fromPiece())
+                    pieceAt(moveLog.castlingExtraMove.to(), Pieces.none)
+                }
+            }
         }
-        return MoveLog.castling(this, move, pieceAt(move.to()), castlingExtraMove);
+        whiteLeftRookMoved = moveLog.whiteLeftRookMoved
+        whiteRightRookMoved = moveLog.whiteRightRookMoved
+        whiteKingMoved = moveLog.whiteKingMoved
+        blackLeftRookMoved = moveLog.blackLeftRookMoved
+        blackRightRookMoved = moveLog.blackRightRookMoved
+        blackKingMoved = moveLog.blackKingMoved
+        enPassant[moveLog.move.to().file()] = moveLog.enPassant
+        drawCounter = moveLog.drawCounter
+        moveCounter = moveLog.moveCounter
+        togglePlayer()
     }
 
-    public Board play(Move move) {
-        final MoveLog moveLog;
+    fun playCastlingExtraMove(move: Move): MoveLog {
+        val castlingExtraMove: Move
+        if (move.isCastlingQueenside) {
+            if (move.fromPiece().color() == PieceColor.whiteSet) {
+                castlingExtraMove = Move(Pieces.whiteRook, a1Square, d1Square)
+                pieceAt(a1Square, Pieces.none)
+                pieceAt(d1Square, Pieces.whiteRook)
+            } else {
+                castlingExtraMove = Move(Pieces.blackRook, a8Square, d8Square)
+                pieceAt(a8Square, Pieces.none)
+                pieceAt(d8Square, Pieces.blackRook)
+            }
+        } else if (move.fromPiece().color() == PieceColor.whiteSet) {
+            castlingExtraMove = Move(Pieces.whiteRook, h1Square, f1Square)
+            pieceAt(h1Square, Pieces.none)
+            pieceAt(f1Square, Pieces.whiteRook)
+        } else {
+            castlingExtraMove = Move(Pieces.blackRook, h8Square, f8Square)
+            pieceAt(h8Square, Pieces.none)
+            pieceAt(f8Square, Pieces.blackRook)
+        }
+        return castling(this, move, pieceAt(move.to()), castlingExtraMove)
+    }
 
-        if (move.isCastling()) {
-            moveLog = playCastlingExtraMove(move);
-            drawCounter++;
+    fun play(move: Move): Board {
+        val moveLog: MoveLog
+        if (move.isCastling) {
+            moveLog = playCastlingExtraMove(move)
+            drawCounter++
         } else {
             // if pawn advances 2 squares, it is possible that next move is a en passant capture
-            if (move.fromPiece().pieceType() == Pawn && move.rankDistanceAbs() == 2) {
-                enPassant[move.to().file()] = moveCounter;
+            if (move.fromPiece().pieceType() == PieceType.Pawn && move.rankDistanceAbs() == 2) {
+                enPassant[move.to().file()] = moveCounter
             }
             // en passant capture
-            if (move.fromPiece().pieceType() == Pawn
-                    && move.rankDistance() == 1
-                    && move.fileDistanceAbs() == 1
-                    && enPassant[move.to().file()] == moveCounter - 1) {
+            if (move.fromPiece()
+                    .pieceType() == PieceType.Pawn && move.rankDistance() == 1 && move.fileDistanceAbs() == 1 && enPassant[move.to()
+                    .file()] == moveCounter - 1
+            ) {
                 // i.e. for whites
                 // turn=1, to.x = 2, to.y = 5, squareC = (3,5)
-                moveLog = MoveLog.enPassant(this, move, pieceAt(move.to()));
-                pieceAt(moveLog.move.enPassantSquare(), none);
+                moveLog = enPassant(this, move, pieceAt(move.to()))
+                pieceAt(moveLog.move.enPassantSquare(), Pieces.none)
             } else {
-                moveLog = MoveLog.normalMove(this, move, pieceAt(move.to()));
+                moveLog = normalMove(this, move, pieceAt(move.to()))
             }
-            if (!noneAt(move.to()) || move.fromPiece().pieceType() == Pawn) {
+            if (!noneAt(move.to()) || move.fromPiece().pieceType() == PieceType.Pawn) {
                 // draw counter restarts when we capture a piece or move a pawn
-                drawCounter = 0;
+                drawCounter = 0
             } else {
-                drawCounter++;
+                drawCounter++
             }
         }
-
-        updateMovedPieces(move);
-
-        pieceAt(move.from(), none);
-        pieceAt(move.to(), move.fromPiece());
-        togglePlayer();
-        moveCounter++;
-        moves.add(moveLog);
-
-        return this;
+        updateMovedPieces(move)
+        pieceAt(move.from(), Pieces.none)
+        pieceAt(move.to(), move.fromPiece())
+        togglePlayer()
+        moveCounter++
+        moves.add(moveLog)
+        return this
     }
 
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(moves, currentPlayer, whiteLeftRookMoved, whiteRightRookMoved, whiteKingMoved, blackLeftRookMoved, blackRightRookMoved, blackKingMoved, drawCounter, moveCounter, blackPlayer, whitePlayer);
-        result = 31 * result + squareBoard.hashCode();
-        result = 31 * result + Arrays.hashCode(enPassant);
-        return result;
+    override fun hashCode(): Int {
+        var result = Objects.hash(
+            moves,
+            currentPlayer,
+            whiteLeftRookMoved,
+            whiteRightRookMoved,
+            whiteKingMoved,
+            blackLeftRookMoved,
+            blackRightRookMoved,
+            blackKingMoved,
+            drawCounter,
+            moveCounter,
+            blackPlayer,
+            whitePlayer
+        )
+        result = 31 * result + squareBoard.hashCode()
+        result = 31 * result + enPassant.contentHashCode()
+        return result
+    }
+
+    companion object {
+        fun parseBoard(stringBoard: String): Board {
+            val cleanStringBoard = stringBoard.replace("[ \t\n]".toRegex(), "")
+            val board = Board()
+            Square.allSquares.forEach(Consumer { square: Square ->
+                board.pieceAt(
+                    square, Pieces.parse(
+                        cleanStringBoard[square.arrayPosition()]
+                    )
+                )
+            })
+            return board
+        }
     }
 }

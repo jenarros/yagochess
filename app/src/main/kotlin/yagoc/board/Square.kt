@@ -93,7 +93,7 @@ data class Square(val rank: Int, val file: Int) : Serializable, Comparable<Squar
     }
 
     fun exists(): Boolean {
-        return rank <= 7 && rank >= 0 && file <= 7 && file >= 0
+        return rank in 0..7 && file in 0..7
     }
 
     fun diagonalSquares(): List<Square> {

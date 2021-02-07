@@ -1,6 +1,6 @@
 package yagoc
 
-import yagoc.board.Board.parseBoard
+import yagoc.board.Board
 import yagoc.board.Move
 import yagoc.board.Square
 import yagoc.pieces.Piece
@@ -34,6 +34,6 @@ class BoardSpec(stringBoard: String, val fromSquare: Square) {
     }
 
     companion object {
-        fun String.toBoard() = parseBoard(this)
+        fun String.toBoard() = Board.parseBoard(this)
     }
 }

@@ -1,7 +1,5 @@
-package yagoc.board;
+package yagoc.board
 
-public enum MoveType {
-    normal,
-    enPassant,
-    castling
+enum class MoveType {
+    normal, enPassant, castling
 }

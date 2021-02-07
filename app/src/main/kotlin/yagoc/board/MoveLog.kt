@@ -1,48 +1,51 @@
-package yagoc.board;
+package yagoc.board
 
-import yagoc.pieces.Piece;
+import yagoc.pieces.Piece
+import java.io.Serializable
 
-import java.io.Serializable;
+class MoveLog private constructor(
+    board: BoardView,
+    val move: Move,
+    val toPiece: Piece,
+    val type: MoveType,
+    val castlingExtraMove: Move?
+) : Serializable {
 
-public class MoveLog implements Serializable {
-	final Move move;
-	final boolean whiteLeftRookMoved, whiteRightRookMoved, whiteKingMoved;
-	final boolean blackLeftRookMoved, blackRightRookMoved, blackKingMoved;
-	final int enPassant;
-	final int drawCounter;
-	final int moveCounter;
-	final Piece toPiece;
+    val whiteLeftRookMoved = board.hasWhiteLeftRookMoved()
 
-	final MoveType type;
-	final Move castlingExtraMove;
-	final Piece enPassantPiece;
+    val whiteRightRookMoved = board.hasWhiteRightRookMoved()
 
-	private MoveLog(BoardView board, Move move, Piece toPiece, MoveType moveType, Move castlingExtraMove) {
-		this.type = moveType;
-		this.move = move;
-		this.toPiece = toPiece;
-		this.enPassantPiece = moveType.equals(MoveType.enPassant) ? board.pieceAt(move.enPassantSquare()) : null;
-		this.castlingExtraMove = castlingExtraMove;
-		this.whiteLeftRookMoved = board.hasWhiteLeftRookMoved();
-		this.whiteRightRookMoved = board.hasWhiteRightRookMoved();
-		this.whiteKingMoved = board.hasWhiteKingMoved();
-		this.blackLeftRookMoved = board.hasBlackLeftRookMoved();
-		this.blackRightRookMoved = board.hasBlackRightRookMoved();
-		this.blackKingMoved = board.hasBlackKingMoved();
-		this.drawCounter = board.drawCounter();
-		this.moveCounter = board.moveCounter();
-		this.enPassant = board.enPassant(move.to().file());
-	}
+    val whiteKingMoved = board.hasWhiteKingMoved()
 
-	public static MoveLog enPassant(BoardView board, Move move, Piece toPiece) {
-		return new MoveLog(board, move, toPiece, MoveType.enPassant, null);
-	}
+    val blackLeftRookMoved = board.hasBlackLeftRookMoved()
 
-	public static MoveLog castling(BoardView board, Move move, Piece toPiece, Move castlingExtraMove) {
-		return new MoveLog(board, move, toPiece, MoveType.castling, castlingExtraMove);
-	}
+    val blackRightRookMoved = board.hasBlackRightRookMoved()
 
-	public static MoveLog normalMove(BoardView board, Move move, Piece toPiece) {
-		return new MoveLog(board, move, toPiece, MoveType.normal, null);
-	}
+    val blackKingMoved = board.hasBlackKingMoved()
+
+    val enPassant = board.enPassant(move.to().file())
+
+    val drawCounter = board.drawCounter()
+
+    val moveCounter = board.moveCounter()
+
+    val enPassantPiece: Piece? = if (type == MoveType.enPassant) board.pieceAt(move.enPassantSquare()) else null
+
+    companion object {
+        @JvmStatic
+        fun enPassant(board: BoardView, move: Move, toPiece: Piece): MoveLog {
+            return MoveLog(board, move, toPiece, MoveType.enPassant, null)
+        }
+
+        @JvmStatic
+        fun castling(board: BoardView, move: Move, toPiece: Piece, castlingExtraMove: Move?): MoveLog {
+            return MoveLog(board, move, toPiece, MoveType.castling, castlingExtraMove)
+        }
+
+        @JvmStatic
+        fun normalMove(board: BoardView, move: Move, toPiece: Piece): MoveLog {
+            return MoveLog(board, move, toPiece, MoveType.normal, null)
+        }
+    }
+
 }
