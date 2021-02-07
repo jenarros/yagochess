@@ -1,66 +1,60 @@
-package yagoc.pieces;
+package yagoc.pieces
 
-import yagoc.board.BoardView;
-import yagoc.board.Move;
-import yagoc.board.Square;
+import yagoc.board.BoardView
+import yagoc.board.Move
+import yagoc.board.Square
+import java.util.stream.Stream
+import kotlin.math.min
 
-import java.util.stream.Stream;
-
-public class Bishop extends Piece {
-    public Bishop(PieceColor pieceColor) {
-        super(PieceType.Bishop, pieceColor);
+class Bishop(pieceColor: PieceColor) : Piece(PieceType.Bishop, pieceColor) {
+    public override fun isValidForPiece(board: BoardView, move: Move): Boolean {
+        return isCorrectMoveForBishop(board, move)
     }
 
-    static Stream<Move> generateMovesForBishop(BoardView board, Square from) {
-        Piece piece = board.pieceAt(from);
-
-        return from.diagonalSquares().stream().map((to) -> new Move(piece, from, to));
+    public override fun generateMovesForPiece(board: BoardView, from: Square): Stream<Move> {
+        return generateMovesForBishop(board, from)
     }
 
-    static boolean isCorrectMoveForBishop(BoardView board, Move move) {
-        if (move.rankDistanceAbs() == move.fileDistanceAbs()) {
-            //vamos a recorrer el movimiento de izquierda a derecha
-            int ma = Math.max(move.from().file(), move.to().file()); //y final
-            int rank, file, direction;
-
-            //calculamos la casilla de inicio
-            if (move.from().file() < move.to().file()) {
-                rank = move.from().rank();
-                file = move.from().file();
-            } else {
-                rank = move.to().rank();
-                file = move.to().file();
-            }
-
-            // calculamos el desplazamiento
-            if (rank == Math.min(move.from().rank(), move.to().rank())) {
-                // down
-                direction = 1;
-            } else {
-                // up
-                direction = -1;
-            }
-
-            // go through the squares
-            for (file++, rank += direction; file < ma; ) {
-                if (board.someAt(new Square(rank, file)))
-                    return false;
-                rank += direction;
-                file++;
-            }
-            return true;
-        } else {
-            return false;
+    companion object {
+        fun generateMovesForBishop(board: BoardView, from: Square): Stream<Move> {
+            val piece = board.pieceAt(from)
+            return from.diagonalSquares().stream().map { to: Square -> Move(piece, from, to) }
         }
-    }
 
-    @Override
-    public boolean isValidForPiece(BoardView board, Move move) {
-        return isCorrectMoveForBishop(board, move);
-    }
+        fun isCorrectMoveForBishop(board: BoardView, move: Move): Boolean {
+            return if (move.rankDistanceAbs() == move.fileDistanceAbs()) {
+                // walk the move from left to right
+                val ma = Math.max(move.from().file(), move.to().file()) //y final
+                var rank: Int
+                var file: Int
 
-    @Override
-    public Stream<Move> generateMovesForPiece(BoardView board, Square from) {
-        return generateMovesForBishop(board, from);
+                // starting position
+                if (move.from().file() < move.to().file()) {
+                    rank = move.from().rank()
+                    file = move.from().file()
+                } else {
+                    rank = move.to().rank()
+                    file = move.to().file()
+                }
+
+                val direction = if (rank == min(move.from().rank(), move.to().rank())) { // down
+                    1
+                } else { // up
+                    -1
+                }
+
+                // go through the squares
+                file++
+                rank += direction
+                while (file < ma) {
+                    if (board.someAt(Square(rank, file))) return false
+                    rank += direction
+                    file++
+                }
+                true
+            } else {
+                false
+            }
+        }
     }
 }

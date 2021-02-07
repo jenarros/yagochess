@@ -3,10 +3,7 @@ package yagoc.board
 import yagoc.board.MoveLog.Companion.castling
 import yagoc.board.MoveLog.Companion.enPassant
 import yagoc.board.MoveLog.Companion.normalMove
-import yagoc.pieces.Piece
-import yagoc.pieces.PieceColor
-import yagoc.pieces.PieceType
-import yagoc.pieces.Pieces
+import yagoc.pieces.*
 import yagoc.players.ComputerPlayer
 import yagoc.players.Player
 import yagoc.players.PlayerStrategy
@@ -196,12 +193,12 @@ class Board : BoardView {
     }
 
     private fun updateMovedPieces(move: Move) {
-        if (move.fromPiece() == Pieces.whiteKing) whiteKingMoved =
-            true else if (move.fromPiece() == Pieces.whiteRook && move.from().file() == 0) whiteLeftRookMoved =
-            true else if (move.fromPiece() == Pieces.whiteRook && move.from().file() == 7) whiteRightRookMoved = true
-        if (move.fromPiece() == Pieces.blackKing) blackKingMoved =
-            true else if (move.fromPiece() == Pieces.blackRook && move.from().file() == 0) blackLeftRookMoved =
-            true else if (move.fromPiece() == Pieces.blackRook && move.from().file() == 7) blackRightRookMoved = true
+        if (move.fromPiece() == whiteKing) whiteKingMoved =
+            true else if (move.fromPiece() == whiteRook && move.from().file() == 0) whiteLeftRookMoved =
+            true else if (move.fromPiece() == whiteRook && move.from().file() == 7) whiteRightRookMoved = true
+        if (move.fromPiece() == blackKing) blackKingMoved =
+            true else if (move.fromPiece() == blackRook && move.from().file() == 0) blackLeftRookMoved =
+            true else if (move.fromPiece() == blackRook && move.from().file() == 7) blackRightRookMoved = true
     }
 
     fun undo() {
@@ -221,7 +218,7 @@ class Board : BoardView {
                 pieceAt(moveLog.move.to(), moveLog.toPiece)
                 moveLog.castlingExtraMove?.let {
                     pieceAt(moveLog.castlingExtraMove.from(), moveLog.castlingExtraMove.fromPiece())
-                    pieceAt(moveLog.castlingExtraMove.to(), Pieces.none)
+                    pieceAt(moveLog.castlingExtraMove.to(), none)
                 }
             }
         }
@@ -241,22 +238,22 @@ class Board : BoardView {
         val castlingExtraMove: Move
         if (move.isCastlingQueenside) {
             if (move.fromPiece().color() == PieceColor.whiteSet) {
-                castlingExtraMove = Move(Pieces.whiteRook, a1Square, d1Square)
-                pieceAt(a1Square, Pieces.none)
-                pieceAt(d1Square, Pieces.whiteRook)
+                castlingExtraMove = Move(whiteRook, a1Square, d1Square)
+                pieceAt(a1Square, none)
+                pieceAt(d1Square, whiteRook)
             } else {
-                castlingExtraMove = Move(Pieces.blackRook, a8Square, d8Square)
-                pieceAt(a8Square, Pieces.none)
-                pieceAt(d8Square, Pieces.blackRook)
+                castlingExtraMove = Move(blackRook, a8Square, d8Square)
+                pieceAt(a8Square, none)
+                pieceAt(d8Square, blackRook)
             }
         } else if (move.fromPiece().color() == PieceColor.whiteSet) {
-            castlingExtraMove = Move(Pieces.whiteRook, h1Square, f1Square)
-            pieceAt(h1Square, Pieces.none)
-            pieceAt(f1Square, Pieces.whiteRook)
+            castlingExtraMove = Move(whiteRook, h1Square, f1Square)
+            pieceAt(h1Square, none)
+            pieceAt(f1Square, whiteRook)
         } else {
-            castlingExtraMove = Move(Pieces.blackRook, h8Square, f8Square)
-            pieceAt(h8Square, Pieces.none)
-            pieceAt(f8Square, Pieces.blackRook)
+            castlingExtraMove = Move(blackRook, h8Square, f8Square)
+            pieceAt(h8Square, none)
+            pieceAt(f8Square, blackRook)
         }
         return castling(this, move, pieceAt(move.to()), castlingExtraMove)
     }
@@ -279,7 +276,7 @@ class Board : BoardView {
                 // i.e. for whites
                 // turn=1, to.x = 2, to.y = 5, squareC = (3,5)
                 moveLog = enPassant(this, move, pieceAt(move.to()))
-                pieceAt(moveLog.move.enPassantSquare(), Pieces.none)
+                pieceAt(moveLog.move.enPassantSquare(), none)
             } else {
                 moveLog = normalMove(this, move, pieceAt(move.to()))
             }
@@ -291,7 +288,7 @@ class Board : BoardView {
             }
         }
         updateMovedPieces(move)
-        pieceAt(move.from(), Pieces.none)
+        pieceAt(move.from(), none)
         pieceAt(move.to(), move.fromPiece())
         togglePlayer()
         moveCounter++

@@ -1,5 +1,7 @@
-package yagoc.pieces;
+package yagoc.pieces
 
-public enum PieceColor {
-    blackSet, whiteSet
+enum class PieceColor {
+    blackSet,
+    whiteSet,
+    none
 }

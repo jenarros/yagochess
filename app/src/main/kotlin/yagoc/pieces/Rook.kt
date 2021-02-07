@@ -1,52 +1,46 @@
-package yagoc.pieces;
+package yagoc.pieces
 
-import yagoc.board.BoardView;
-import yagoc.board.Move;
-import yagoc.board.Square;
+import yagoc.board.BoardView
+import yagoc.board.Move
+import yagoc.board.Square
+import java.util.stream.Stream
 
-import java.util.stream.Stream;
-
-public class Rook extends Piece {
-    public Rook(PieceColor pieceColor) {
-        super(PieceType.Rook, pieceColor);
+class Rook(pieceColor: PieceColor) : Piece(PieceType.Rook, pieceColor) {
+    public override fun isValidForPiece(board: BoardView, move: Move): Boolean {
+        return isCorrectMoveForRook(board, move)
     }
 
-    static boolean isCorrectMoveForRook(BoardView board, Move move) {
-        if (move.hasSameRank()) {
-            //movimiento horizontal
-            int mi = Math.min(move.from().file(), move.to().file()) + 1;
-            int ma = Math.max(move.from().file(), move.to().file());
-            for (; mi < ma; mi++) {
-                if (board.someAt(new Square(move.from().rank(), mi)))
-                    return false;
-            }
-            return true;
-        } else if (move.hasSameFile()) {
-            //movimiento vertical
-            int mi = Math.min(move.from().rank(), move.to().rank()) + 1;
-            int ma = Math.max(move.from().rank(), move.to().rank());
-            for (; mi < ma; mi++) {
-                if (board.someAt(new Square(mi, move.from().file())))
-                    return false;
-            }
-            return true;
-        } else
-            return false;
+    public override fun generateMovesForPiece(board: BoardView, from: Square): Stream<Move> {
+        return generateMovesForRook(board, from)
     }
 
-    static Stream<Move> generateMovesForRook(BoardView board, Square from) {
-        Piece piece = board.pieceAt(from);
-        return from.straightSquares().stream()
-                .map((to) -> new Move(piece, from, to));
-    }
+    companion object {
+        fun isCorrectMoveForRook(board: BoardView, move: Move): Boolean {
+            return if (move.hasSameRank()) {
+                //movimiento horizontal
+                var mi = Math.min(move.from().file(), move.to().file()) + 1
+                val ma = Math.max(move.from().file(), move.to().file())
+                while (mi < ma) {
+                    if (board.someAt(Square(move.from().rank(), mi))) return false
+                    mi++
+                }
+                true
+            } else if (move.hasSameFile()) {
+                //movimiento vertical
+                var mi = Math.min(move.from().rank(), move.to().rank()) + 1
+                val ma = Math.max(move.from().rank(), move.to().rank())
+                while (mi < ma) {
+                    if (board.someAt(Square(mi, move.from().file()))) return false
+                    mi++
+                }
+                true
+            } else false
+        }
 
-    @Override
-    public boolean isValidForPiece(BoardView board, Move move) {
-        return isCorrectMoveForRook(board, move);
-    }
-
-    @Override
-    public Stream<Move> generateMovesForPiece(BoardView board, Square from) {
-        return generateMovesForRook(board, from);
+        fun generateMovesForRook(board: BoardView, from: Square): Stream<Move> {
+            val piece = board.pieceAt(from)
+            return from.straightSquares().stream()
+                .map { to: Square -> Move(piece, from, to) }
+        }
     }
 }

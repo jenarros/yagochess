@@ -4,7 +4,6 @@ import yagoc.board.Board;
 import yagoc.board.Move;
 import yagoc.board.Square;
 import yagoc.pieces.PieceColor;
-import yagoc.pieces.Pieces;
 import yagoc.players.ComputerPlayer;
 import yagoc.players.PlayerStrategy;
 import yagoc.players.UserPlayer;
@@ -21,6 +20,10 @@ import static yagoc.Yagoc.logger;
 import static yagoc.board.BoardRules.isCorrectMove;
 import static yagoc.board.BoardRules.moveDoesNotCreateCheck;
 import static yagoc.board.BoardRules.noMoreMovesAllowed;
+import static yagoc.pieces.PiecesKt.blackPawn;
+import static yagoc.pieces.PiecesKt.blackQueen;
+import static yagoc.pieces.PiecesKt.whitePawn;
+import static yagoc.pieces.PiecesKt.whiteQueen;
 
 public class Controller {
     private static final int COMPUTER_PAUSE_SECONDS = 1;
@@ -92,10 +95,10 @@ public class Controller {
 
     public void ifPawnHasReachedFinalRankReplaceWithQueen(Board board, Move move) {
         //TODO What if there is already a queen?
-        if ((move.fromPiece().equals(Pieces.blackPawn) && move.to().rank() == 7)) {
-            board.pieceAt(move.to(), Pieces.blackQueen);
-        } else if (move.fromPiece().equals(Pieces.whitePawn) && move.to().rank() == 0) {
-            board.pieceAt(move.to(), Pieces.whiteQueen);
+        if ((move.fromPiece().equals(blackPawn) && move.to().rank() == 7)) {
+            board.pieceAt(move.to(), blackQueen);
+        } else if (move.fromPiece().equals(whitePawn) && move.to().rank() == 0) {
+            board.pieceAt(move.to(), whiteQueen);
         }
     }
 

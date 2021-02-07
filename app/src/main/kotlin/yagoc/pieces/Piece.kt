@@ -1,62 +1,50 @@
-package yagoc.pieces;
+package yagoc.pieces
 
-import yagoc.board.BoardView;
-import yagoc.board.Move;
-import yagoc.board.Square;
+import yagoc.board.BoardView
+import yagoc.board.Move
+import yagoc.board.Square
+import java.io.Serializable
+import java.util.*
+import java.util.stream.Stream
 
-import java.io.Serializable;
-import java.util.Objects;
-import java.util.stream.Stream;
-
-import static yagoc.pieces.PieceColor.blackSet;
-import static yagoc.pieces.PieceColor.whiteSet;
-import static yagoc.pieces.Pieces.none;
-
-abstract public class Piece implements Serializable {
-    private final PieceType pieceType;
-    private final PieceColor color;
-
-    public Piece(PieceType pieceType, PieceColor color) {
-        this.pieceType = pieceType;
-        this.color = color;
+abstract class Piece(private val pieceType: PieceType, private val color: PieceColor) : Serializable {
+    open fun pieceType(): PieceType {
+        return pieceType
     }
 
-    public PieceType pieceType() {
-        return pieceType;
+    open fun color(): PieceColor {
+        return color
     }
 
-    public PieceColor color() {
-        return color;
+    fun switchTo(type: PieceType): Piece {
+        return all.stream()
+            .filter { piece: Piece -> type == piece.pieceType && piece.color == color }
+            .findFirst().orElseThrow()
     }
 
-    public Piece switchTo(PieceType type) {
-        return Pieces.all.stream()
-                .filter((piece) -> type.equals(piece.pieceType) && piece.color == this.color)
-                .findFirst().orElseThrow();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Piece piece = (Piece) o;
+    override fun equals(o: Any?): Boolean {
+        if (this === o) return true
+        if (o == null || javaClass != o.javaClass) return false
+        val piece = o as Piece
         return pieceType == piece.pieceType &&
-                color == piece.color;
+                color == piece.color
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(pieceType, color);
+    override fun hashCode(): Int {
+        return Objects.hash(pieceType, color)
     }
 
-    @Override
-    public String toString() {
-        if (pieceType == null) {
-            return "";
-        } else if (pieceType == PieceType.Knight) {
-            return "N";
-        } else {
-            return pieceType.name().substring(0, 1);
+    override fun toString(): String {
+        return when (pieceType) {
+            PieceType.none -> {
+                ""
+            }
+            PieceType.Knight -> {
+                "N"
+            }
+            else -> {
+                pieceType.name.substring(0, 1)
+            }
         }
     }
 
@@ -64,34 +52,33 @@ abstract public class Piece implements Serializable {
      * Can safely assume that general rules have been validated such as:
      * - the piece is not moving to a square with a piece of the same color
      */
-    protected abstract boolean isValidForPiece(BoardView board, Move move);
+    protected abstract fun isValidForPiece(board: BoardView, move: Move): Boolean
 
-    public final boolean isCorrectMove(BoardView board, Move move) {
-        if (board.pieceAt(move.from()).color().equals(board.pieceAt(move.to()).color())) {
-            return false;
-        }
-        return this.isValidForPiece(board, move);
+    fun isCorrectMove(board: BoardView, move: Move): Boolean {
+        return if (board.pieceAt(move.from()).color() == board.pieceAt(move.to()).color()) {
+            false
+        } else isValidForPiece(board, move)
     }
 
     /**
      * These are all potential moves pre-validation, the resulting moves need to be validated.
      */
-    protected abstract Stream<Move> generateMovesForPiece(BoardView board, Square from);
+    protected abstract fun generateMovesForPiece(board: BoardView, from: Square): Stream<Move>
 
-    public final Stream<Move> generateMoves(BoardView board, Square from) {
-        return generateMovesForPiece(board, from).filter((move -> isCorrectMove(board, move)));
+    fun generateMoves(board: BoardView, from: Square): Stream<Move> {
+        return generateMovesForPiece(board, from).filter { move: Move -> isCorrectMove(board, move) }
     }
 
-    public boolean notOfSameColor(PieceColor pieceColor) {
-        return this != none && this.color != pieceColor;
+    fun notOfSameColor(pieceColor: PieceColor): Boolean {
+        return this !== none && color != pieceColor
     }
 
-    public char toUniqueChar() {
-        if (blackSet.equals(color())) {
-            return toString().charAt(0);
-        } else if (whiteSet.equals(color())) {
-            return toString().toLowerCase().charAt(0);
+    fun toUniqueChar(): Char {
+        if (PieceColor.blackSet == color()) {
+            return toString()[0]
+        } else if (PieceColor.whiteSet == color()) {
+            return toString().toLowerCase()[0]
         }
-        return '-';
+        return '-'
     }
 }

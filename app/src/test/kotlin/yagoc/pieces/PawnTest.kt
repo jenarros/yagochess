@@ -5,7 +5,6 @@ import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 import yagoc.BoardSpec
 import yagoc.board.Square
-import yagoc.pieces.Pieces.blackPawn
 
 class PawnTest {
     @Test

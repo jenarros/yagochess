@@ -3,7 +3,7 @@ package yagoc.board
 import yagoc.pieces.Piece
 import yagoc.pieces.PieceColor
 import yagoc.pieces.PieceType
-import yagoc.pieces.Pieces
+import yagoc.pieces.none
 import java.io.Serializable
 import kotlin.math.abs
 
@@ -70,7 +70,7 @@ class Move(private val fromPiece: Piece, private val from: Square, private val t
     }
 
     init {
-        require(fromPiece != Pieces.none) { "Cannot move nothing" }
+        require(fromPiece != none) { "Cannot move nothing" }
         require(from.exists() && to.exists()) { "This move contains non-existing squares: $from $to" }
     }
 }

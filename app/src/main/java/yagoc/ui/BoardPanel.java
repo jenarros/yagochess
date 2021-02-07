@@ -4,7 +4,6 @@ import yagoc.Controller;
 import yagoc.board.BoardView;
 import yagoc.board.Square;
 import yagoc.pieces.Piece;
-import yagoc.pieces.Pieces;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;
@@ -16,6 +15,7 @@ import java.util.stream.IntStream;
 
 import static yagoc.board.Move.FILE_NAMES;
 import static yagoc.board.Move.RANK_NAMES;
+import static yagoc.pieces.PiecesKt.*;
 import static yagoc.ui.YagocWindow.BOARD_FONT_SIZE;
 import static yagoc.ui.YagocWindow.BORDER_SIZE;
 import static yagoc.ui.YagocWindow.IMAGE_SIZE;
@@ -111,7 +111,7 @@ public class BoardPanel extends JPanel {
 		coordY[3] = point.y;
 		g.fillPolygon(coordX, coordY, 4);
 
-		if (!square.equals(mouseMotionListener.selectedSquare) && !piece.equals(Pieces.none)) {
+		if (!square.equals(mouseMotionListener.selectedSquare) && !piece.equals(none)) {
 			drawPiece(g, square, piece);
 		} else if (square.equals(mouseMotionListener.selectedSquare) && mouseMotionListener.mousePosition != null) {
 			drawPiece(g, toMouseLocation(mouseMotionListener.mousePosition), piece, 0);
@@ -164,18 +164,18 @@ public class BoardPanel extends JPanel {
 		Toolkit t = getToolkit();
 		Map<Piece, Image> images = new HashMap<>();
 
-		images.put(Pieces.whitePawn, t.getImage(this.getClass().getResource("/img/white_pawn.gif")));
-		images.put(Pieces.whiteKnight, t.getImage(this.getClass().getResource("/img/white_knight.gif")));
-		images.put(Pieces.whiteBishop, t.getImage(this.getClass().getResource("/img/white_bishop.gif")));
-		images.put(Pieces.whiteRook, t.getImage(this.getClass().getResource("/img/white_rook.gif")));
-		images.put(Pieces.whiteQueen, t.getImage(this.getClass().getResource("/img/white_queen.gif")));
-		images.put(Pieces.whiteKing, t.getImage(this.getClass().getResource("/img/white_king.gif")));
-		images.put(Pieces.blackPawn, t.getImage(this.getClass().getResource("/img/black_pawn.gif")));
-		images.put(Pieces.blackKnight, t.getImage(this.getClass().getResource("/img/black_knight.gif")));
-		images.put(Pieces.blackBishop, t.getImage(this.getClass().getResource("/img/black_bishop.gif")));
-		images.put(Pieces.blackRook, t.getImage(this.getClass().getResource("/img/black_rook.gif")));
-		images.put(Pieces.blackQueen, t.getImage(this.getClass().getResource("/img/black_queen.gif")));
-		images.put(Pieces.blackKing, t.getImage(this.getClass().getResource("/img/black_king.gif")));
+		images.put(whitePawn, t.getImage(this.getClass().getResource("/img/white_pawn.gif")));
+		images.put(whiteKnight, t.getImage(this.getClass().getResource("/img/white_knight.gif")));
+		images.put(whiteBishop, t.getImage(this.getClass().getResource("/img/white_bishop.gif")));
+		images.put(whiteRook, t.getImage(this.getClass().getResource("/img/white_rook.gif")));
+		images.put(whiteQueen, t.getImage(this.getClass().getResource("/img/white_queen.gif")));
+		images.put(whiteKing, t.getImage(this.getClass().getResource("/img/white_king.gif")));
+		images.put(blackPawn, t.getImage(this.getClass().getResource("/img/black_pawn.gif")));
+		images.put(blackKnight, t.getImage(this.getClass().getResource("/img/black_knight.gif")));
+		images.put(blackBishop, t.getImage(this.getClass().getResource("/img/black_bishop.gif")));
+		images.put(blackRook, t.getImage(this.getClass().getResource("/img/black_rook.gif")));
+		images.put(blackQueen, t.getImage(this.getClass().getResource("/img/black_queen.gif")));
+		images.put(blackKing, t.getImage(this.getClass().getResource("/img/black_king.gif")));
 
 		return images;
 	}

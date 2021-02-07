@@ -1,7 +1,6 @@
 package yagoc.board
 
-import yagoc.pieces.Piece
-import yagoc.pieces.Pieces.*
+import yagoc.pieces.*
 import java.io.Serializable
 import java.util.*
 

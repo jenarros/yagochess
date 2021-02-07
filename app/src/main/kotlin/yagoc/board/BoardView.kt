@@ -1,7 +1,7 @@
 package yagoc.board
 
 import yagoc.pieces.Piece
-import yagoc.pieces.Pieces
+import yagoc.pieces.none
 import yagoc.players.Player
 import java.io.Serializable
 import java.util.concurrent.Callable
@@ -9,7 +9,7 @@ import java.util.concurrent.Callable
 interface BoardView : Serializable {
     fun pieceAt(square: Square): Piece
     fun noneAt(square: Square): Boolean {
-        return pieceAt(square) == Pieces.none
+        return pieceAt(square) == none
     }
 
     fun someAt(square: Square): Boolean {
