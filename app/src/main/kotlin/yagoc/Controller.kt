@@ -22,6 +22,7 @@ import javax.swing.SwingUtilities
 class Controller(private val board: Board, private val userOptions: UserOptionDialog) {
     private val checkpoints = ArrayList<Board>()
     private var finished = false
+    private var paused = false
 
     fun resetBoard(board: Board) {
         checkpoints.clear()
@@ -56,9 +57,7 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
             return false
         } else if (board.currentPlayer().isUser) {
             val move = Move(board.pieceAt(from), from, to)
-            if (from != to
-                && isCorrectMove(board, move)
-                && moveDoesNotCreateCheck(board, move)
+            if (from != to && isCorrectMove(board, move) && moveDoesNotCreateCheck(board, move)
             ) {
                 board.play(move)
                 ifPawnHasReachedFinalRankReplaceWithQueen(board, move)
@@ -80,7 +79,7 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
     }
 
     fun nextMove() {
-        if (finished) return
+        if (finished || paused) return
         if (board.currentPlayer().isComputer) {
             val move = board.currentPlayer().move(board)
             board.play(move)
@@ -104,8 +103,9 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
 
     fun configurePlayers() {
         val game = userOptions.gameType()
-            logger.info("Type $game chosen")
-            if (game == 1) {
+        logger.info("Type $game chosen")
+        when (game) {
+            1 -> {
                 board.blackPlayer(
                     ComputerPlayer(
                         "computer",
@@ -115,7 +115,8 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
                     )
                 )
                 board.whitePlayer(UserPlayer("user", PieceColor.whiteSet))
-            } else if (game == 2) {
+            }
+            2 -> {
                 board.blackPlayer(UserPlayer("user", PieceColor.blackSet))
                 board.whitePlayer(
                     ComputerPlayer(
@@ -125,7 +126,8 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
                         PlayerStrategy.F1
                     )
                 )
-            } else if (game == 3) {
+            }
+            3 -> {
                 board.blackPlayer(
                     ComputerPlayer(
                         "computer 1",
@@ -142,16 +144,26 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
                         PlayerStrategy.F1
                     )
                 )
-            } else {
+            }
+            else -> {
                 board.blackPlayer(UserPlayer("user 1", PieceColor.blackSet))
                 board.whitePlayer(UserPlayer("user 2", PieceColor.whiteSet))
             }
-            logger.info("name\ttype")
-            logger.info(board.blackPlayer().toString())
-            logger.info(board.whitePlayer().toString())
-            if (board.currentPlayer().isComputer) {
-                SwingUtilities.invokeLater { nextMove() }
-            }
+        }
+        logger.info("name\ttype")
+        logger.info(board.blackPlayer().toString())
+        logger.info(board.whitePlayer().toString())
+
+        if (board.currentPlayer().isComputer) {
+            SwingUtilities.invokeLater { nextMove() }
+        }
+    }
+
+    fun togglePause() {
+        paused = !paused
+        if (!paused) {
+            SwingUtilities.invokeLater { nextMove() }
+        }
     }
 
     companion object {

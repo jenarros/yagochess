@@ -86,6 +86,12 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
         val frameColor = Color.DARK_GRAY
 
         private fun addMenuBar(yagocWindow: YagocWindow, controller: Controller) {
+            val loadMenuItem = JMenuItem("Open")
+            loadMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_O, yagocWindow.toolkit.menuShortcutKeyMaskEx)
+            loadMenuItem.addActionListener(yagocWindow::open)
+            val pauseMenuItem = JMenuItem("Pause")
+            pauseMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_P, yagocWindow.toolkit.menuShortcutKeyMaskEx)
+            pauseMenuItem.addActionListener { controller.togglePause() }
             val restartGameMenuItem = JMenuItem("Reset")
             restartGameMenuItem.accelerator =
                 KeyStroke.getKeyStroke(KeyEvent.VK_R, yagocWindow.toolkit.menuShortcutKeyMaskEx)
@@ -93,9 +99,6 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
             val saveMenuItem = JMenuItem("Save")
             saveMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_S, yagocWindow.toolkit.menuShortcutKeyMaskEx)
             saveMenuItem.addActionListener(yagocWindow::save)
-            val loadMenuItem = JMenuItem("Open")
-            loadMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_O, yagocWindow.toolkit.menuShortcutKeyMaskEx)
-            loadMenuItem.addActionListener(yagocWindow::open)
             val optionsMenuItem = JMenuItem("Preferences...")
             optionsMenuItem.accelerator =
                 KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, yagocWindow.toolkit.menuShortcutKeyMaskEx)
@@ -105,10 +108,11 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
             undo.addActionListener { e: ActionEvent -> controller.undo() }
             val menuBar = JMenuBar()
             val menu = JMenu("File")
-            menu.add(saveMenuItem)
             menu.add(loadMenuItem)
+            menu.add(pauseMenuItem)
             menu.add(optionsMenuItem)
             menu.add(restartGameMenuItem)
+            menu.add(saveMenuItem)
             menu.add(undo)
             menuBar.add(menu)
             yagocWindow.jMenuBar = menuBar
@@ -121,22 +125,18 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
         logger = Logger(textPane)
         boardPanel = BoardPanel(controller, board)
         centerInScreen()
-        try {
-            val scrollPane = JScrollPane(textPane)
-            scrollPane.preferredSize = Dimension(boardPanel.boardAndBorderSize, LOG_HEIGHT)
-            scrollPane.maximumSize = Dimension(boardPanel.boardAndBorderSize, LOG_HEIGHT)
-            scrollPane.verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
-            val cont = contentPane
-            cont.layout = BorderLayout()
-            UIManager.put("OptionPane.messageFont", Font(Font.MONOSPACED, Font.PLAIN, menuFontSize))
-            UIManager.put("OptionPane.buttonFont", Font(Font.MONOSPACED, Font.PLAIN, menuFontSize))
-            cont.add(boardPanel, BorderLayout.WEST)
-            cont.add(scrollPane, BorderLayout.SOUTH)
-            isResizable = false
-            addMenuBar(this, controller)
-            pack()
-        } catch (e: Exception) {
-            println("Error:$e")
-        }
+        val scrollPane = JScrollPane(textPane)
+        scrollPane.preferredSize = Dimension(boardPanel.boardAndBorderSize, LOG_HEIGHT)
+        scrollPane.maximumSize = Dimension(boardPanel.boardAndBorderSize, LOG_HEIGHT)
+        scrollPane.verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
+        val cont = contentPane
+        cont.layout = BorderLayout()
+        UIManager.put("OptionPane.messageFont", Font(Font.MONOSPACED, Font.PLAIN, menuFontSize))
+        UIManager.put("OptionPane.buttonFont", Font(Font.MONOSPACED, Font.PLAIN, menuFontSize))
+        cont.add(boardPanel, BorderLayout.WEST)
+        cont.add(scrollPane, BorderLayout.SOUTH)
+        isResizable = false
+        addMenuBar(this, controller)
+        pack()
     }
 }

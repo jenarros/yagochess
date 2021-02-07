@@ -5,6 +5,7 @@ import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 import yagoc.BoardSpec.Companion.toBoard
 import yagoc.board.BoardRules.generateMoves
+import yagoc.pieces.PieceColor
 
 class BoardTest {
     @Test
@@ -72,5 +73,42 @@ class BoardTest {
         assertThat(Board(expected).playAndUndo(Square(7, 4), Square(7, 2)), equalTo(expected))
         assertThat(Board(expected).playAndUndo(Square(0, 4), Square(0, 6)), equalTo(expected))
         assertThat(Board(expected).playAndUndo(Square(0, 4), Square(0, 2)), equalTo(expected))
+    }
+
+
+    @Test
+    fun `can identify check`() {
+        val expected = """
+            ----r---
+            --q-----
+            ------r-
+            -k-b-n-p
+            ---b----
+            ---n----
+            -R-----p
+            -K------
+        """.toBoard()
+
+        assertThat(BoardRules.isInCheck(expected, PieceColor.whiteSet), equalTo(true))
+        assertThat(BoardRules.isInCheck(expected, PieceColor.blackSet), equalTo(false))
+    }
+
+    @Test
+    fun `can identify checkmate`() {
+        val expected = """
+            ----r---
+            --------
+            ------r-
+            -k-b-n-p
+            ---b----
+            ---n----
+            -q-----p
+            -K------
+        """.toBoard()
+
+        expected.togglePlayer()
+        assertThat(BoardRules.isCurrentPlayerCheckmate(expected), equalTo(true))
+        expected.togglePlayer()
+        assertThat(BoardRules.isCurrentPlayerCheckmate(expected), equalTo(false))
     }
 }

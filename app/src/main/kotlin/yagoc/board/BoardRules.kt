@@ -8,6 +8,7 @@ import java.util.stream.Stream
 import kotlin.streams.toList
 
 object BoardRules {
+    @JvmStatic
     fun isCorrectMove(board: BoardView, from: Square, to: Square): Boolean {
         return isCorrectMove(board, Move(board.pieceAt(from), from, to))
     }
@@ -17,6 +18,7 @@ object BoardRules {
         return move.fromPiece().isCorrectMove(board, move)
     }
 
+    @JvmStatic
     fun cannotMoveWithoutBeingCheck(board: BoardView): Boolean {
         return generateMoves(board).stream().noneMatch { move: Move -> moveDoesNotCreateCheck(board, move) }
     }
@@ -38,22 +40,19 @@ object BoardRules {
             }
     }
 
-    fun isCheckmate(board: BoardView): Boolean {
-        return if (isInCheck(board, board.currentPlayer().pieceColor)) {
+    fun isCurrentPlayerCheckmate(board: BoardView) =
+        if (isInCheck(board, board.currentPlayer().pieceColor)) {
             cannotMoveWithoutBeingCheck(board)
         } else {
             false
         }
-    }
 
-    fun isADraw(board: BoardView): Boolean {
-        return if (!isInCheck(board, board.currentPlayer().pieceColor) && cannotMoveWithoutBeingCheck(
-                board
-            )
-        ) {
+    fun isADraw(board: BoardView) =
+        if (!isInCheck(board, board.currentPlayer().pieceColor) && cannotMoveWithoutBeingCheck(board)) {
             true
-        } else board.drawCounter() == 50
-    }
+        } else {
+            board.drawCounter() == 50
+        }
 
     @JvmStatic
     fun moveDoesNotCreateCheck(board: BoardView, move: Move): Boolean {
@@ -68,7 +67,7 @@ object BoardRules {
     @JvmStatic
     fun noMoreMovesAllowed(board: BoardView): Boolean {
         return when {
-            isCheckmate(board) -> true.also {
+            isCurrentPlayerCheckmate(board) -> true.also {
                 Yagoc.logger.info("checkmate winner is " + board.oppositePlayer().name)
             }
             isADraw(board) -> true.also {

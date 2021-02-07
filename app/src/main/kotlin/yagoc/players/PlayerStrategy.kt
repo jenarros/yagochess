@@ -108,8 +108,8 @@ class PlayerStrategy(private val strategy: (BoardView, PieceColor) -> Int) : Ser
             }.sum()
         }
 
-        fun isPieceOurs(board: BoardView, set: PieceColor, square: Square): Boolean {
-            return board.pieceAt(square).color() === set
+        fun isPieceOurs(board: BoardView, pieceColor: PieceColor, square: Square): Boolean {
+            return board.pieceAt(square).color() === pieceColor
         }
 
         fun isPieceTheirs(board: BoardView, color: PieceColor, square: Square): Boolean {
