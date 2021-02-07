@@ -16,11 +16,13 @@ class Bishop(pieceColor: PieceColor) : Piece(PieceType.Bishop, pieceColor) {
     }
 
     companion object {
+        @JvmStatic
         fun generateMovesForBishop(board: BoardView, from: Square): Stream<Move> {
             val piece = board.pieceAt(from)
             return from.diagonalSquares().stream().map { to: Square -> Move(piece, from, to) }
         }
 
+        @JvmStatic
         fun isCorrectMoveForBishop(board: BoardView, move: Move): Boolean {
             return if (move.rankDistanceAbs() == move.fileDistanceAbs()) {
                 // walk the move from left to right

@@ -4,12 +4,6 @@ Run with:
 ./gradlew run
 ```
 
-## TODO
-
-- Should I have a Set containing each of the sets?
-- Should restart reset to defaults or to current options?
-- Checkmate due to repeated configuration 3 times
-
 ## Interesting implementation areas
 
 ### UI
@@ -41,3 +35,15 @@ Stateful vs stateless considerations, it seems that if the board is immutable, t
 ### Artificial Intelligence
 
 #### alpha-beta algorithm
+
+## TODO
+
+### Performance
+
+- Review if additional use of @JvmStatic and @JvmField is needed
+
+### Gameplay
+
+- Should I have a Set containing each of the sets?
+- Should restart reset to defaults or to current options?
+- Checkmate due to repeated configuration 3 times

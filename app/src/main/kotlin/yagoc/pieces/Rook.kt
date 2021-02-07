@@ -17,6 +17,7 @@ class Rook(pieceColor: PieceColor) : Piece(PieceType.Rook, pieceColor) {
     }
 
     companion object {
+        @JvmStatic
         fun isCorrectMoveForRook(board: BoardView, move: Move): Boolean {
             return when {
                 move.hasSameRank() -> {
@@ -43,6 +44,7 @@ class Rook(pieceColor: PieceColor) : Piece(PieceType.Rook, pieceColor) {
             }
         }
 
+        @JvmStatic
         fun generateMovesForRook(board: BoardView, from: Square): Stream<Move> {
             val piece = board.pieceAt(from)
             return from.straightSquares().stream()

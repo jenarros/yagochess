@@ -27,7 +27,6 @@ application {
     mainClass.set("yagoc.Yagoc")
 }
 
-// config JVM target to 11 for kotlin compilation tasks
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions.jvmTarget = "14"
 }

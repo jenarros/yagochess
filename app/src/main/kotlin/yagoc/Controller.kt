@@ -1,167 +1,160 @@
-package yagoc;
+package yagoc
 
-import yagoc.board.Board;
-import yagoc.board.Move;
-import yagoc.board.Square;
-import yagoc.pieces.PieceColor;
-import yagoc.players.ComputerPlayer;
-import yagoc.players.PlayerStrategy;
-import yagoc.players.UserPlayer;
-import yagoc.ui.UserOptionDialog;
+import yagoc.Yagoc.logger
+import yagoc.board.Board
+import yagoc.board.BoardRules.isCorrectMove
+import yagoc.board.BoardRules.moveDoesNotCreateCheck
+import yagoc.board.BoardRules.noMoreMovesAllowed
+import yagoc.board.Move
+import yagoc.board.Square
+import yagoc.pieces.*
+import yagoc.players.ComputerPlayer
+import yagoc.players.PlayerStrategy
+import yagoc.players.UserPlayer
+import yagoc.ui.UserOptionDialog
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.ObjectOutputStream
+import java.util.*
+import java.util.concurrent.TimeUnit
+import javax.swing.SwingUtilities
 
-import javax.swing.*;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
+class Controller(private val board: Board, private val userOptions: UserOptionDialog) {
+    private val checkpoints = ArrayList<Board>()
+    private var finished = false
 
-import static yagoc.Yagoc.logger;
-import static yagoc.board.BoardRules.isCorrectMove;
-import static yagoc.board.BoardRules.moveDoesNotCreateCheck;
-import static yagoc.board.BoardRules.noMoreMovesAllowed;
-import static yagoc.pieces.PiecesKt.blackPawn;
-import static yagoc.pieces.PiecesKt.blackQueen;
-import static yagoc.pieces.PiecesKt.whitePawn;
-import static yagoc.pieces.PiecesKt.whiteQueen;
-
-public class Controller {
-    private static final int COMPUTER_PAUSE_SECONDS = 1;
-    private final ArrayList<Board> checkpoints = new ArrayList<>();
-    private final Board board;
-    private final UserOptionDialog userOptions;
-    private boolean finished;
-
-    public Controller(Board board, UserOptionDialog userOptions) {
-        this.board = board;
-        this.userOptions = userOptions;
+    fun resetBoard(board: Board) {
+        checkpoints.clear()
+        this.board.resetWith(board)
+        nextMove()
     }
 
-    public void resetBoard(Board board) {
-        checkpoints.clear();
-        this.board.resetWith(board);
-        nextMove();
-    }
-
-    public void undo() {
-        if (!checkpoints.isEmpty()) {
-            this.board.resetWith(checkpoints.remove(checkpoints.size() - 1));
-            this.finished = false;
+    fun undo() {
+        if (checkpoints.isNotEmpty()) {
+            board.resetWith(checkpoints.removeAt(checkpoints.size - 1))
+            finished = false
         }
     }
 
-    public void saveBoard(String absolutePath) throws IOException {
-        try (FileOutputStream fileStream = new FileOutputStream(absolutePath);
-             ObjectOutputStream stream = new ObjectOutputStream(fileStream)) {
-
-            stream.writeObject(board);
+    @Throws(IOException::class)
+    fun saveBoard(absolutePath: String) {
+        FileOutputStream(absolutePath).use { fileStream ->
+            ObjectOutputStream(fileStream).use { stream -> stream.writeObject(board) }
         }
     }
 
-    public void move(Square from, Square to) {
-        Board copy = new Board(board);
-
+    fun move(from: Square, to: Square) {
+        val copy = Board(board)
         if (moveIfPossible(from, to)) {
-            checkpoints.add(copy);
+            checkpoints.add(copy)
         }
-
-        SwingUtilities.invokeLater(this::nextMove);
+        SwingUtilities.invokeLater { nextMove() }
     }
 
-    public boolean moveIfPossible(Square from, Square to) {
+    fun moveIfPossible(from: Square, to: Square): Boolean {
         if (finished || !board.isPieceOfCurrentPlayer(board.pieceAt(from))) {
-            return false;
-        } else if (board.currentPlayer().isUser()) {
-
-            Move move = new Move(board.pieceAt(from), from, to);
-            if (!from.equals(to)
-                    && isCorrectMove(board, move)
-                    && moveDoesNotCreateCheck(board, move)) {
-
-                board.play(move);
-
-                ifPawnHasReachedFinalRankReplaceWithQueen(board, move);
-
-                finished = noMoreMovesAllowed(board);
-
-                logger.info(move.toString());
-
-                return true;
+            return false
+        } else if (board.currentPlayer().isUser) {
+            val move = Move(board.pieceAt(from), from, to)
+            if (from != to
+                && isCorrectMove(board, move)
+                && moveDoesNotCreateCheck(board, move)
+            ) {
+                board.play(move)
+                ifPawnHasReachedFinalRankReplaceWithQueen(board, move)
+                finished = noMoreMovesAllowed(board)
+                logger.info(move.toString())
+                return true
             }
         }
-
-        return false;
+        return false
     }
 
-    public void ifPawnHasReachedFinalRankReplaceWithQueen(Board board, Move move) {
+    fun ifPawnHasReachedFinalRankReplaceWithQueen(board: Board, move: Move) {
         //TODO What if there is already a queen?
-        if ((move.fromPiece().equals(blackPawn) && move.to().rank() == 7)) {
-            board.pieceAt(move.to(), blackQueen);
-        } else if (move.fromPiece().equals(whitePawn) && move.to().rank() == 0) {
-            board.pieceAt(move.to(), whiteQueen);
+        if (move.fromPiece() == blackPawn && move.to().rank() == 7) {
+            board.pieceAt(move.to(), blackQueen)
+        } else if (move.fromPiece() == whitePawn && move.to().rank() == 0) {
+            board.pieceAt(move.to(), whiteQueen)
         }
     }
 
-    public void nextMove() {
-        if (finished) return;
-
-        if (board.currentPlayer().isComputer()) {
-            Move move = board.currentPlayer().move(board);
-
-            board.play(move);
-            logger.info(move.toString());
-
-            ifPawnHasReachedFinalRankReplaceWithQueen(board, move);
-
-            finished = noMoreMovesAllowed(board);
+    fun nextMove() {
+        if (finished) return
+        if (board.currentPlayer().isComputer) {
+            val move = board.currentPlayer().move(board)
+            board.play(move)
+            logger.info(move.toString())
+            ifPawnHasReachedFinalRankReplaceWithQueen(board, move)
+            finished = noMoreMovesAllowed(board)
         }
-
-        if (board.currentPlayer().isComputer()) {
-            breath();
-            SwingUtilities.invokeLater(this::nextMove);
+        if (board.currentPlayer().isComputer) {
+            breath()
+            SwingUtilities.invokeLater { nextMove() }
         }
     }
 
-    private void breath() {
-        try {
-            TimeUnit.SECONDS.sleep(COMPUTER_PAUSE_SECONDS);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+    private fun breath() {
+        TimeUnit.SECONDS.sleep(COMPUTER_PAUSE_SECONDS.toLong())
     }
 
-    public void newBoard() {
-        board.reset();
+    fun newBoard() {
+        board.reset()
     }
 
-    public void configurePlayers() {
-        try {
-            int game = userOptions.getGameType();
-            logger.info("Type " + game + " chosen");
-
+    fun configurePlayers() {
+        val game = userOptions.gameType()
+            logger.info("Type $game chosen")
             if (game == 1) {
-                board.blackPlayer(new ComputerPlayer("computer", PieceColor.blackSet, userOptions.getLevel("computer", 1), PlayerStrategy.F1));
-                board.whitePlayer(new UserPlayer("user", PieceColor.whiteSet));
+                board.blackPlayer(
+                    ComputerPlayer(
+                        "computer",
+                        PieceColor.blackSet,
+                        userOptions.getLevel("computer", 1),
+                        PlayerStrategy.F1
+                    )
+                )
+                board.whitePlayer(UserPlayer("user", PieceColor.whiteSet))
             } else if (game == 2) {
-                board.blackPlayer(new UserPlayer("user", PieceColor.blackSet));
-                board.whitePlayer(new ComputerPlayer("computer", PieceColor.whiteSet, userOptions.getLevel("computer", 1), PlayerStrategy.F1));
+                board.blackPlayer(UserPlayer("user", PieceColor.blackSet))
+                board.whitePlayer(
+                    ComputerPlayer(
+                        "computer",
+                        PieceColor.whiteSet,
+                        userOptions.getLevel("computer", 1),
+                        PlayerStrategy.F1
+                    )
+                )
             } else if (game == 3) {
-                board.blackPlayer(new ComputerPlayer("computer 1", PieceColor.blackSet, userOptions.getLevel("computer 1", 1), PlayerStrategy.F1));
-                board.whitePlayer(new ComputerPlayer("computer 2", PieceColor.whiteSet, userOptions.getLevel("computer 2", 1), PlayerStrategy.F2));
+                board.blackPlayer(
+                    ComputerPlayer(
+                        "computer 1",
+                        PieceColor.blackSet,
+                        userOptions.getLevel("computer 1", 1),
+                        PlayerStrategy.F1
+                    )
+                )
+                board.whitePlayer(
+                    ComputerPlayer(
+                        "computer 2",
+                        PieceColor.whiteSet,
+                        userOptions.getLevel("computer 2", 1),
+                        PlayerStrategy.F1
+                    )
+                )
             } else {
-                board.blackPlayer(new UserPlayer("user 1", PieceColor.blackSet));
-                board.whitePlayer(new UserPlayer("user 2", PieceColor.whiteSet));
+                board.blackPlayer(UserPlayer("user 1", PieceColor.blackSet))
+                board.whitePlayer(UserPlayer("user 2", PieceColor.whiteSet))
             }
-            logger.info("name\ttype");
-            logger.info(board.blackPlayer().toString());
-            logger.info(board.whitePlayer().toString());
+            logger.info("name\ttype")
+            logger.info(board.blackPlayer().toString())
+            logger.info(board.whitePlayer().toString())
+            if (board.currentPlayer().isComputer) {
+                SwingUtilities.invokeLater { nextMove() }
+            }
+    }
 
-            if (board.currentPlayer().isComputer()) {
-                SwingUtilities.invokeLater(this::nextMove);
-            }
-        } catch (Exception exc) {
-            logger.info("Error: " + exc);
-            System.exit(-1);
-        }
+    companion object {
+        private const val COMPUTER_PAUSE_SECONDS = 1
     }
 }

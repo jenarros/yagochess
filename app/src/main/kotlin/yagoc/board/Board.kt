@@ -172,13 +172,9 @@ class Board : BoardView {
 
     override fun <T> playAndUndo(move: Move, callable: Callable<T>): T {
         play(move)
-        return try {
-            val moveValue = callable.call()
-            undo()
-            moveValue
-        } catch (e: Exception) {
-            throw RuntimeException(e)
-        }
+        val moveValue = callable.call()
+        undo()
+        return moveValue
     }
 
     override fun playAndUndo(from: Square, to: Square): Board {

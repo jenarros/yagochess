@@ -8,6 +8,7 @@ import yagoc.BoardSpec.Companion.toBoard
 import yagoc.pieces.PieceColor
 import yagoc.players.ComputerPlayer
 import yagoc.players.PlayerStrategy
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 class GenerationOfComputerMovesTest {
@@ -15,7 +16,7 @@ class GenerationOfComputerMovesTest {
     private val counter = AtomicInteger()
 
     @Test
-    @Timeout(4) // Before migration to Kotlin, it was a bit faster and always under 4s
+    @Timeout(3500, unit = TimeUnit.MILLISECONDS) // Before migration to Kotlin, it was always under 4s
     fun `can generate moves fast`() {
         val level3 = ComputerPlayer("level3", PieceColor.whiteSet, 4, PlayerStrategy.F1)
 

@@ -1,237 +1,205 @@
-package yagoc.ui;
+package yagoc.ui
 
-import yagoc.Controller;
-import yagoc.board.BoardView;
-import yagoc.board.Square;
-import yagoc.pieces.Piece;
+import yagoc.Controller
+import yagoc.board.BoardView
+import yagoc.board.Move
+import yagoc.board.Square
+import yagoc.board.allSquares
+import yagoc.pieces.*
+import java.awt.*
+import java.awt.event.ActionEvent
+import java.awt.event.MouseEvent
+import java.util.*
+import java.util.stream.IntStream
+import javax.swing.JPanel
+import javax.swing.Timer
+import javax.swing.event.MouseInputListener
+import kotlin.math.floor
+import kotlin.math.min
 
-import javax.swing.*;
-import javax.swing.event.MouseInputListener;
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.IntStream;
+class BoardPanel(private val controller: Controller, private val board: BoardView) : JPanel() {
+    private val images = images()
+    private val mouseMotionListener = AccionListener()
 
-import static yagoc.board.Move.FILE_NAMES;
-import static yagoc.board.Move.RANK_NAMES;
-import static yagoc.board.SquaresKt.allSquares;
-import static yagoc.pieces.PiecesKt.*;
-import static yagoc.ui.YagocWindow.BOARD_FONT_SIZE;
-import static yagoc.ui.YagocWindow.BORDER_SIZE;
-import static yagoc.ui.YagocWindow.IMAGE_SIZE;
-import static yagoc.ui.YagocWindow.LOG_HEIGHT;
-import static yagoc.ui.YagocWindow.SQUARE_SIZE;
-import static yagoc.ui.YagocWindow.darkSquaresColor;
-import static yagoc.ui.YagocWindow.lightSquaresColor;
+    public override fun paintComponent(g: Graphics) {
+        super.paintComponent(g)
+        paintBoard(g)
+    }
 
-public class BoardPanel extends JPanel {
-	public static final Integer[] PLAYER_LEVELS = {1, 2, 3, 4, 5};
-	public static final Integer[] GAME_OPTIONS = {1, 2, 3, 4};
-	public static final int REFRESH_RATE_MILLISECONDS = 20; // 1000 / rate = fps
+    fun drawPiece(g: Graphics, square: Square, piece: Piece) {
+        drawPiece(g, toScreenCoordinates(square), piece, (squareSize - imageSize) / 2)
+    }
 
-	private final BoardView board;
-	private final Controller controller;
-	private final Map<Piece, Image> images = images();
-	private final AccionListener mouseMotionListener = new AccionListener();
+    fun drawPiece(g: Graphics, position: Point, piece: Piece, gap: Int) {
+        g.drawImage(images[piece], position.x + gap, position.y + gap, imageSize, imageSize, this)
+    }
 
-	public BoardPanel(Controller controller, BoardView board) {
-		this.controller = controller;
-		this.board = board;
-		setLayout(new BorderLayout(0, 0));
-		setBackground(YagocWindow.frameColor);
-		setPreferredSize(new Dimension(getBoardAndBorderSize(), getBoardAndBorderSize()));
-		setMaximumSize(new Dimension(getBoardAndBorderSize(), getBoardAndBorderSize()));
-		setFont(new Font(Font.MONOSPACED, Font.BOLD, getBoardFontSize()));
+    fun toScreenCoordinates(square: Square): Point {
+        return Point(square.file() * squareSize + borderSize, square.rank() * squareSize + borderSize)
+    }
 
-		addMouseListener(mouseMotionListener);
-		addMouseMotionListener(mouseMotionListener);
-		new Timer(REFRESH_RATE_MILLISECONDS, (actionEvent) -> {
-			repaint();
-		}).start();
-	}
+    fun paintBoard(g: Graphics) {
+        drawBorder(g)
+        allSquares.forEach { square: Square -> drawSquare(g, square) }
+        mouseMotionListener.selectedSquare?.let { drawSquare(g, it) }
+    }
 
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		paintBoard(g);
-	}
+    private fun drawBorder(g: Graphics) {
+        g.color = Color.lightGray
+        IntStream.range(0, 8).forEach { file: Int ->
+            g.drawString(
+                Move.FILE_NAMES[file],
+                borderSize + (squareSize * 0.4).toInt() + file * squareSize,
+                boardFontSize
+            )
+            g.drawString(
+                Move.FILE_NAMES[file],
+                borderSize + (squareSize * 0.4).toInt() + file * squareSize,
+                boardSize + (borderSize * 1.8).toInt()
+            )
+        }
+        IntStream.range(0, 8).forEach { rank: Int ->
+            g.drawString(
+                Move.RANK_NAMES[rank],
+                (borderSize * 0.25).toInt(),
+                borderSize + (squareSize * 0.6).toInt() + rank * squareSize
+            )
+            g.drawString(
+                Move.RANK_NAMES[rank],
+                boardSize + (borderSize * 1.3).toInt(),
+                borderSize + (squareSize * 0.6).toInt() + rank * squareSize
+            )
+        }
+    }
 
-	void drawPiece(Graphics g, Square square, Piece piece) {
-		drawPiece(g, toScreenCoordinates(square), piece, (getSquareSize() - getImageSize()) / 2);
-	}
+    fun boardSquare(p: Point): Square {
+        return Square(
+            java.lang.Double.valueOf(floor(((p.y - borderSize) / squareSize).toDouble())).toInt(),
+            java.lang.Double.valueOf(floor(((p.x - borderSize) / squareSize).toDouble())).toInt()
+        )
+    }
 
-	void drawPiece(Graphics g, Point position, Piece piece, int gap) {
-		g.drawImage(images.get(piece), position.x + gap, position.y + gap, getImageSize(), getImageSize(), this);
-	}
+    private fun drawSquare(g: Graphics, square: Square) {
+        val piece = board.pieceAt(square)
+        val point = toScreenCoordinates(square)
+        val coordX = IntArray(4)
+        val coordY = IntArray(4)
+        g.color = squareColor(square)
+        coordX[0] = point.x
+        coordX[1] = point.x
+        coordX[2] = point.x + squareSize
+        coordX[3] = point.x + squareSize
+        coordY[0] = point.y
+        coordY[1] = point.y + squareSize
+        coordY[2] = point.y + squareSize
+        coordY[3] = point.y
+        g.fillPolygon(coordX, coordY, 4)
+        if (square != mouseMotionListener.selectedSquare && piece != none) {
+            drawPiece(g, square, piece)
+        } else if (square == mouseMotionListener.selectedSquare) {
+            mouseMotionListener.mousePosition?.let {
+                drawPiece(g, toMouseLocation(it), piece, 0)
+            }
+        }
+    }
 
-	Point toScreenCoordinates(Square square) {
-		return new Point(square.file() * getSquareSize() + getBorderSize(), square.rank() * getSquareSize() + getBorderSize());
-	}
+    private fun toMouseLocation(mousePointer: Point): Point {
+        return Point(mousePointer.x - imageSize / 2, mousePointer.y - imageSize / 2)
+    }
 
-	void paintBoard(Graphics g) {
-		drawBorder(g);
+    private fun squareColor(square: Square): Color {
+        return if (square.file() % 2 == 0 && square.rank() % 2 == 0 || square.file() % 2 == 1 && square.rank() % 2 == 1) {
+            YagocWindow.lightSquaresColor
+        } else {
+            YagocWindow.darkSquaresColor
+        }
+    }
 
-		Arrays.stream(allSquares).forEach((square) -> {
-			drawSquare(g, square);
-		});
+    val borderSize = scale(YagocWindow.BORDER_SIZE)
+    val imageSize = scale(YagocWindow.IMAGE_SIZE)
+    val squareSize = scale(YagocWindow.SQUARE_SIZE)
 
-		if (mouseMotionListener.selectedSquare != null) drawSquare(g, mouseMotionListener.selectedSquare);
-	}
+    fun scale(value: Int): Int {
+        val dimension = toolkit.screenSize
+        val originalBoardAndBorderSize = YagocWindow.SQUARE_SIZE * 8 + YagocWindow.BORDER_SIZE * 2
+        return min(
+            (dimension.height - YagocWindow.LOG_HEIGHT) / originalBoardAndBorderSize,
+            dimension.width / originalBoardAndBorderSize
+        ) * value
+    }
 
-	private void drawBorder(Graphics g) {
-		g.setColor(Color.lightGray);
-		IntStream.range(0, 8).forEach((file) -> {
-			g.drawString(FILE_NAMES[file], getBorderSize() + (int) (getSquareSize() * 0.4) + file * getSquareSize(), getBoardFontSize());
-			g.drawString(FILE_NAMES[file], getBorderSize() + (int) (getSquareSize() * 0.4) + file * getSquareSize(), getBoardSize() + (int) (getBorderSize() * 1.8));
-		});
+    val boardAndBorderSize = squareSize * 8 + borderSize * 2
+    val boardSize = squareSize * 8
+    val boardFontSize = scale(YagocWindow.BOARD_FONT_SIZE)
 
-		IntStream.range(0, 8).forEach((rank) -> {
-			g.drawString(RANK_NAMES[rank], (int) (getBorderSize() * 0.25), getBorderSize() + (int) (getSquareSize() * 0.6) + rank * getSquareSize());
-			g.drawString(RANK_NAMES[rank], getBoardSize() + ((int) (getBorderSize() * 1.3)), getBorderSize() + (int) (getSquareSize() * 0.6) + rank * getSquareSize());
-		});
-	}
+    private fun images(): Map<Piece, Image> {
+        val t = toolkit
+        val images: MutableMap<Piece, Image> = HashMap()
+        images[whitePawn] = t.getImage(this.javaClass.getResource("/img/white_pawn.gif"))
+        images[whiteKnight] = t.getImage(this.javaClass.getResource("/img/white_knight.gif"))
+        images[whiteBishop] = t.getImage(this.javaClass.getResource("/img/white_bishop.gif"))
+        images[whiteRook] = t.getImage(this.javaClass.getResource("/img/white_rook.gif"))
+        images[whiteQueen] = t.getImage(this.javaClass.getResource("/img/white_queen.gif"))
+        images[whiteKing] = t.getImage(this.javaClass.getResource("/img/white_king.gif"))
+        images[blackPawn] = t.getImage(this.javaClass.getResource("/img/black_pawn.gif"))
+        images[blackKnight] = t.getImage(this.javaClass.getResource("/img/black_knight.gif"))
+        images[blackBishop] = t.getImage(this.javaClass.getResource("/img/black_bishop.gif"))
+        images[blackRook] = t.getImage(this.javaClass.getResource("/img/black_rook.gif"))
+        images[blackQueen] = t.getImage(this.javaClass.getResource("/img/black_queen.gif"))
+        images[blackKing] = t.getImage(this.javaClass.getResource("/img/black_king.gif"))
+        return images
+    }
 
-	Square boardSquare(Point p) {
-		return new Square(Double.valueOf(Math.floor((p.y - getBorderSize()) / getSquareSize())).intValue(), Double.valueOf(Math.floor((p.x - getBorderSize()) / getSquareSize())).intValue());
-	}
+    internal inner class AccionListener : MouseInputListener {
+        var selectedSquare: Square? = null
+        var mousePosition: Point? = null
+        override fun mouseClicked(e: MouseEvent) {}
+        override fun mousePressed(e: MouseEvent) {
+            val position = e.point
+            if (isInsideTheBoard(position)) {
+                selectedSquare = boardSquare(position)
+                mousePosition = e.point
+            }
+        }
 
-	private void drawSquare(Graphics g, Square square) {
-		Piece piece = board.pieceAt(square);
-		Point point = toScreenCoordinates(square);
-		int[] coordX = new int[4];
-		int[] coordY = new int[4];
+        private fun isInsideTheBoard(position: Point): Boolean {
+            return position.x >= borderSize && position.x < boardAndBorderSize - borderSize &&
+                    position.y >= borderSize && position.y < boardAndBorderSize - borderSize
+        }
 
-		g.setColor(squareColor(square));
-		coordX[0] = point.x;
-		coordX[1] = point.x;
-		coordX[2] = point.x + getSquareSize();
-		coordX[3] = point.x + getSquareSize();
-		coordY[0] = point.y;
-		coordY[1] = point.y + getSquareSize();
-		coordY[2] = point.y + getSquareSize();
-		coordY[3] = point.y;
-		g.fillPolygon(coordX, coordY, 4);
+        override fun mouseReleased(e: MouseEvent) {
+            val position = e.point
+            val from = selectedSquare
+            if (isInsideTheBoard(position)) {
+                from?.let { controller.move(from, boardSquare(position)) }
+                selectedSquare = null
+                mousePosition = null
+            }
+        }
 
-		if (!square.equals(mouseMotionListener.selectedSquare) && !piece.equals(none)) {
-			drawPiece(g, square, piece);
-		} else if (square.equals(mouseMotionListener.selectedSquare) && mouseMotionListener.mousePosition != null) {
-			drawPiece(g, toMouseLocation(mouseMotionListener.mousePosition), piece, 0);
-		}
-	}
+        override fun mouseEntered(e: MouseEvent) {}
+        override fun mouseExited(e: MouseEvent) {}
+        override fun mouseDragged(e: MouseEvent) {
+            mousePosition = Point(e.point.x, e.point.y)
+        }
 
-	private Point toMouseLocation(Point mousePointer) {
-		return new Point(mousePointer.x - getImageSize() / 2, mousePointer.y - getImageSize() / 2);
-	}
+        override fun mouseMoved(e: MouseEvent) {}
+    }
 
-	private Color squareColor(Square square) {
-		if ((square.file() % 2 == 0 && square.rank() % 2 == 0) || square.file() % 2 == 1 && square.rank() % 2 == 1) {
-			return lightSquaresColor;
-		} else {
-			return darkSquaresColor;
-		}
-	}
+    companion object {
+        val PLAYER_LEVELS = arrayOf(1, 2, 3, 4, 5)
+        val GAME_OPTIONS = arrayOf(1, 2, 3, 4)
+        const val REFRESH_RATE_MILLISECONDS = 20 // 1000 / rate = fps
+    }
 
-	int getBorderSize() {
-		return scale(BORDER_SIZE);
-	}
-
-	int getImageSize() {
-		return scale(IMAGE_SIZE);
-	}
-
-	int getSquareSize() {
-		return scale(SQUARE_SIZE);
-	}
-
-	int scale(int value) {
-		Dimension dimension = getToolkit().getScreenSize();
-		int originalBoardAndBorderSize = SQUARE_SIZE * 8 + BORDER_SIZE * 2;
-		return Math.min((dimension.height - LOG_HEIGHT) / originalBoardAndBorderSize, dimension.width / originalBoardAndBorderSize) * value;
-	}
-
-	int getBoardAndBorderSize() {
-		return getSquareSize() * 8 + getBorderSize() * 2;
-	}
-
-	int getBoardSize() {
-		return getSquareSize() * 8;
-	}
-
-	int getBoardFontSize() {
-		return scale(BOARD_FONT_SIZE);
-	}
-
-	private Map<Piece, Image> images() {
-		Toolkit t = getToolkit();
-		Map<Piece, Image> images = new HashMap<>();
-
-		images.put(whitePawn, t.getImage(this.getClass().getResource("/img/white_pawn.gif")));
-		images.put(whiteKnight, t.getImage(this.getClass().getResource("/img/white_knight.gif")));
-		images.put(whiteBishop, t.getImage(this.getClass().getResource("/img/white_bishop.gif")));
-		images.put(whiteRook, t.getImage(this.getClass().getResource("/img/white_rook.gif")));
-		images.put(whiteQueen, t.getImage(this.getClass().getResource("/img/white_queen.gif")));
-		images.put(whiteKing, t.getImage(this.getClass().getResource("/img/white_king.gif")));
-		images.put(blackPawn, t.getImage(this.getClass().getResource("/img/black_pawn.gif")));
-		images.put(blackKnight, t.getImage(this.getClass().getResource("/img/black_knight.gif")));
-		images.put(blackBishop, t.getImage(this.getClass().getResource("/img/black_bishop.gif")));
-		images.put(blackRook, t.getImage(this.getClass().getResource("/img/black_rook.gif")));
-		images.put(blackQueen, t.getImage(this.getClass().getResource("/img/black_queen.gif")));
-		images.put(blackKing, t.getImage(this.getClass().getResource("/img/black_king.gif")));
-
-		return images;
-	}
-
-	class AccionListener implements MouseInputListener {
-		Square selectedSquare;
-		Point mousePosition;
-
-		@Override
-		public void mouseClicked(MouseEvent e) {
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			Point position = e.getPoint();
-			if (isInsideTheBoard(position)) {
-				selectedSquare = boardSquare(position);
-				mousePosition = e.getPoint();
-			}
-		}
-
-		private boolean isInsideTheBoard(Point position) {
-			return (position.x >= getBorderSize()) && (position.x < getBoardAndBorderSize() - getBorderSize()) &&
-					(position.y >= getBorderSize()) && (position.y < getBoardAndBorderSize() - getBorderSize());
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			Point position = e.getPoint();
-
-			if (isInsideTheBoard(position)) {
-				controller.move(selectedSquare, boardSquare(position));
-
-				selectedSquare = null;
-				mousePosition = null;
-			}
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-		}
-
-		@Override
-		public void mouseDragged(MouseEvent e) {
-			mousePosition = new Point(e.getPoint().x, e.getPoint().y);
-		}
-
-		@Override
-		public void mouseMoved(MouseEvent e) {
-
-		}
-	}
+    init {
+        layout = BorderLayout(0, 0)
+        background = YagocWindow.frameColor
+        preferredSize = Dimension(boardAndBorderSize, boardAndBorderSize)
+        maximumSize = Dimension(boardAndBorderSize, boardAndBorderSize)
+        font = Font(Font.MONOSPACED, Font.BOLD, boardFontSize)
+        addMouseListener(mouseMotionListener)
+        addMouseMotionListener(mouseMotionListener)
+        Timer(REFRESH_RATE_MILLISECONDS) { _: ActionEvent -> repaint() }.start()
+    }
 }
