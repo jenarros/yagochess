@@ -13,7 +13,6 @@ import yagoc.players.PlayerStrategy
 import yagoc.players.UserPlayer
 import yagoc.ui.UserOptionDialog
 import java.io.FileOutputStream
-import java.io.IOException
 import java.io.ObjectOutputStream
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -34,10 +33,10 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
         if (checkpoints.isNotEmpty()) {
             board.resetWith(checkpoints.removeAt(checkpoints.size - 1))
             finished = false
+            SwingUtilities.invokeLater { nextMove() }
         }
     }
 
-    @Throws(IOException::class)
     fun saveBoard(absolutePath: String) {
         FileOutputStream(absolutePath).use { fileStream ->
             ObjectOutputStream(fileStream).use { stream -> stream.writeObject(board) }
@@ -80,12 +79,14 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
 
     fun nextMove() {
         if (finished || paused) return
-        if (board.currentPlayer().isComputer) {
+        else if (board.currentPlayer().isComputer) {
+            val checkpoint = Board(board)
             val move = board.currentPlayer().move(board)
             board.play(move)
             logger.info(move.toString())
             ifPawnHasReachedFinalRankReplaceWithQueen(board, move)
             finished = noMoreMovesAllowed(board)
+            checkpoints.add(checkpoint)
         }
         if (board.currentPlayer().isComputer) {
             breath()
@@ -161,6 +162,7 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
 
     fun togglePause() {
         paused = !paused
+        logger.info(if (paused) "Game paused" else "Game resumed")
         if (!paused) {
             SwingUtilities.invokeLater { nextMove() }
         }
