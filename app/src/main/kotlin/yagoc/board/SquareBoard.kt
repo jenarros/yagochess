@@ -6,13 +6,7 @@ import java.io.Serializable
 import java.util.*
 
 class SquareBoard(val pieces: Array<Piece> = Array(64) { none }) : Serializable {
-    operator fun get(square: Squares) = pieces[square.ordinal]
-
     operator fun get(squareIndex: Int) = pieces[squareIndex]
-
-    operator fun set(square: Squares, piece: Piece) {
-        pieces[square.ordinal] = piece
-    }
 
     operator fun set(squareIndex: Int, piece: Piece) {
         pieces[squareIndex] = piece
@@ -20,27 +14,27 @@ class SquareBoard(val pieces: Array<Piece> = Array(64) { none }) : Serializable 
 
     fun reset() {
         Arrays.fill(pieces, none)
-        set(Squares.a8, blackRook)
-        set(Squares.b8, blackKnight)
-        set(Squares.c8, blackBishop)
-        set(Squares.d8, blackQueen)
-        set(Squares.e8, blackKing)
-        set(Squares.f8, blackBishop)
-        set(Squares.g8, blackKnight)
-        set(Squares.h8, blackRook)
+        set(a8, blackRook)
+        set(b8, blackKnight)
+        set(c8, blackBishop)
+        set(d8, blackQueen)
+        set(e8, blackKing)
+        set(f8, blackBishop)
+        set(g8, blackKnight)
+        set(h8, blackRook)
 
-        Squares.subset(Squares.a7, Squares.h7).forEach { set(it, blackPawn) }
+        allSquares.copyOfRange(a7, h7 + 1).forEach { set(it.arrayPosition(), blackPawn) }
 
-        set(Squares.a1, whiteRook)
-        set(Squares.b1, whiteKnight)
-        set(Squares.c1, whiteBishop)
-        set(Squares.d1, whiteQueen)
-        set(Squares.e1, whiteKing)
-        set(Squares.f1, whiteBishop)
-        set(Squares.g1, whiteKnight)
-        set(Squares.h1, whiteRook)
+        set(a1, whiteRook)
+        set(b1, whiteKnight)
+        set(c1, whiteBishop)
+        set(d1, whiteQueen)
+        set(e1, whiteKing)
+        set(f1, whiteBishop)
+        set(g1, whiteKnight)
+        set(h1, whiteRook)
 
-        Squares.subset(Squares.a2, Squares.h2).forEach { set(it, whitePawn) }
+        allSquares.copyOfRange(a2, h2 + 1).forEach { set(it.arrayPosition(), whitePawn) }
     }
 
     override fun equals(other: Any?): Boolean {

@@ -11,14 +11,8 @@ import static yagoc.pieces.Pieces.none;
 public interface BoardView extends Serializable {
     Piece pieceAt(Square square);
 
-    Piece pieceAt(Squares squares);
-
     default boolean noneAt(Square square) {
         return pieceAt(square).equals(none);
-    }
-
-    default boolean noneAt(Squares squares) {
-        return noneAt(squares.legacySquare());
     }
 
     default boolean someAt(Square square) {

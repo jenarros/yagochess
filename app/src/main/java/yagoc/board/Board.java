@@ -13,6 +13,14 @@ import java.util.Objects;
 import java.util.Stack;
 import java.util.concurrent.Callable;
 
+import static yagoc.board.SquaresKt.a1Square;
+import static yagoc.board.SquaresKt.a8Square;
+import static yagoc.board.SquaresKt.d1Square;
+import static yagoc.board.SquaresKt.d8Square;
+import static yagoc.board.SquaresKt.f1Square;
+import static yagoc.board.SquaresKt.f8Square;
+import static yagoc.board.SquaresKt.h1Square;
+import static yagoc.board.SquaresKt.h8Square;
 import static yagoc.pieces.PieceType.Pawn;
 import static yagoc.pieces.Pieces.none;
 
@@ -146,15 +154,6 @@ public class Board implements BoardView {
     }
 
     @Override
-    public Piece pieceAt(Squares squares) {
-        Square square = squares.legacySquare();
-        if (!square.exists()) {
-            throw new IllegalArgumentException("Square " + square + " does not exist.");
-        }
-        return pieceAt(square);
-    }
-
-    @Override
     public Piece pieceAt(Square square) {
         return squareBoard.get(square.arrayPosition());
     }
@@ -277,23 +276,23 @@ public class Board implements BoardView {
 
         if (move.isCastlingQueenside()) {
             if (move.fromPiece().color() == PieceColor.whiteSet) {
-                castlingExtraMove = new Move(Pieces.whiteRook, Squares.a1.legacySquare(), Squares.d1.legacySquare());
-                pieceAt(Squares.a1.legacySquare(), none);
-                pieceAt(Squares.d1.legacySquare(), Pieces.whiteRook);
+                castlingExtraMove = new Move(Pieces.whiteRook, a1Square, d1Square);
+                pieceAt(a1Square, none);
+                pieceAt(d1Square, Pieces.whiteRook);
             } else {
-                castlingExtraMove = new Move(Pieces.blackRook, Squares.a8.legacySquare(), Squares.d8.legacySquare());
-                pieceAt(Squares.a8.legacySquare(), none);
-                pieceAt(Squares.d8.legacySquare(), Pieces.blackRook);
+                castlingExtraMove = new Move(Pieces.blackRook, a8Square, d8Square);
+                pieceAt(a8Square, none);
+                pieceAt(d8Square, Pieces.blackRook);
             }
 
         } else if (move.fromPiece().color() == PieceColor.whiteSet) {
-            castlingExtraMove = new Move(Pieces.whiteRook, Squares.h1.legacySquare(), Squares.f1.legacySquare());
-            pieceAt(Squares.h1.legacySquare(), none);
-            pieceAt(Squares.f1.legacySquare(), Pieces.whiteRook);
+            castlingExtraMove = new Move(Pieces.whiteRook, h1Square, f1Square);
+            pieceAt(h1Square, none);
+            pieceAt(f1Square, Pieces.whiteRook);
         } else {
-            castlingExtraMove = new Move(Pieces.blackRook, Squares.h8.legacySquare(), Squares.f8.legacySquare());
-            pieceAt(Squares.h8.legacySquare(), none);
-            pieceAt(Squares.f8.legacySquare(), Pieces.blackRook);
+            castlingExtraMove = new Move(Pieces.blackRook, h8Square, f8Square);
+            pieceAt(h8Square, none);
+            pieceAt(f8Square, Pieces.blackRook);
         }
         return MoveLog.castling(this, move, pieceAt(move.to()), castlingExtraMove);
     }

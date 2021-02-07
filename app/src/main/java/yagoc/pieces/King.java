@@ -3,18 +3,12 @@ package yagoc.pieces;
 import yagoc.board.BoardView;
 import yagoc.board.Move;
 import yagoc.board.Square;
-import yagoc.board.Squares;
 
 import java.util.stream.Stream;
 
 import static yagoc.board.BoardRules.isInCheck;
 import static yagoc.board.BoardRules.moveDoesNotCreateCheck;
-import static yagoc.board.Squares.b8;
-import static yagoc.board.Squares.c8;
-import static yagoc.board.Squares.d8;
-import static yagoc.board.Squares.f1;
-import static yagoc.board.Squares.f8;
-import static yagoc.board.Squares.g1;
+import static yagoc.board.SquaresKt.*;
 
 public class King extends Piece {
     public King(PieceColor pieceColor) {
@@ -51,31 +45,31 @@ public class King extends Piece {
             if (move.to().file() == 2 && board.pieceAt(new Square(move.from().rank(), 0)).equals(move.fromPiece().switchTo(PieceType.Rook))) { // queenside
                 // white set
                 if (move.fromPiece().color() == PieceColor.whiteSet && !board.hasWhiteLeftRookMoved() &&
-                        board.noneAt(Squares.b1) && board.noneAt(Squares.c1) &&
-                        board.noneAt(Squares.d1) &&
-                        moveDoesNotCreateCheck(board, move.from(), Squares.d1.legacySquare()) &&
-                        moveDoesNotCreateCheck(board, move.from(), Squares.c1.legacySquare())) {
+                        board.noneAt(b1Square) && board.noneAt(c1Square) &&
+                        board.noneAt(d1Square) &&
+                        moveDoesNotCreateCheck(board, move.from(), d1Square) &&
+                        moveDoesNotCreateCheck(board, move.from(), c1Square)) {
                     return true;
                 }
                 // black set
                 return move.fromPiece().color() == PieceColor.blackSet && !board.hasBlackLeftRookMoved() &&
-                        board.noneAt(b8) && board.noneAt(c8) &&
-                        board.noneAt(Squares.d8) &&
-                        moveDoesNotCreateCheck(board, move.from(), d8.legacySquare()) &&
-                        moveDoesNotCreateCheck(board, move.from(), c8.legacySquare());
+                        board.noneAt(b8Square) && board.noneAt(c8Square) &&
+                        board.noneAt(d8Square) &&
+                        moveDoesNotCreateCheck(board, move.from(), d8Square) &&
+                        moveDoesNotCreateCheck(board, move.from(), c8Square);
             } else if (move.to().file() == 6 && board.pieceAt(new Square(move.from().rank(), 7)).equals(move.fromPiece().switchTo(PieceType.Rook))) { // kingside
                 // white set
                 if (move.fromPiece().color() == PieceColor.whiteSet && !board.hasWhiteRightRookMoved() &&
-                        board.noneAt(Squares.f1) && board.noneAt(g1) &&
-                        moveDoesNotCreateCheck(board, move.from(), g1.legacySquare()) &&
-                        moveDoesNotCreateCheck(board, move.from(), f1.legacySquare())) {
+                        board.noneAt(f1Square) && board.noneAt(g1Square) &&
+                        moveDoesNotCreateCheck(board, move.from(), g1Square) &&
+                        moveDoesNotCreateCheck(board, move.from(), f1Square)) {
                     return true;
                 }
                 // black set
                 return move.fromPiece().color() == PieceColor.blackSet && !board.hasBlackRightRookMoved() &&
-                        board.noneAt(f8) && board.noneAt(Squares.g8) &&
-                        moveDoesNotCreateCheck(board, move.from(), Squares.g8.legacySquare()) &&
-                        moveDoesNotCreateCheck(board, move.from(), f8.legacySquare());
+                        board.noneAt(f8Square) && board.noneAt(g8Square) &&
+                        moveDoesNotCreateCheck(board, move.from(), g8Square) &&
+                        moveDoesNotCreateCheck(board, move.from(), f8Square);
             }
         }
         return false;
