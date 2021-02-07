@@ -39,7 +39,7 @@ object BoardRules {
     }
 
     fun isCheckmate(board: BoardView): Boolean {
-        return if (isInCheck(board, board.currentPlayer().pieceColor())) {
+        return if (isInCheck(board, board.currentPlayer().pieceColor)) {
             cannotMoveWithoutBeingCheck(board)
         } else {
             false
@@ -47,7 +47,7 @@ object BoardRules {
     }
 
     fun isADraw(board: BoardView): Boolean {
-        return if (!isInCheck(board, board.currentPlayer().pieceColor()) && cannotMoveWithoutBeingCheck(
+        return if (!isInCheck(board, board.currentPlayer().pieceColor) && cannotMoveWithoutBeingCheck(
                 board
             )
         ) {
@@ -68,13 +68,11 @@ object BoardRules {
     @JvmStatic
     fun noMoreMovesAllowed(board: BoardView): Boolean {
         return when {
-            isCheckmate(board) -> {
-                Yagoc.logger.info("checkmate winner is " + board.oppositePlayer().name())
-                true
+            isCheckmate(board) -> true.also {
+                Yagoc.logger.info("checkmate winner is " + board.oppositePlayer().name)
             }
-            isADraw(board) -> {
+            isADraw(board) -> true.also {
                 Yagoc.logger.info("draw")
-                true
             }
             else -> false
         }

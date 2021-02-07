@@ -11,27 +11,15 @@ import java.io.Serializable
 import java.util.concurrent.atomic.AtomicInteger
 
 class ComputerPlayer(
-    private val name: String,
-    private val pieceColor: PieceColor,
+    name: String,
+    pieceColor: PieceColor,
     private val level: Int,
     private val strategy: PlayerStrategy
-) : Player, Serializable {
+) : Player(name, pieceColor, PlayerType.Computer), Serializable {
     private val noMoves = Move(blackPawn, a1Square, a1Square)
 
-    override fun pieceColor(): PieceColor {
-        return pieceColor
-    }
-
-    override fun type(): PlayerType {
-        return PlayerType.Computer
-    }
-
-    override fun name(): String {
-        return name
-    }
-
     override fun toString(): String {
-        return pieceColor.toString() + "\t" + type() + "\t" + level
+        return pieceColor.toString() + "\t" + type + "\t" + level
     }
 
     override fun move(board: BoardView): Move {

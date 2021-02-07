@@ -117,7 +117,7 @@ class Board : BoardView {
     }
 
     override fun isPieceOfCurrentPlayer(piece: Piece): Boolean {
-        return piece.color() == currentPlayer.pieceColor()
+        return piece.color() == currentPlayer.pieceColor
     }
 
     fun togglePlayer() {

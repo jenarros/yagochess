@@ -4,13 +4,8 @@ import yagoc.board.BoardView
 import yagoc.board.Move
 import yagoc.pieces.PieceColor
 
-interface Player {
-    fun move(board: BoardView): Move
-    fun type(): PlayerType
-    fun pieceColor(): PieceColor
-    fun name(): String
-    val isUser: Boolean
-        get() = type() == PlayerType.User
-    val isComputer: Boolean
-        get() = type() == PlayerType.Computer
+abstract class Player(val name: String, val pieceColor: PieceColor, val type: PlayerType) {
+    abstract fun move(board: BoardView): Move
+    val isUser = type == PlayerType.User
+    val isComputer = type == PlayerType.Computer
 }

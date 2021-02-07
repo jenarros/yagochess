@@ -1,25 +1,21 @@
-package yagoc;
+package yagoc
 
-import yagoc.board.Board;
-import yagoc.ui.UserOptionDialog;
-import yagoc.ui.YagocWindow;
+import yagoc.board.Board
+import yagoc.ui.UserOptionDialog
+import yagoc.ui.YagocWindow
+import javax.swing.UIManager
 
-import javax.swing.*;
+object Yagoc {
+    @JvmField
+    var logger = Logger()
 
-public class Yagoc {
-    public static Logger logger = new Logger();
-
-    public static void main(String[] args) {
-        try {
-            System.setProperty("apple.laf.useScreenMenuBar", "true");
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            System.err.println("Error" + e);
-        }
-
-        Board board = new Board();
-        YagocWindow yagocWindow = new YagocWindow(new Controller(board, new UserOptionDialog()), board);
-        yagocWindow.setTitle("Yet Another Game Of Chess");
-        yagocWindow.setVisible(true);
+    @JvmStatic
+    fun main(args: Array<String>) {
+        System.setProperty("apple.laf.useScreenMenuBar", "true")
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
+        val board = Board()
+        val yagocWindow = YagocWindow(Controller(board, UserOptionDialog()), board)
+        yagocWindow.title = "Yet Another Game Of Chess"
+        yagocWindow.isVisible = true
     }
 }
