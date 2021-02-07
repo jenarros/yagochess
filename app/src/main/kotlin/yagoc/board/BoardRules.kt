@@ -27,12 +27,12 @@ object BoardRules {
     fun isInCheck(board: BoardView, color: PieceColor): Boolean {
         // Could not find $color king!
         val kingSquare = allSquares.first { square: Square ->
-            board.pieceAt(square).pieceType() == PieceType.King && board.pieceAt(square).color() == color
+            board.pieceAt(square).pieceType == PieceType.King && board.pieceAt(square).color == color
         }
 
         return allSquares
             .any { from: Square ->
-                board.someAt(from) && board.pieceAt(from).color() != color && isCorrectMove(
+                board.someAt(from) && board.pieceAt(from).color != color && isCorrectMove(
                     board,
                     from,
                     kingSquare
@@ -56,7 +56,7 @@ object BoardRules {
 
     @JvmStatic
     fun moveDoesNotCreateCheck(board: BoardView, move: Move): Boolean {
-        return !board.playAndUndo(move) { isInCheck(board, move.fromPiece().color()) }
+        return !board.playAndUndo(move) { isInCheck(board, move.fromPiece().color) }
     }
 
     @JvmStatic

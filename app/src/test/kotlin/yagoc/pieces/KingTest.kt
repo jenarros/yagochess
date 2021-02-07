@@ -4,7 +4,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 import yagoc.BoardSpec
-import yagoc.board.Square
+import yagoc.board.*
 
 class KingTest {
     @Test
@@ -19,7 +19,7 @@ class KingTest {
             --------
             --------
             --------
-        """, Square(3, 3)
+        """, d5Square
         )
 
         test.possibleMoves().run {
@@ -40,7 +40,7 @@ class KingTest {
             --------
             --------
             --------
-        """, Square(3, 3)
+        """, d5Square
         )
 
         test.possibleMoves().run {
@@ -61,7 +61,7 @@ class KingTest {
             --------
             --------
             --------
-        """, Square(0, 4)
+        """, e8Square
         )
 
         test.possibleMoves().run {
@@ -82,7 +82,7 @@ class KingTest {
             --------
             --------
             --------
-        """, Square(0, 4)
+        """, e8Square
         )
 
         test.possibleMoves().run {
@@ -102,12 +102,12 @@ class KingTest {
             --------
             --------
             --------
-        """, Square(0, 4)
+        """, e8Square
         )
 
-        assertThat(test.plusMove(blackKing, Square(0, 3), Square(0, 4)).possibleMoves().size, equalTo(2))
-        assertThat(test.plusMove(blackRook, Square(0, 1), Square(0, 0)).possibleMoves().size, equalTo(2))
-        assertThat(test.plusMove(blackRook, Square(0, 6), Square(0, 7)).possibleMoves().size, equalTo(2))
+        assertThat(test.plusMove(blackKing, d8Square, e8Square).possibleMoves().size, equalTo(2))
+        assertThat(test.plusMove(blackRook, b8Square, a8Square).possibleMoves().size, equalTo(2))
+        assertThat(test.plusMove(blackRook, g8Square, h8Square).possibleMoves().size, equalTo(2))
     }
 
     @Test
@@ -122,7 +122,7 @@ class KingTest {
             --------
             ---111--
             r-11k11r
-        """, Square(7, 4)
+        """, e1Square
         )
 
         test.possibleMoves().run {
@@ -143,11 +143,11 @@ class KingTest {
             --------
             ---ppp--
             r--1k1-r
-        """, Square(7, 4)
+        """, e1Square
         )
 
-        assertThat(test.plusMove(whiteKing, Square(7, 3), Square(7, 4)).possibleMoves().size, equalTo(2))
-        assertThat(test.plusMove(whiteRook, Square(7, 1), Square(7, 0)).possibleMoves().size, equalTo(2))
-        assertThat(test.plusMove(whiteRook, Square(7, 6), Square(7, 7)).possibleMoves().size, equalTo(2))
+        assertThat(test.plusMove(whiteKing, d1Square, e1Square).possibleMoves().size, equalTo(2))
+        assertThat(test.plusMove(whiteRook, b1Square, a1Square).possibleMoves().size, equalTo(2))
+        assertThat(test.plusMove(whiteRook, g1Square, h1Square).possibleMoves().size, equalTo(2))
     }
 }

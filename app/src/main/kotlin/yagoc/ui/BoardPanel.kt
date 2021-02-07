@@ -1,10 +1,7 @@
 package yagoc.ui
 
 import yagoc.Controller
-import yagoc.board.BoardView
-import yagoc.board.Move
-import yagoc.board.Square
-import yagoc.board.allSquares
+import yagoc.board.*
 import yagoc.pieces.*
 import java.awt.*
 import java.awt.event.ActionEvent
@@ -35,7 +32,7 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
     }
 
     fun toScreenCoordinates(square: Square): Point {
-        return Point(square.file() * squareSize + borderSize, square.rank() * squareSize + borderSize)
+        return Point(square.file * squareSize + borderSize, square.rank * squareSize + borderSize)
     }
 
     fun paintBoard(g: Graphics) {
@@ -72,19 +69,19 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
         }
     }
 
-    fun boardSquare(p: Point): Square {
-        return Square(
-            java.lang.Double.valueOf(floor(((p.y - borderSize) / squareSize).toDouble())).toInt(),
-            java.lang.Double.valueOf(floor(((p.x - borderSize) / squareSize).toDouble())).toInt()
+    fun boardSquare(point: Point): Square {
+        return square(
+            floor(((point.y - borderSize) / squareSize).toDouble()).toInt(),
+            floor(((point.x - borderSize) / squareSize).toDouble()).toInt()
         )
     }
 
-    private fun drawSquare(g: Graphics, square: Square) {
+    private fun drawSquare(graphics: Graphics, square: Square) {
         val piece = board.pieceAt(square)
         val point = toScreenCoordinates(square)
         val coordX = IntArray(4)
         val coordY = IntArray(4)
-        g.color = squareColor(square)
+        graphics.color = squareColor(square)
         coordX[0] = point.x
         coordX[1] = point.x
         coordX[2] = point.x + squareSize
@@ -93,12 +90,12 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
         coordY[1] = point.y + squareSize
         coordY[2] = point.y + squareSize
         coordY[3] = point.y
-        g.fillPolygon(coordX, coordY, 4)
+        graphics.fillPolygon(coordX, coordY, 4)
         if (square != mouseMotionListener.selectedSquare && piece != none) {
-            drawPiece(g, square, piece)
+            drawPiece(graphics, square, piece)
         } else if (square == mouseMotionListener.selectedSquare) {
             mouseMotionListener.mousePosition?.let {
-                drawPiece(g, toMouseLocation(it), piece, 0)
+                drawPiece(graphics, toMouseLocation(it), piece, 0)
             }
         }
     }
@@ -108,7 +105,7 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
     }
 
     private fun squareColor(square: Square): Color {
-        return if (square.file() % 2 == 0 && square.rank() % 2 == 0 || square.file() % 2 == 1 && square.rank() % 2 == 1) {
+        return if (square.file % 2 == 0 && square.rank % 2 == 0 || square.file % 2 == 1 && square.rank % 2 == 1) {
             YagocWindow.lightSquaresColor
         } else {
             YagocWindow.darkSquaresColor

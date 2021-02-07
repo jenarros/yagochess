@@ -7,14 +7,7 @@ import java.io.Serializable
 import java.util.*
 import java.util.stream.Stream
 
-abstract class Piece(private val pieceType: PieceType, private val color: PieceColor) : Serializable {
-    open fun pieceType(): PieceType {
-        return pieceType
-    }
-
-    open fun color(): PieceColor {
-        return color
-    }
+abstract class Piece(val pieceType: PieceType, val color: PieceColor) : Serializable {
 
     fun switchTo(type: PieceType): Piece {
         return all.stream()
@@ -55,7 +48,7 @@ abstract class Piece(private val pieceType: PieceType, private val color: PieceC
     protected abstract fun isValidForPiece(board: BoardView, move: Move): Boolean
 
     fun isCorrectMove(board: BoardView, move: Move): Boolean {
-        return if (board.pieceAt(move.from()).color() == board.pieceAt(move.to()).color()) {
+        return if (board.pieceAt(move.from()).color == board.pieceAt(move.to()).color) {
             false
         } else isValidForPiece(board, move)
     }
@@ -74,9 +67,9 @@ abstract class Piece(private val pieceType: PieceType, private val color: PieceC
     }
 
     fun toUniqueChar(): Char {
-        if (PieceColor.blackSet == color()) {
+        if (PieceColor.blackSet == color) {
             return toString()[0]
-        } else if (PieceColor.whiteSet == color()) {
+        } else if (PieceColor.whiteSet == color) {
             return toString().toLowerCase()[0]
         }
         return '-'

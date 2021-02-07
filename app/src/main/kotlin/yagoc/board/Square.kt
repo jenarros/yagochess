@@ -5,90 +5,87 @@ import java.io.Serializable
 import java.util.*
 import java.util.stream.Collectors
 
-data class Square(val rank: Int, val file: Int) : Serializable, Comparable<Square> {
-    constructor(arrayPosition: Int) : this(arrayPosition / 8, arrayPosition % 8)
-
-    fun rank() = rank
-
-    fun file() = file
+data class Square(val arrayPosition: Int) : Serializable, Comparable<Square> {
+    val rank = arrayPosition / 8
+    val file = arrayPosition % 8
 
     fun nextRank(pieceColor: PieceColor): Square {
         return if (pieceColor == PieceColor.whiteSet) {
-            Square(rank - 1, file)
+            square(rank - 1, file)
         } else {
-            Square(rank + 1, file)
+            square(rank + 1, file)
         }
     }
 
     fun next2Rank(pieceColor: PieceColor): Square {
         return if (pieceColor == PieceColor.whiteSet) {
-            Square(rank - 2, file)
+            square(rank - 2, file)
         } else {
-            Square(rank + 2, file)
+            square(rank + 2, file)
         }
     }
 
     fun next2File(pieceColor: PieceColor): Square {
         return if (pieceColor == PieceColor.whiteSet) {
-            Square(rank, file + 2)
+            square(rank, file + 2)
         } else {
-            Square(rank, file - 2)
+            square(rank, file - 2)
         }
     }
 
     fun previous2File(pieceColor: PieceColor): Square {
         return if (pieceColor == PieceColor.whiteSet) {
-            Square(rank, file - 2)
+            square(rank, file - 2)
         } else {
-            Square(rank, file + 2)
+            square(rank, file + 2)
         }
     }
 
     fun nextRankNextFile(pieceColor: PieceColor): Square {
         return if (pieceColor == PieceColor.whiteSet) {
-            Square(rank - 1, file + 1)
+            square(rank - 1, file + 1)
         } else {
-            Square(rank + 1, file - 1)
+            square(rank + 1, file - 1)
         }
     }
 
     fun nextRankPreviousFile(pieceColor: PieceColor): Square {
         return if (pieceColor == PieceColor.whiteSet) {
-            Square(rank - 1, file - 1)
+            square(rank - 1, file - 1)
         } else {
-            Square(rank + 1, file + 1)
+            square(rank + 1, file + 1)
         }
     }
 
     fun previousFile(pieceColor: PieceColor): Square {
         return if (pieceColor == PieceColor.whiteSet) {
-            Square(rank, file - 1)
+            square(rank, file - 1)
         } else {
-            Square(rank, file + 1)
+            square(rank, file + 1)
         }
     }
 
     fun nextFile(pieceColor: PieceColor): Square {
         return if (pieceColor == PieceColor.whiteSet) {
-            Square(rank, file + 1)
+            square(rank, file + 1)
         } else {
-            Square(rank, file - 1)
+            square(rank, file - 1)
         }
     }
 
     fun previousRank(pieceColor: PieceColor): Square {
         return if (pieceColor == PieceColor.whiteSet) {
-            Square(rank + 1, file)
+            square(rank + 1, file)
         } else {
-            Square(rank - 1, file)
+            square(rank - 1, file)
         }
     }
 
     fun previous2Rank(pieceColor: PieceColor): Square {
         return if (pieceColor == PieceColor.whiteSet) {
-            Square(rank + 2, file)
+            square(rank + 2, file)
         } else {
-            Square(rank - 2, file)
+            square(rank - 2, file)
         }
     }
 
@@ -99,10 +96,10 @@ data class Square(val rank: Int, val file: Int) : Serializable, Comparable<Squar
     fun diagonalSquares(): List<Square> {
         val acc: MutableList<Square> = ArrayList()
         for (distance in 1..7) {
-            acc.add(Square(rank + distance, file + distance))
-            acc.add(Square(rank + distance, file - distance))
-            acc.add(Square(rank - distance, file + distance))
-            acc.add(Square(rank - distance, file - distance))
+            acc.add(square(rank + distance, file + distance))
+            acc.add(square(rank + distance, file - distance))
+            acc.add(square(rank - distance, file + distance))
+            acc.add(square(rank - distance, file - distance))
         }
         return acc.stream().filter { obj: Square -> obj.exists() }.collect(Collectors.toList())
     }
@@ -110,10 +107,10 @@ data class Square(val rank: Int, val file: Int) : Serializable, Comparable<Squar
     fun straightSquares(): List<Square> {
         val acc: MutableList<Square> = ArrayList()
         for (distance in 1..7) {
-            acc.add(Square(rank + distance, file))
-            acc.add(Square(rank - distance, file))
-            acc.add(Square(rank, file + distance))
-            acc.add(Square(rank, file - distance))
+            acc.add(square(rank + distance, file))
+            acc.add(square(rank - distance, file))
+            acc.add(square(rank, file + distance))
+            acc.add(square(rank, file - distance))
         }
         return acc.stream().filter { obj: Square -> obj.exists() }.collect(Collectors.toList())
     }

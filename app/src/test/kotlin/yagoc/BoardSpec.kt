@@ -17,7 +17,7 @@ class BoardSpec(stringBoard: String, val fromSquare: Square) {
     val validSquares = stringBoard.trimIndent().replace("\n", "").let { boardAsString ->
         allSquares.filter {
             '1' == (boardAsString[it.arrayPosition()]) || Pieces.parse(boardAsString[it.arrayPosition()])
-                .notOfSameColor(fromPiece().color())
+                .notOfSameColor(fromPiece().color)
         }.sorted().toList()
     }
 

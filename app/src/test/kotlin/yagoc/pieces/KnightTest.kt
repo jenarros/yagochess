@@ -5,7 +5,8 @@ import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.hasItem
 import org.junit.jupiter.api.Test
 import yagoc.BoardSpec
-import yagoc.board.Square
+import yagoc.board.d5Square
+import yagoc.board.f4Square
 
 class KnightTest {
     @Test
@@ -20,7 +21,7 @@ class KnightTest {
             --1-1---
             --------
             --------
-        """, Square(3, 3)
+        """, d5Square
         )
 
         test.possibleMoves().run {
@@ -41,12 +42,12 @@ class KnightTest {
             --1-1---
             --------
             --------
-        """, Square(3, 3)
+        """, d5Square
         )
 
         test.possibleMoves().run {
             assertThat(this.size, equalTo(7))
-            assertThat(this, hasItem(equalTo(Square(4, 5))))
+            assertThat(this, hasItem(equalTo(f4Square)))
             assertThat(this, equalTo(test.validSquares))
         }
     }

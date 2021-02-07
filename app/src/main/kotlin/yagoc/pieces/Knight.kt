@@ -17,14 +17,14 @@ class Knight(pieceColor: PieceColor) : Piece(PieceType.Knight, pieceColor) {
     public override fun generateMovesForPiece(board: BoardView, from: Square): Stream<Move> {
         val piece = board.pieceAt(from)
         return Stream.of(
-            from.next2Rank(piece.color()).nextFile(piece.color()),
-            from.next2Rank(piece.color()).previousFile(piece.color()),
-            from.previous2Rank(piece.color()).nextFile(piece.color()),
-            from.previous2Rank(piece.color()).previousFile(piece.color()),
-            from.next2File(piece.color()).nextRank(piece.color()),
-            from.next2File(piece.color()).previousRank(piece.color()),
-            from.previous2File(piece.color()).nextRank(piece.color()),
-            from.previous2File(piece.color()).previousRank(piece.color())
+            from.next2Rank(piece.color).nextFile(piece.color),
+            from.next2Rank(piece.color).previousFile(piece.color),
+            from.previous2Rank(piece.color).nextFile(piece.color),
+            from.previous2Rank(piece.color).previousFile(piece.color),
+            from.next2File(piece.color).nextRank(piece.color),
+            from.next2File(piece.color).previousRank(piece.color),
+            from.previous2File(piece.color).nextRank(piece.color),
+            from.previous2File(piece.color).previousRank(piece.color)
         ).filter { obj: Square -> obj.exists() }
             .map { to: Square -> Move(piece, from, to) }
     }

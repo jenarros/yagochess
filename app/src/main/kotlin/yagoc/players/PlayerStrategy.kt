@@ -21,30 +21,30 @@ class PlayerStrategy(private val strategy: (BoardView, PieceColor) -> Int) : Ser
                 var acc = 0
                 if (isPieceOurs(board, color, square)) {
                     val piece = board.pieceAt(square)
-                    when (piece.pieceType()) {
+                    when (piece.pieceType) {
                         PieceType.Pawn -> {
                             acc += 100
-                            acc += if (piece.color() === PieceColor.blackSet) square.rank() * 20 else (7 - square.rank()) * 20
+                            acc += if (piece.color === PieceColor.blackSet) square.rank * 20 else (7 - square.rank) * 20
 
                             // covered pawn is better
                             if (square.nextRank(color)
-                                    .exists() && square.file() - 1 > 0 && square.file() + 1 < 8 && (board.pieceAt(
+                                    .exists() && square.file - 1 > 0 && square.file + 1 < 8 && (board.pieceAt(
                                     square.nextRankPreviousFile(color)
                                 ) == piece || board.pieceAt(square.nextRankPreviousFile(color)) == piece)
                             ) acc += 30
                         }
                         PieceType.Knight -> {
-                            acc += (300 + (3.5 - abs(3.5 - square.file())) * 20).toInt()
-                            acc += if (piece.color() === PieceColor.blackSet) (abs(3.5 - square.rank()) * 10).toInt() else (abs(
-                                3.5 - square.rank()
+                            acc += (300 + (3.5 - abs(3.5 - square.file)) * 20).toInt()
+                            acc += if (piece.color === PieceColor.blackSet) (abs(3.5 - square.rank) * 10).toInt() else (abs(
+                                3.5 - square.rank
                             ) * 10).toInt()
                         }
                         PieceType.Bishop -> acc += (300 + generateMoves(board, square).count() * 10).toInt()
                         PieceType.Rook -> acc += 500
                         PieceType.Queen -> {
-                            acc += (940 + (3.5 - abs(3.5 - square.file())) * 20).toInt()
-                            acc += if (piece.color() === PieceColor.blackSet) (abs(3.5 - square.rank()) * 10).toInt() else (abs(
-                                3.5 - square.rank()
+                            acc += (940 + (3.5 - abs(3.5 - square.file)) * 20).toInt()
+                            acc += if (piece.color === PieceColor.blackSet) (abs(3.5 - square.rank) * 10).toInt() else (abs(
+                                3.5 - square.rank
                             ) * 10).toInt()
                         }
                         else -> {
@@ -52,22 +52,22 @@ class PlayerStrategy(private val strategy: (BoardView, PieceColor) -> Int) : Ser
                     }
                 } else if (isPieceTheirs(board, color, square)) {
                     val piece = board.pieceAt(square)
-                    when (piece.pieceType()) {
+                    when (piece.pieceType) {
                         PieceType.Pawn -> {
                             acc -= 100
-                            acc -= if (piece.color() === PieceColor.blackSet) square.rank() * 30 else (7 - square.rank()) * 30
+                            acc -= if (piece.color === PieceColor.blackSet) square.rank * 30 else (7 - square.rank) * 30
                             if (square.nextRank(color)
-                                    .exists() && square.file() - 1 > 0 && square.file() + 1 < 8 && (board.pieceAt(
+                                    .exists() && square.file - 1 > 0 && square.file + 1 < 8 && (board.pieceAt(
                                     square.nextRankPreviousFile(color)
                                 ) == piece || board.pieceAt(square.nextRankPreviousFile(color)) == piece)
                             ) acc -= 20
                         }
-                        PieceType.Knight -> acc -= (300 + (3.5 - abs(3.5 - square.file())) * 20).toInt()
+                        PieceType.Knight -> acc -= (300 + (3.5 - abs(3.5 - square.file)) * 20).toInt()
                         PieceType.Bishop -> acc -= (330 + generateMoves(board, square).count() * 10).toInt()
                         PieceType.Rook -> acc -= 500
                         PieceType.Queen -> {
                             acc -= 1000
-                            acc -= (abs(3.5 - square.rank()) * 10).toInt()
+                            acc -= (abs(3.5 - square.rank) * 10).toInt()
                         }
                         else -> {
                         }
@@ -83,7 +83,7 @@ class PlayerStrategy(private val strategy: (BoardView, PieceColor) -> Int) : Ser
                 var acc = 0
                 if (isPieceOurs(board, set, square)) {
                     val piece = board.pieceAt(square)
-                    when (piece.pieceType()) {
+                    when (piece.pieceType) {
                         PieceType.Pawn -> acc += 100
                         PieceType.Knight -> acc += 300
                         PieceType.Bishop -> acc += 330
@@ -94,7 +94,7 @@ class PlayerStrategy(private val strategy: (BoardView, PieceColor) -> Int) : Ser
                     }
                 } else if (isPieceTheirs(board, set, square)) {
                     val piece = board.pieceAt(square)
-                    when (piece.pieceType()) {
+                    when (piece.pieceType) {
                         PieceType.Pawn -> acc -= 100
                         PieceType.Knight -> acc -= 300
                         PieceType.Bishop -> acc -= 330
@@ -109,11 +109,11 @@ class PlayerStrategy(private val strategy: (BoardView, PieceColor) -> Int) : Ser
         }
 
         fun isPieceOurs(board: BoardView, pieceColor: PieceColor, square: Square): Boolean {
-            return board.pieceAt(square).color() === pieceColor
+            return board.pieceAt(square).color === pieceColor
         }
 
         fun isPieceTheirs(board: BoardView, color: PieceColor, square: Square): Boolean {
-            return board.pieceAt(square).color() !== color && !board.noneAt(square)
+            return board.pieceAt(square).color !== color && !board.noneAt(square)
         }
     }
 }

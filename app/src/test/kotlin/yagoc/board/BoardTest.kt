@@ -69,10 +69,10 @@ class BoardTest {
             r---k--r
         """.toBoard()
 
-        assertThat(Board(expected).playAndUndo(Square(7, 4), Square(7, 6)), equalTo(expected))
-        assertThat(Board(expected).playAndUndo(Square(7, 4), Square(7, 2)), equalTo(expected))
-        assertThat(Board(expected).playAndUndo(Square(0, 4), Square(0, 6)), equalTo(expected))
-        assertThat(Board(expected).playAndUndo(Square(0, 4), Square(0, 2)), equalTo(expected))
+        assertThat(Board(expected).playAndUndo(e1Square, g1Square), equalTo(expected))
+        assertThat(Board(expected).playAndUndo(e1Square, c1Square), equalTo(expected))
+        assertThat(Board(expected).playAndUndo(e8Square, g8Square), equalTo(expected))
+        assertThat(Board(expected).playAndUndo(e8Square, c8Square), equalTo(expected))
     }
 
 
@@ -110,5 +110,21 @@ class BoardTest {
         assertThat(BoardRules.isCurrentPlayerCheckmate(expected), equalTo(true))
         expected.togglePlayer()
         assertThat(BoardRules.isCurrentPlayerCheckmate(expected), equalTo(false))
+    }
+
+    @Test
+    fun `can identify draw`() {
+        val expected = """
+            --------
+            --------
+            --------
+            --------
+            -------K
+            -Q------
+            --------
+            k-------
+        """.toBoard()
+
+        assertThat(BoardRules.isADraw(expected), equalTo(true))
     }
 }

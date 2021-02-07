@@ -15,10 +15,10 @@ class Pawn(pieceColor: PieceColor) : Piece(PieceType.Pawn, pieceColor) {
         if (move.hasSameFile() && board.pieceAt(move.to()) == none) {
             // if we move two squares, we should start from the initial position and next rank should be empty
             if (move.rankDistance() == 2 && board.pieceAt(
-                    move.to().previousRank(move.fromPiece().color())
+                    move.to().previousRank(move.fromPiece().color)
                 ) == none &&
-                (move.from().rank() == 6 && move.fromPiece().color() == PieceColor.whiteSet || move.from()
-                    .rank() == 1 && move.fromPiece().color() == PieceColor.blackSet)
+                (move.from().rank == 6 && move.fromPiece().color == PieceColor.whiteSet || move.from()
+                    .rank == 1 && move.fromPiece().color == PieceColor.blackSet)
             ) return true
             if (move.rankDistance() == 1) return true
         }
@@ -26,12 +26,12 @@ class Pawn(pieceColor: PieceColor) : Piece(PieceType.Pawn, pieceColor) {
         // diagonal
         return if (move.fileDistanceAbs() == 1 && move.rankDistance() == 1) {
             // capture
-            if (board.pieceAt(move.to()).notOfSameColor(move.fromPiece().color())) {
+            if (board.pieceAt(move.to()).notOfSameColor(move.fromPiece().color)) {
                 true
             } else board.pieceAt(move.to()) == none && board.enPassant(
-                move.to().file()
-            ) == board.moveCounter() - 1 && move.from().rank() == if (move.fromPiece()
-                    .color() == PieceColor.whiteSet
+                move.to().file
+            ) == board.moveCounter() - 1 && move.from().rank == if (move.fromPiece()
+                    .color == PieceColor.whiteSet
             ) 3 else 4
 
             // en passant
@@ -41,10 +41,10 @@ class Pawn(pieceColor: PieceColor) : Piece(PieceType.Pawn, pieceColor) {
     public override fun generateMovesForPiece(board: BoardView, from: Square): Stream<Move> {
         val piece = board.pieceAt(from)
         return Stream.of(
-            from.nextRankPreviousFile(piece.color()),  // left
-            from.nextRank(piece.color()),  // ahead
-            from.next2Rank(piece.color()),  // ahead 2
-            from.nextRankNextFile(piece.color()) // right
+            from.nextRankPreviousFile(piece.color),  // left
+            from.nextRank(piece.color),  // ahead
+            from.next2Rank(piece.color),  // ahead 2
+            from.nextRankNextFile(piece.color) // right
         ).filter { obj: Square -> obj.exists() }
             .map { to: Square -> Move(piece, from, to) }
     }

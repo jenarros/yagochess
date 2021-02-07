@@ -4,7 +4,10 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 import yagoc.BoardSpec
-import yagoc.board.Square
+import yagoc.board.b5Square
+import yagoc.board.c5Square
+import yagoc.board.c6Square
+import yagoc.board.c7Square
 
 class PawnTest {
     @Test
@@ -19,7 +22,7 @@ class PawnTest {
             --------
             --------
             --------
-        """, Square(1, 2)
+        """, c7Square
         )
 
         test.possibleMoves().run {
@@ -40,7 +43,7 @@ class PawnTest {
             --------
             --------
             --------
-        """, Square(2, 2)
+        """, c6Square
         )
 
         test.possibleMoves().run {
@@ -61,7 +64,7 @@ class PawnTest {
             --------
             --------
             --------
-        """, Square(2, 2)
+        """, c6Square
         )
 
         test.possibleMoves().run {
@@ -82,8 +85,8 @@ class PawnTest {
             --------
             --------
             --------
-        """, Square(3, 1)
-        ).plusMove(blackPawn, Square(1, 2), Square(3, 2))
+        """, b5Square
+        ).plusMove(blackPawn, c7Square, c5Square)
 
         test.possibleMoves().run {
             assertThat(this.size, equalTo(2))

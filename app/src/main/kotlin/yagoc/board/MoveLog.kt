@@ -23,7 +23,7 @@ class MoveLog private constructor(
 
     val blackKingMoved = board.hasBlackKingMoved()
 
-    val enPassant = board.enPassant(move.to().file())
+    val enPassant = board.enPassant(move.to().file)
 
     val drawCounter = board.drawCounter()
 

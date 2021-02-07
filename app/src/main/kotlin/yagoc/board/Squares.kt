@@ -269,6 +269,17 @@ val allSquares = arrayOf(
     a1Square, b1Square, c1Square, d1Square, e1Square, f1Square, g1Square, h1Square
 )
 
+@JvmField
+val invalidSquare = Square(-1)
+
+fun square(rank: Int, file: Int): Square {
+    return if (rank in 0..7 && file in 0..7) {
+        allSquares[rank * 8 + file]
+    } else {
+        invalidSquare
+    }
+}
+
 //fun main() {
 //    /**
 //     * Generate

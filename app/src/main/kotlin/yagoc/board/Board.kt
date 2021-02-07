@@ -117,7 +117,7 @@ class Board : BoardView {
     }
 
     override fun isPieceOfCurrentPlayer(piece: Piece): Boolean {
-        return piece.color() == currentPlayer.pieceColor
+        return piece.color == currentPlayer.pieceColor
     }
 
     fun togglePlayer() {
@@ -156,7 +156,7 @@ class Board : BoardView {
         allSquares.forEach { square: Square ->
             val piece = pieceAt(square)
             buffer.append(piece.toUniqueChar())
-            if (square.file() % 8 == 7 && square.rank() < 7) buffer.append("\n")
+            if (square.file % 8 == 7 && square.rank < 7) buffer.append("\n")
         }
         return buffer.toString()
     }
@@ -189,11 +189,11 @@ class Board : BoardView {
 
     private fun updateMovedPieces(move: Move) {
         if (move.fromPiece() == whiteKing) whiteKingMoved =
-            true else if (move.fromPiece() == whiteRook && move.from().file() == 0) whiteLeftRookMoved =
-            true else if (move.fromPiece() == whiteRook && move.from().file() == 7) whiteRightRookMoved = true
+            true else if (move.fromPiece() == whiteRook && move.from().file == 0) whiteLeftRookMoved =
+            true else if (move.fromPiece() == whiteRook && move.from().file == 7) whiteRightRookMoved = true
         if (move.fromPiece() == blackKing) blackKingMoved =
-            true else if (move.fromPiece() == blackRook && move.from().file() == 0) blackLeftRookMoved =
-            true else if (move.fromPiece() == blackRook && move.from().file() == 7) blackRightRookMoved = true
+            true else if (move.fromPiece() == blackRook && move.from().file == 0) blackLeftRookMoved =
+            true else if (move.fromPiece() == blackRook && move.from().file == 7) blackRightRookMoved = true
     }
 
     fun undo() {
@@ -223,7 +223,7 @@ class Board : BoardView {
         blackLeftRookMoved = moveLog.blackLeftRookMoved
         blackRightRookMoved = moveLog.blackRightRookMoved
         blackKingMoved = moveLog.blackKingMoved
-        enPassant[moveLog.move.to().file()] = moveLog.enPassant
+        enPassant[moveLog.move.to().file] = moveLog.enPassant
         drawCounter = moveLog.drawCounter
         moveCounter = moveLog.moveCounter
         togglePlayer()
@@ -232,7 +232,7 @@ class Board : BoardView {
     fun playCastlingExtraMove(move: Move): MoveLog {
         val castlingExtraMove: Move
         if (move.isCastlingQueenside) {
-            if (move.fromPiece().color() == PieceColor.whiteSet) {
+            if (move.fromPiece().color == PieceColor.whiteSet) {
                 castlingExtraMove = Move(whiteRook, a1Square, d1Square)
                 pieceAt(a1Square, none)
                 pieceAt(d1Square, whiteRook)
@@ -241,7 +241,7 @@ class Board : BoardView {
                 pieceAt(a8Square, none)
                 pieceAt(d8Square, blackRook)
             }
-        } else if (move.fromPiece().color() == PieceColor.whiteSet) {
+        } else if (move.fromPiece().color == PieceColor.whiteSet) {
             castlingExtraMove = Move(whiteRook, h1Square, f1Square)
             pieceAt(h1Square, none)
             pieceAt(f1Square, whiteRook)
@@ -260,13 +260,13 @@ class Board : BoardView {
             drawCounter++
         } else {
             // if pawn advances 2 squares, it is possible that next move is a en passant capture
-            if (move.fromPiece().pieceType() == PieceType.Pawn && move.rankDistanceAbs() == 2) {
-                enPassant[move.to().file()] = moveCounter
+            if (move.fromPiece().pieceType == PieceType.Pawn && move.rankDistanceAbs() == 2) {
+                enPassant[move.to().file] = moveCounter
             }
             // en passant capture
             if (move.fromPiece()
-                    .pieceType() == PieceType.Pawn && move.rankDistance() == 1 && move.fileDistanceAbs() == 1 && enPassant[move.to()
-                    .file()] == moveCounter - 1
+                    .pieceType == PieceType.Pawn && move.rankDistance() == 1 && move.fileDistanceAbs() == 1 && enPassant[move.to()
+                    .file] == moveCounter - 1
             ) {
                 // i.e. for whites
                 // turn=1, to.x = 2, to.y = 5, squareC = (3,5)
@@ -275,7 +275,7 @@ class Board : BoardView {
             } else {
                 moveLog = normalMove(this, move, pieceAt(move.to()))
             }
-            if (!noneAt(move.to()) || move.fromPiece().pieceType() == PieceType.Pawn) {
+            if (!noneAt(move.to()) || move.fromPiece().pieceType == PieceType.Pawn) {
                 // draw counter restarts when we capture a piece or move a pawn
                 drawCounter = 0
             } else {
