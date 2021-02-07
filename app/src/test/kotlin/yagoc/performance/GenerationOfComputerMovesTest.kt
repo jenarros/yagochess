@@ -15,7 +15,7 @@ class GenerationOfComputerMovesTest {
     private val counter = AtomicInteger()
 
     @Test
-    @Timeout(7) // Before using the Scoreboard class, it was a bit faster and always under 4s
+    @Timeout(4) // Before migration to Kotlin, it was a bit faster and always under 4s
     fun `can generate moves fast`() {
         val level3 = ComputerPlayer("level3", PieceColor.whiteSet, 4, PlayerStrategy.F1)
 

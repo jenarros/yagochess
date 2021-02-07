@@ -1,140 +1,126 @@
-package yagoc.players;
+package yagoc.players
 
-import yagoc.board.BoardView;
-import yagoc.board.Move;
-import yagoc.pieces.PieceColor;
+import yagoc.Yagoc
+import yagoc.board.BoardRules.generateMoves
+import yagoc.board.BoardView
+import yagoc.board.Move
+import yagoc.board.a1Square
+import yagoc.pieces.PieceColor
+import yagoc.pieces.blackPawn
+import java.io.Serializable
+import java.util.concurrent.atomic.AtomicInteger
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.concurrent.atomic.AtomicInteger;
+class ComputerPlayer(
+    private val name: String,
+    private val pieceColor: PieceColor,
+    private val level: Int,
+    private val strategy: PlayerStrategy
+) : Player, Serializable {
+    private val noMoves = Move(blackPawn, a1Square, a1Square)
 
-import static yagoc.Yagoc.logger;
-import static yagoc.board.BoardRules.generateMoves;
-
-public class ComputerPlayer implements Player, Serializable {
-    final protected PieceColor pieceColor;
-    final private String name;
-    final private int level;
-    private final PlayerStrategy strategy;
-
-    public ComputerPlayer(String name, PieceColor pieceColor, int level, PlayerStrategy strategy) {
-        this.name = name;
-        this.pieceColor = pieceColor;
-        this.level = level;
-        this.strategy = strategy;
+    override fun pieceColor(): PieceColor {
+        return pieceColor
     }
 
-    public PieceColor pieceColor() {
-        return pieceColor;
+    override fun type(): PlayerType {
+        return PlayerType.Computer
     }
 
-    @Override
-    public PlayerType type() {
-        return PlayerType.computer;
+    override fun name(): String {
+        return name
     }
 
-    @Override
-    public String name() {
-        return name;
+    override fun toString(): String {
+        return pieceColor.toString() + "\t" + type() + "\t" + level
     }
 
-    @Override
-    public String toString() {
-        return pieceColor + "\t" + type() + "\t" + level;
+    override fun move(board: BoardView): Move {
+        val moveCounter = AtomicInteger(0)
+        val start = System.currentTimeMillis()
+        val moveValue = alphaBeta(level, board, Int.MIN_VALUE, Int.MAX_VALUE, moveCounter)
+        val elapsed = System.currentTimeMillis() - start + 1
+        Yagoc.logger.info("alpha-beta: processed = " + moveCounter + " moves in " + elapsed + "ms " + moveCounter.toInt() / elapsed + " moves/ms,  minimax = " + moveValue.value)
+        return moveValue.move
     }
 
-    public Move move(BoardView board) {
-        AtomicInteger moveCounter = new AtomicInteger(0);
-        long start = System.currentTimeMillis();
-        MoveValue moveValue = alphaBeta(level, board, Integer.MIN_VALUE, Integer.MAX_VALUE, moveCounter);
-        long elapsed = System.currentTimeMillis() - start + 1;
-        logger.info("alpha-beta: processed = " + moveCounter + " moves in " + elapsed + "ms " + moveCounter.intValue() / elapsed + " moves/ms,  minimax = " + moveValue.value);
-        return moveValue.move;
-    }
-
-    public MoveValue alphaBeta(int depth, BoardView board, int alfa, int beta, AtomicInteger moveCounter) {
-        if (depth == 0) {
-            return leafMoveValue(board);
-        } else if ((level - depth) % 2 == 0) { // maximizing player = current player (as depth = level)
-            return alphaBetaMax(depth, board, alfa, beta, moveCounter);
-        } else {
-            return alphaBetaMin(depth, board, alfa, beta, moveCounter);
+    fun alphaBeta(depth: Int, board: BoardView, alfa: Int, beta: Int, moveCounter: AtomicInteger): MoveValue {
+        return when {
+            depth == 0 -> leafValue(board)
+            (level - depth) % 2 == 0 -> // maximizing player = current player (as depth = level)
+                alphaBetaMax(depth, board, alfa, beta, moveCounter)
+            else -> alphaBetaMin(depth, board, alfa, beta, moveCounter)
         }
     }
 
-    private MoveValue alphaBetaMin(int depth, BoardView board, int alpha, int beta, AtomicInteger processedMoves) {
-        Collection<Move> moves = generateMoves(board);
+    private fun alphaBetaMin(
+        depth: Int,
+        board: BoardView,
+        alpha: Int,
+        beta: Int,
+        processedMoves: AtomicInteger
+    ): MoveValue {
+        val moves = generateMoves(board)
 
         // checkmate
         if (moves.isEmpty()) {
-            return new MoveValue(Integer.MAX_VALUE - (level - depth + 1));
+            return MoveValue(noMoves, Int.MAX_VALUE - (level - depth + 1))
         }
-
-        MoveValue betaMoveValue;
-        MoveValue moveValue = new MoveValue(beta);
-
-        for (Move move : moves) {
-            processedMoves.getAndIncrement();
+        var betaMoveValue: MoveValue
+        var moveValue = MoveValue(moves.stream().findFirst().orElseThrow(), beta)
+        for (move in moves) {
+            processedMoves.getAndIncrement()
 
             // beta = min[beta, AlphaBeta(N_k,alpha,beta)]
-            final int v = moveValue.value;
-            betaMoveValue = board.playAndUndo(move, () -> alphaBeta(depth - 1, board, alpha, v, processedMoves));
-
+            val v = moveValue.value
+            betaMoveValue = board.playAndUndo(move) { alphaBeta(depth - 1, board, alpha, v, processedMoves) }
             if (betaMoveValue.value < moveValue.value) {
-                moveValue = new MoveValue(move, betaMoveValue.value); // better
+                moveValue = MoveValue(move, betaMoveValue.value) // better
             }
 
             // beta cutoff
             if (alpha >= moveValue.value) {
-                return new MoveValue(moveValue.move, alpha);
+                return MoveValue(moveValue.move, alpha)
             }
         }
 
-        // if MIN is going to lose in 2 o more moves, we let it play
-        if (moveValue.move == null) {
-            moveValue = new MoveValue(moves.stream().findFirst().orElseThrow(), moveValue.value);
-        }
-
-        return moveValue;
+        return moveValue
     }
 
-    protected MoveValue leafMoveValue(BoardView board) {
-        return new MoveValue(strategy.apply(board, pieceColor));
+    private fun leafValue(board: BoardView): MoveValue {
+        return MoveValue(noMoves, strategy.apply(board, pieceColor))
     }
 
-    private MoveValue alphaBetaMax(int depth, BoardView board, int alpha, int beta, AtomicInteger processedMoves) {
-        Collection<Move> moves = generateMoves(board);
+    private fun alphaBetaMax(
+        depth: Int,
+        board: BoardView,
+        alpha: Int,
+        beta: Int,
+        processedMoves: AtomicInteger
+    ): MoveValue {
+        val moves = generateMoves(board)
 
         // checkmate
         if (moves.isEmpty()) {
-            return new MoveValue(Integer.MIN_VALUE + (level - depth + 1));
+            return MoveValue(noMoves, Int.MIN_VALUE + (level - depth + 1))
         }
-
-        MoveValue alphaMoveValue;
-        MoveValue moveValue = new MoveValue(alpha);
-
-        for (Move move : moves) {
-            processedMoves.getAndIncrement();
+        var alphaMoveValue: MoveValue
+        var moveValue = MoveValue(moves.stream().findFirst().orElseThrow(), alpha)
+        for (move in moves) {
+            processedMoves.getAndIncrement()
 
             // alpha = max[alpha, AlphaBeta(N_k,alpha,beta)
-            final int v = moveValue.value;
-            alphaMoveValue = board.playAndUndo(move, () -> alphaBeta(depth - 1, board, v, beta, processedMoves));
-
+            val v = moveValue.value
+            alphaMoveValue = board.playAndUndo(move) { alphaBeta(depth - 1, board, v, beta, processedMoves) }
             if (alphaMoveValue.value > moveValue.value) {
-                moveValue = new MoveValue(move, alphaMoveValue.value); // better
+                moveValue = MoveValue(move, alphaMoveValue.value) // better
             }
 
             // alpha cutoff
             if (moveValue.value >= beta) {
-                return new MoveValue(moveValue.move, beta);
+                return MoveValue(moveValue.move, beta)
             }
         }
 
-        // if MAX is going to lose in 2 o more moves, we let it play
-        if (moveValue.move == null) {
-            moveValue = new MoveValue(moves.stream().findFirst().orElseThrow(), moveValue.value);
-        }
-
-        return moveValue;
+        return moveValue
     }
 }

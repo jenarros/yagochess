@@ -1,40 +1,28 @@
-package yagoc.players;
+package yagoc.players
 
-import yagoc.board.BoardView;
-import yagoc.board.Move;
-import yagoc.pieces.PieceColor;
+import yagoc.board.BoardView
+import yagoc.board.Move
+import yagoc.pieces.PieceColor
+import java.io.Serializable
 
-import java.io.Serializable;
-
-public class UserPlayer implements Player, Serializable {
-    private final String name;
-    private final PieceColor set;
-
-    public UserPlayer(String name, PieceColor set) {
-        this.name = name;
-        this.set = set;
+class UserPlayer(private val name: String, private val pieceColor: PieceColor) : Player, Serializable {
+    override fun pieceColor(): PieceColor {
+        return pieceColor
     }
 
-    public PieceColor pieceColor() {
-        return set;
+    override fun move(board: BoardView): Move {
+        throw RuntimeException("$name cannot move without user input.")
     }
 
-    @Override
-    public Move move(BoardView board) {
-        throw new RuntimeException(name + " cannot move without user input.");
+    override fun type(): PlayerType {
+        return PlayerType.User
     }
 
-    @Override
-    public PlayerType type() {
-        return PlayerType.user;
+    override fun name(): String {
+        return name
     }
 
-    public String name() {
-        return name;
-    }
-
-    @Override
-    public String toString() {
-        return set + "\t" + name() + "\t" + type();
+    override fun toString(): String {
+        return pieceColor.toString() + "\t" + name() + "\t" + type()
     }
 }

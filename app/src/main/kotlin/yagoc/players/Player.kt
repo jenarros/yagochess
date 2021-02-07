@@ -1,23 +1,16 @@
-package yagoc.players;
+package yagoc.players
 
-import yagoc.board.BoardView;
-import yagoc.board.Move;
-import yagoc.pieces.PieceColor;
+import yagoc.board.BoardView
+import yagoc.board.Move
+import yagoc.pieces.PieceColor
 
-public interface Player {
-    Move move(BoardView board);
-
-    PlayerType type();
-
-    PieceColor pieceColor();
-
-    String name();
-
-    default boolean isUser() {
-        return type() == PlayerType.user;
-    }
-
-    default boolean isComputer() {
-        return type() == PlayerType.computer;
-    }
+interface Player {
+    fun move(board: BoardView): Move
+    fun type(): PlayerType
+    fun pieceColor(): PieceColor
+    fun name(): String
+    val isUser: Boolean
+        get() = type() == PlayerType.User
+    val isComputer: Boolean
+        get() = type() == PlayerType.Computer
 }

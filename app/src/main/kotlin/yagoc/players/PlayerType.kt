@@ -1,5 +1,6 @@
-package yagoc.players;
+package yagoc.players
 
-enum PlayerType {
-    user, computer
+enum class PlayerType {
+    User,
+    Computer
 }

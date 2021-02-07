@@ -1,160 +1,119 @@
-package yagoc.players;
+package yagoc.players
 
-import yagoc.board.BoardView;
-import yagoc.board.Square;
-import yagoc.pieces.Piece;
-import yagoc.pieces.PieceColor;
+import yagoc.board.BoardRules.generateMoves
+import yagoc.board.BoardView
+import yagoc.board.Square
+import yagoc.board.allSquares
+import yagoc.pieces.PieceColor
+import yagoc.pieces.PieceType
+import java.io.Serializable
+import kotlin.math.abs
 
-import java.io.Serializable;
-import java.util.Arrays;
-
-import static yagoc.board.BoardRules.generateMoves;
-import static yagoc.board.SquaresKt.allSquares;
-
-public class PlayerStrategy implements Serializable {
-    public static PlayerStrategy F1 = new PlayerStrategy((board, color) -> {
-        return Arrays.stream(allSquares).map((square) -> {
-            int acc = 0;
-
-            if (isPieceOurs(board, color, square)) {
-                final Piece piece = board.pieceAt(square);
-
-                switch (piece.pieceType()) {
-                    case Pawn: // further ahead is better
-                        acc += 100;
-                        if (piece.color() == PieceColor.blackSet)
-                            acc += square.rank() * 20;
-                        else
-                            acc += (7 - square.rank()) * 20;
-
-                        // covered pawn is better
-                        if (square.nextRank(color).exists() && square.file() - 1 > 0 && square.file() + 1 < 8
-                                && (board.pieceAt(square.nextRankPreviousFile(color)).equals(piece) || board.pieceAt(square.nextRankPreviousFile(color)).equals(piece)))
-                            acc += 30;
-                        break;
-                    case Knight: // middle of the board is better
-                        acc += 300 + (3.5 - Math.abs(3.5 - square.file())) * 20;
-                        if (piece.color() == PieceColor.blackSet)
-                            acc += Math.abs(3.5 - square.rank()) * 10;
-                        else
-                            acc += Math.abs(3.5 - square.rank()) * 10;
-                        break;
-                    case Bishop:
-                        acc += 300 + generateMoves(board, square).count() * 10;
-                        break;
-                    case Rook:
-                        acc += 500;
-                        break;
-                    case Queen: // middle of the board is better
-                        acc += 940 + (3.5 - Math.abs(3.5 - square.file())) * 20;
-                        if (piece.color() == PieceColor.blackSet)
-                            acc += Math.abs(3.5 - square.rank()) * 10;
-                        else
-                            acc += Math.abs(3.5 - square.rank()) * 10;
-                        break;
-                    default:
-                        break;
-                }
-            } else if (isPieceTheirs(board, color, square)) {
-                final Piece piece = board.pieceAt(square);
-
-                switch (piece.pieceType()) {
-                    case Pawn: // further ahead is better
-                        acc -= 100;
-                        if (piece.color() == PieceColor.blackSet)
-                            acc -= square.rank() * 30;
-                        else
-                            acc -= (7 - square.rank()) * 30;
-                        if (square.nextRank(color).exists() && square.file() - 1 > 0 && square.file() + 1 < 8
-                                && (board.pieceAt(square.nextRankPreviousFile(color)).equals(piece) || board.pieceAt(square.nextRankPreviousFile(color)).equals(piece)))
-                            acc -= 20;
-                        break;
-                    case Knight:
-                        acc -= 300 + (3.5 - Math.abs(3.5 - square.file())) * 20;
-                        break;
-                    case Bishop:
-                        acc -= 330 + generateMoves(board, square).count() * 10;
-                        break;
-                    case Rook:
-                        acc -= 500;
-                        break;
-                    case Queen:
-                        acc -= 1000;
-                        acc -= Math.abs(3.5 - square.rank()) * 10;
-                        break;
-                    default:
-                        break;
-                }
-            }
-            return acc;
-        }).mapToInt(Integer::intValue).sum();
-    });
-
-    public static PlayerStrategy F2 = new PlayerStrategy((board, set) -> {
-        return Arrays.stream(allSquares).map((square) -> {
-            int acc = 0;
-
-            if (isPieceOurs(board, set, square)) {
-                final Piece piece = board.pieceAt(square);
-                switch (piece.pieceType()) {
-                    case Pawn: // further ahead is better
-                        acc += 100;
-                        break;
-                    case Knight: // middle of the board is better
-                        acc += 300;
-                        break;
-                    case Bishop:
-                        acc += 330;
-                        break;
-                    case Rook:
-                        acc += 500;
-                        break;
-                    case Queen: // middle of the board is better
-                        acc += 940;
-                        break;
-                    default:
-                }
-            } else if (isPieceTheirs(board, set, square)) {
-                final Piece piece = board.pieceAt(square);
-
-                switch (piece.pieceType()) {
-                    case Pawn:
-                        acc -= 100;
-                        break;
-                    case Knight:
-                        acc -= 300;
-                        break;
-                    case Bishop:
-                        acc -= 330;
-                        break;
-                    case Rook:
-                        acc -= 500;
-                        break;
-                    case King:
-                        acc -= 940;
-                        break;
-                    default:
-                }
-            }
-            return acc;
-        }).mapToInt(Integer::intValue).sum();
-    });
-
-    private final SerializableBiFunction strategy;
-
-    public PlayerStrategy(SerializableBiFunction strategy) {
-        this.strategy = strategy;
+class PlayerStrategy(private val strategy: (BoardView, PieceColor) -> Int) : Serializable {
+    fun apply(board: BoardView, pieceColor: PieceColor): Int {
+        return strategy(board, pieceColor)
     }
 
-    static boolean isPieceOurs(BoardView board, PieceColor set, Square square) {
-        return board.pieceAt(square).color() == set;
-    }
+    companion object {
+        @JvmField
+        var F1 = PlayerStrategy { board: BoardView, color: PieceColor ->
+            allSquares.map { square: Square ->
+                var acc = 0
+                if (isPieceOurs(board, color, square)) {
+                    val piece = board.pieceAt(square)
+                    when (piece.pieceType()) {
+                        PieceType.Pawn -> {
+                            acc += 100
+                            acc += if (piece.color() === PieceColor.blackSet) square.rank() * 20 else (7 - square.rank()) * 20
 
-    static boolean isPieceTheirs(BoardView board, PieceColor color, Square square) {
-        return board.pieceAt(square).color() != color && !board.noneAt(square);
-    }
+                            // covered pawn is better
+                            if (square.nextRank(color)
+                                    .exists() && square.file() - 1 > 0 && square.file() + 1 < 8 && (board.pieceAt(
+                                    square.nextRankPreviousFile(color)
+                                ) == piece || board.pieceAt(square.nextRankPreviousFile(color)) == piece)
+                            ) acc += 30
+                        }
+                        PieceType.Knight -> {
+                            acc += (300 + (3.5 - abs(3.5 - square.file())) * 20).toInt()
+                            acc += if (piece.color() === PieceColor.blackSet) (abs(3.5 - square.rank()) * 10).toInt() else (abs(
+                                3.5 - square.rank()
+                            ) * 10).toInt()
+                        }
+                        PieceType.Bishop -> acc += (300 + generateMoves(board, square).count() * 10).toInt()
+                        PieceType.Rook -> acc += 500
+                        PieceType.Queen -> {
+                            acc += (940 + (3.5 - abs(3.5 - square.file())) * 20).toInt()
+                            acc += if (piece.color() === PieceColor.blackSet) (abs(3.5 - square.rank()) * 10).toInt() else (abs(
+                                3.5 - square.rank()
+                            ) * 10).toInt()
+                        }
+                        else -> {
+                        }
+                    }
+                } else if (isPieceTheirs(board, color, square)) {
+                    val piece = board.pieceAt(square)
+                    when (piece.pieceType()) {
+                        PieceType.Pawn -> {
+                            acc -= 100
+                            acc -= if (piece.color() === PieceColor.blackSet) square.rank() * 30 else (7 - square.rank()) * 30
+                            if (square.nextRank(color)
+                                    .exists() && square.file() - 1 > 0 && square.file() + 1 < 8 && (board.pieceAt(
+                                    square.nextRankPreviousFile(color)
+                                ) == piece || board.pieceAt(square.nextRankPreviousFile(color)) == piece)
+                            ) acc -= 20
+                        }
+                        PieceType.Knight -> acc -= (300 + (3.5 - abs(3.5 - square.file())) * 20).toInt()
+                        PieceType.Bishop -> acc -= (330 + generateMoves(board, square).count() * 10).toInt()
+                        PieceType.Rook -> acc -= 500
+                        PieceType.Queen -> {
+                            acc -= 1000
+                            acc -= (abs(3.5 - square.rank()) * 10).toInt()
+                        }
+                        else -> {
+                        }
+                    }
+                }
+                acc
+            }.sum()
+        }
 
-    public Integer apply(BoardView board, PieceColor pieceColor) {
-        return strategy.apply(board, pieceColor);
+        @JvmField
+        var F2 = PlayerStrategy { board: BoardView, set: PieceColor ->
+            allSquares.map { square: Square ->
+                var acc = 0
+                if (isPieceOurs(board, set, square)) {
+                    val piece = board.pieceAt(square)
+                    when (piece.pieceType()) {
+                        PieceType.Pawn -> acc += 100
+                        PieceType.Knight -> acc += 300
+                        PieceType.Bishop -> acc += 330
+                        PieceType.Rook -> acc += 500
+                        PieceType.Queen -> acc += 940
+                        else -> {
+                        }
+                    }
+                } else if (isPieceTheirs(board, set, square)) {
+                    val piece = board.pieceAt(square)
+                    when (piece.pieceType()) {
+                        PieceType.Pawn -> acc -= 100
+                        PieceType.Knight -> acc -= 300
+                        PieceType.Bishop -> acc -= 330
+                        PieceType.Rook -> acc -= 500
+                        PieceType.King -> acc -= 940
+                        else -> {
+                        }
+                    }
+                }
+                acc
+            }.sum()
+        }
+
+        fun isPieceOurs(board: BoardView, set: PieceColor, square: Square): Boolean {
+            return board.pieceAt(square).color() === set
+        }
+
+        fun isPieceTheirs(board: BoardView, color: PieceColor, square: Square): Boolean {
+            return board.pieceAt(square).color() !== color && !board.noneAt(square)
+        }
     }
 }
