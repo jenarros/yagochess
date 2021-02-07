@@ -4,8 +4,8 @@ import yagoc.Yagoc
 import yagoc.pieces.PieceColor
 import yagoc.pieces.PieceType
 import java.util.function.Predicate
-import java.util.stream.Collectors
 import java.util.stream.Stream
+import kotlin.streams.toList
 
 object BoardRules {
     fun isCorrectMove(board: BoardView, from: Square, to: Square): Boolean {
@@ -23,13 +23,13 @@ object BoardRules {
 
     @JvmStatic
     fun isInCheck(board: BoardView, color: PieceColor): Boolean {
-        val kingSquare = Square.allSquares.stream()
-            .filter { square: Square ->
-                board.pieceAt(square).pieceType() == PieceType.King && board.pieceAt(square).color() == color
-            }
-            .findAny().orElseThrow { RuntimeException("Could not find $color king!") }
-        return Square.allSquares.stream()
-            .anyMatch { from: Square ->
+        // Could not find $color king!
+        val kingSquare = allSquares.first { square: Square ->
+            board.pieceAt(square).pieceType() == PieceType.King && board.pieceAt(square).color() == color
+        }
+
+        return allSquares
+            .any { from: Square ->
                 board.someAt(from) && board.pieceAt(from).color() != color && isCorrectMove(
                     board,
                     from,
@@ -92,12 +92,12 @@ object BoardRules {
 
     @JvmStatic
     fun generateMoves(board: BoardView): Collection<Move> {
-        return Square.allSquares.stream().flatMap { from: Square ->
+        return allSquares.flatMap { from: Square ->
             if (board.isPieceOfCurrentPlayer(board.pieceAt(from))) {
-                generateMoves(board, from) { move: Move -> moveDoesNotCreateCheck(board, move) }
+                generateMoves(board, from) { move: Move -> moveDoesNotCreateCheck(board, move) }.toList()
             } else {
-                Stream.empty()
+                emptyList()
             }
-        }.collect(Collectors.toList())
+        }
     }
 }

@@ -132,18 +132,4 @@ data class Square(val rank: Int, val file: Int) : Serializable, Comparable<Squar
     override fun compareTo(other: Square): Int {
         return arrayPosition().compareTo(other.arrayPosition())
     }
-
-    companion object {
-        @JvmField
-        var allSquares = all()
-        private fun all(): List<Square> {
-            val squares: MutableList<Square> = ArrayList()
-            for (rank in 0..7) {
-                for (file in 0..7) {
-                    squares.add(Square(rank, file))
-                }
-            }
-            return squares
-        }
-    }
 }

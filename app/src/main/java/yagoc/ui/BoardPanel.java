@@ -9,12 +9,14 @@ import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
 
 import static yagoc.board.Move.FILE_NAMES;
 import static yagoc.board.Move.RANK_NAMES;
+import static yagoc.board.SquaresKt.allSquares;
 import static yagoc.pieces.PiecesKt.*;
 import static yagoc.ui.YagocWindow.BOARD_FONT_SIZE;
 import static yagoc.ui.YagocWindow.BORDER_SIZE;
@@ -70,7 +72,7 @@ public class BoardPanel extends JPanel {
 	void paintBoard(Graphics g) {
 		drawBorder(g);
 
-		Square.allSquares.forEach((square) -> {
+		Arrays.stream(allSquares).forEach((square) -> {
 			drawSquare(g, square);
 		});
 

@@ -6,12 +6,14 @@ import yagoc.pieces.Piece;
 import yagoc.pieces.PieceColor;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 import static yagoc.board.BoardRules.generateMoves;
+import static yagoc.board.SquaresKt.allSquares;
 
 public class PlayerStrategy implements Serializable {
     public static PlayerStrategy F1 = new PlayerStrategy((board, color) -> {
-        return Square.allSquares.stream().map((square) -> {
+        return Arrays.stream(allSquares).map((square) -> {
             int acc = 0;
 
             if (isPieceOurs(board, color, square)) {
@@ -89,7 +91,7 @@ public class PlayerStrategy implements Serializable {
     });
 
     public static PlayerStrategy F2 = new PlayerStrategy((board, set) -> {
-        return Square.allSquares.stream().map((square) -> {
+        return Arrays.stream(allSquares).map((square) -> {
             int acc = 0;
 
             if (isPieceOurs(board, set, square)) {

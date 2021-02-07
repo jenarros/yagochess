@@ -4,6 +4,8 @@ import yagoc.board.BoardView
 import yagoc.board.Move
 import yagoc.board.Square
 import java.util.stream.Stream
+import kotlin.math.max
+import kotlin.math.min
 
 class Rook(pieceColor: PieceColor) : Piece(PieceType.Rook, pieceColor) {
     public override fun isValidForPiece(board: BoardView, move: Move): Boolean {
@@ -16,25 +18,29 @@ class Rook(pieceColor: PieceColor) : Piece(PieceType.Rook, pieceColor) {
 
     companion object {
         fun isCorrectMoveForRook(board: BoardView, move: Move): Boolean {
-            return if (move.hasSameRank()) {
-                //movimiento horizontal
-                var mi = Math.min(move.from().file(), move.to().file()) + 1
-                val ma = Math.max(move.from().file(), move.to().file())
-                while (mi < ma) {
-                    if (board.someAt(Square(move.from().rank(), mi))) return false
-                    mi++
+            return when {
+                move.hasSameRank() -> {
+                    // move horizontally
+                    var mi = min(move.from().file(), move.to().file()) + 1
+                    val ma = max(move.from().file(), move.to().file())
+                    while (mi < ma) {
+                        if (board.someAt(Square(move.from().rank(), mi))) return false
+                        mi++
+                    }
+                    true
                 }
-                true
-            } else if (move.hasSameFile()) {
-                //movimiento vertical
-                var mi = Math.min(move.from().rank(), move.to().rank()) + 1
-                val ma = Math.max(move.from().rank(), move.to().rank())
-                while (mi < ma) {
-                    if (board.someAt(Square(mi, move.from().file()))) return false
-                    mi++
+                move.hasSameFile() -> {
+                    // move vertically
+                    var mi = min(move.from().rank(), move.to().rank()) + 1
+                    val ma = max(move.from().rank(), move.to().rank())
+                    while (mi < ma) {
+                        if (board.someAt(Square(mi, move.from().file()))) return false
+                        mi++
+                    }
+                    true
                 }
-                true
-            } else false
+                else -> false
+            }
         }
 
         fun generateMovesForRook(board: BoardView, from: Square): Stream<Move> {

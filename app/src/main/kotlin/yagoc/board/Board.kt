@@ -10,7 +10,6 @@ import yagoc.players.PlayerStrategy
 import yagoc.players.UserPlayer
 import java.util.*
 import java.util.concurrent.Callable
-import java.util.function.Consumer
 
 class Board : BoardView {
     private val moves = Stack<MoveLog>()
@@ -154,11 +153,11 @@ class Board : BoardView {
 
     override fun toPrettyString(): String {
         val buffer = StringBuilder()
-        Square.allSquares.forEach(Consumer { square: Square ->
+        allSquares.forEach { square: Square ->
             val piece = pieceAt(square)
             buffer.append(piece.toUniqueChar())
             if (square.file() % 8 == 7 && square.rank() < 7) buffer.append("\n")
-        })
+        }
         return buffer.toString()
     }
 
@@ -320,13 +319,13 @@ class Board : BoardView {
         fun parseBoard(stringBoard: String): Board {
             val cleanStringBoard = stringBoard.replace("[ \t\n]".toRegex(), "")
             val board = Board()
-            Square.allSquares.forEach(Consumer { square: Square ->
+            allSquares.forEach { square: Square ->
                 board.pieceAt(
                     square, Pieces.parse(
                         cleanStringBoard[square.arrayPosition()]
                     )
                 )
-            })
+            }
             return board
         }
     }

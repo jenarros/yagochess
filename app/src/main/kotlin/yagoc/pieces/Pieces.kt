@@ -7,43 +7,43 @@ import java.util.stream.Collectors
 import java.util.stream.Stream
 
 @JvmField
-var blackRook: Piece = Rook(PieceColor.blackSet)
+val blackRook: Piece = Rook(PieceColor.blackSet)
 
 @JvmField
-var blackKnight: Piece = Knight(PieceColor.blackSet)
+val blackKnight: Piece = Knight(PieceColor.blackSet)
 
 @JvmField
-var blackBishop: Piece = Bishop(PieceColor.blackSet)
+val blackBishop: Piece = Bishop(PieceColor.blackSet)
 
 @JvmField
-var blackQueen: Piece = Queen(PieceColor.blackSet)
+val blackQueen: Piece = Queen(PieceColor.blackSet)
 
 @JvmField
-var blackKing: Piece = King(PieceColor.blackSet)
+val blackKing: Piece = King(PieceColor.blackSet)
 
 @JvmField
-var blackPawn: Piece = Pawn(PieceColor.blackSet)
+val blackPawn: Piece = Pawn(PieceColor.blackSet)
 
 @JvmField
-var whiteRook: Piece = Rook(PieceColor.whiteSet)
+val whiteRook: Piece = Rook(PieceColor.whiteSet)
 
 @JvmField
-var whiteKnight: Piece = Knight(PieceColor.whiteSet)
+val whiteKnight: Piece = Knight(PieceColor.whiteSet)
 
 @JvmField
-var whiteBishop: Piece = Bishop(PieceColor.whiteSet)
+val whiteBishop: Piece = Bishop(PieceColor.whiteSet)
 
 @JvmField
-var whiteQueen: Piece = Queen(PieceColor.whiteSet)
+val whiteQueen: Piece = Queen(PieceColor.whiteSet)
 
 @JvmField
-var whiteKing: Piece = King(PieceColor.whiteSet)
+val whiteKing: Piece = King(PieceColor.whiteSet)
 
 @JvmField
-var whitePawn: Piece = Pawn(PieceColor.whiteSet)
+val whitePawn: Piece = Pawn(PieceColor.whiteSet)
 
 @JvmField
-var none: Piece = object : Piece(PieceType.none, PieceColor.none) {
+val none: Piece = object : Piece(PieceType.none, PieceColor.none) {
     public override fun isValidForPiece(board: BoardView, move: Move): Boolean {
         throw RuntimeException("Should not happen")
     }
