@@ -15,7 +15,7 @@ object BoardRules {
 
     @JvmStatic
     fun isCorrectMove(board: BoardView, move: Move): Boolean {
-        return move.fromPiece().isCorrectMove(board, move)
+        return move.fromPiece.isCorrectMove(board, move)
     }
 
     @JvmStatic
@@ -56,7 +56,7 @@ object BoardRules {
 
     @JvmStatic
     fun moveDoesNotCreateCheck(board: BoardView, move: Move): Boolean {
-        return !board.playAndUndo(move) { isInCheck(board, move.fromPiece().color) }
+        return !board.playAndUndo(move) { isInCheck(board, move.fromPiece.color) }
     }
 
     @JvmStatic

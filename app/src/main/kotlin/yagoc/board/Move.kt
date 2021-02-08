@@ -7,11 +7,7 @@ import yagoc.pieces.none
 import java.io.Serializable
 import kotlin.math.abs
 
-class Move(private val fromPiece: Piece, private val from: Square, private val to: Square) : Serializable {
-    override fun toString(): String {
-        return fromPiece.toString() + " " + RANK_NAMES[from.rank] + FILE_NAMES[from.file] + " " + RANK_NAMES[to.rank] + FILE_NAMES[to.file]
-    }
-
+data class Move(val fromPiece: Piece, val from: Square, val to: Square) : Serializable {
     /**
      * positive if going ahead, negative if going backwards
      */
@@ -27,7 +23,7 @@ class Move(private val fromPiece: Piece, private val from: Square, private val t
     }
 
     fun enPassantSquare(): Square {
-        return this.to().previousRank(fromPiece().color)
+        return this.to.previousRank(fromPiece.color)
     }
 
     fun fileDistanceAbs(): Int {
@@ -46,19 +42,12 @@ class Move(private val fromPiece: Piece, private val from: Square, private val t
         return from.rank == to.rank
     }
 
-    val isCastling: Boolean = fromPiece.pieceType == PieceType.King && fileDistanceAbs() == 2 && rankDistance() == 0
-    val isCastlingQueenside: Boolean = isCastling && to.file < from.file
+    val isCastling = fromPiece.pieceType == PieceType.King && fileDistanceAbs() == 2 && rankDistance() == 0
 
-    fun fromPiece(): Piece {
-        return fromPiece
-    }
+    val isCastlingQueenside = isCastling && to.file < from.file
 
-    fun from(): Square {
-        return from
-    }
-
-    fun to(): Square {
-        return to
+    override fun toString(): String {
+        return fromPiece.toString() + " " + RANK_NAMES[from.rank] + FILE_NAMES[from.file] + " " + RANK_NAMES[to.rank] + FILE_NAMES[to.file]
     }
 
     companion object {

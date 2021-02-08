@@ -23,28 +23,28 @@ class MoveLog private constructor(
 
     val blackKingMoved = board.hasBlackKingMoved()
 
-    val enPassant = board.enPassant(move.to().file)
+    val enPassant = board.enPassant(move.to.file)
 
     val drawCounter = board.drawCounter()
 
     val moveCounter = board.moveCounter()
 
-    val enPassantPiece: Piece? = if (type == MoveType.enPassant) board.pieceAt(move.enPassantSquare()) else null
+    val enPassantPiece: Piece? = if (type == MoveType.EnPassant) board.pieceAt(move.enPassantSquare()) else null
 
     companion object {
         @JvmStatic
         fun enPassant(board: BoardView, move: Move, toPiece: Piece): MoveLog {
-            return MoveLog(board, move, toPiece, MoveType.enPassant, null)
+            return MoveLog(board, move, toPiece, MoveType.EnPassant, null)
         }
 
         @JvmStatic
         fun castling(board: BoardView, move: Move, toPiece: Piece, castlingExtraMove: Move?): MoveLog {
-            return MoveLog(board, move, toPiece, MoveType.castling, castlingExtraMove)
+            return MoveLog(board, move, toPiece, MoveType.Castling, castlingExtraMove)
         }
 
         @JvmStatic
         fun normalMove(board: BoardView, move: Move, toPiece: Piece): MoveLog {
-            return MoveLog(board, move, toPiece, MoveType.normal, null)
+            return MoveLog(board, move, toPiece, MoveType.Normal, null)
         }
     }
 

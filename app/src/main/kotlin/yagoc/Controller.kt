@@ -70,10 +70,10 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
 
     fun ifPawnHasReachedFinalRankReplaceWithQueen(board: Board, move: Move) {
         //TODO What if there is already a queen?
-        if (move.fromPiece() == blackPawn && move.to().rank == 7) {
-            board.pieceAt(move.to(), blackQueen)
-        } else if (move.fromPiece() == whitePawn && move.to().rank == 0) {
-            board.pieceAt(move.to(), whiteQueen)
+        if (move.fromPiece == blackPawn && move.to.rank == 7) {
+            board.pieceAt(move.to, blackQueen)
+        } else if (move.fromPiece == whitePawn && move.to.rank == 0) {
+            board.pieceAt(move.to, whiteQueen)
         }
     }
 

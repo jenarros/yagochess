@@ -23,7 +23,7 @@ class BoardSpec(stringBoard: String, val fromSquare: Square) {
 
     fun fromPiece(): Piece = board.pieceAt(fromSquare)
 
-    fun possibleMoves() = fromPiece().generateMoves(board, fromSquare).map { it.to() }.sorted().toList()
+    fun possibleMoves() = fromPiece().generateMoves(board, fromSquare).map { it.to }.sorted().toList()
 
     override fun toString() =
         "\n${board.toPrettyString()}\nFrom: $fromSquare"

@@ -48,7 +48,7 @@ abstract class Piece(val pieceType: PieceType, val color: PieceColor) : Serializ
     protected abstract fun isValidForPiece(board: BoardView, move: Move): Boolean
 
     fun isCorrectMove(board: BoardView, move: Move): Boolean {
-        return if (board.pieceAt(move.from()).color == board.pieceAt(move.to()).color) {
+        return if (board.pieceAt(move.from).color == board.pieceAt(move.to).color) {
             false
         } else isValidForPiece(board, move)
     }
