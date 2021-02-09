@@ -23,8 +23,8 @@ class Board : BoardView {
     private var blackKingMoved = false
     private var drawCounter = 0
     private var moveCounter = 0
-    private var blackPlayer: Player = ComputerPlayer("computer 1", PieceColor.blackSet, 3, PlayerStrategy.F1)
-    private var whitePlayer: Player = UserPlayer("user 1", PieceColor.whiteSet)
+    private var blackPlayer: Player = ComputerPlayer("computer 1", PieceColor.BlackSet, 3, PlayerStrategy.F1)
+    private var whitePlayer: Player = UserPlayer("user 1", PieceColor.WhiteSet)
     private var currentPlayer: Player = whitePlayer
 
     constructor() {
@@ -55,8 +55,8 @@ class Board : BoardView {
 
     fun reset() {
         Arrays.fill(enPassant, -5)
-        blackPlayer = ComputerPlayer("computer 1", PieceColor.blackSet, 3, PlayerStrategy.F1)
-        whitePlayer = UserPlayer("user 1", PieceColor.whiteSet)
+        blackPlayer = ComputerPlayer("computer 1", PieceColor.BlackSet, 3, PlayerStrategy.F1)
+        whitePlayer = UserPlayer("user 1", PieceColor.WhiteSet)
         currentPlayer = whitePlayer
         squareBoard.reset()
     }
@@ -232,7 +232,7 @@ class Board : BoardView {
     fun playCastlingExtraMove(move: Move): MoveLog {
         val castlingExtraMove: Move
         if (move.isCastlingQueenside) {
-            if (move.fromPiece.color == PieceColor.whiteSet) {
+            if (move.fromPiece.color == PieceColor.WhiteSet) {
                 castlingExtraMove = Move(whiteRook, a1Square, d1Square)
                 pieceAt(a1Square, none)
                 pieceAt(d1Square, whiteRook)
@@ -241,7 +241,7 @@ class Board : BoardView {
                 pieceAt(a8Square, none)
                 pieceAt(d8Square, blackRook)
             }
-        } else if (move.fromPiece.color == PieceColor.whiteSet) {
+        } else if (move.fromPiece.color == PieceColor.WhiteSet) {
             castlingExtraMove = Move(whiteRook, h1Square, f1Square)
             pieceAt(h1Square, none)
             pieceAt(f1Square, whiteRook)

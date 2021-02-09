@@ -11,7 +11,5 @@ class UserPlayer(name: String, pieceColor: PieceColor) : Player(name, pieceColor
         throw RuntimeException("$name cannot move without user input.")
     }
 
-    override fun toString(): String {
-        return pieceColor.toString() + "\t" + name + "\t" + type
-    }
+    override fun toString() = pieceColor.toString() + "\t" + name + "\t" + type
 }

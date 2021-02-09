@@ -12,14 +12,14 @@ data class Move(val fromPiece: Piece, val from: Square, val to: Square) : Serial
      * positive if going ahead, negative if going backwards
      */
     fun rankDistance(): Int {
-        return (to.rank - from.rank) * if (fromPiece.color == PieceColor.whiteSet) -1 else 1
+        return (to.rank - from.rank) * if (fromPiece.color == PieceColor.WhiteSet) -1 else 1
     }
 
     /**
      * positive if going to the right, negative if going to the left
      */
     fun fileDistance(): Int {
-        return (to.file - from.file) * if (fromPiece.color == PieceColor.whiteSet) 1 else -1
+        return (to.file - from.file) * if (fromPiece.color == PieceColor.WhiteSet) 1 else -1
     }
 
     fun enPassantSquare(): Square {

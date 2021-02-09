@@ -7,5 +7,5 @@ enum class PieceType {
     Bishop,
     Queen,
     King,
-    none
+    None
 }

@@ -38,12 +38,20 @@ Stateful vs stateless considerations, it seems that if the board is immutable, t
 
 ## TODO
 
+### Distribution
+
+- Configure github build
+
+### Implementation
+
+- Cleanup alphabeta implementation
+- Make alphabeta iterative
+
 ### Performance
 
 - Review if additional use of @JvmStatic and @JvmField is needed
 
 ### Gameplay
 
-- Should I have a Set containing each of the sets?
 - Should restart reset to defaults or to current options?
 - Checkmate due to repeated configuration 3 times

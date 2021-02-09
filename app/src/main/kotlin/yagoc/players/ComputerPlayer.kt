@@ -16,11 +16,9 @@ class ComputerPlayer(
     private val level: Int,
     private val strategy: PlayerStrategy
 ) : Player(name, pieceColor, PlayerType.Computer), Serializable {
-    private val noMoves = Move(blackPawn, a1Square, a1Square)
+    private val noMoves = Move(blackPawn, a1Square, a1Square) //TODO find another way to represent this scenario
 
-    override fun toString(): String {
-        return pieceColor.toString() + "\t" + type + "\t" + level
-    }
+    override fun toString() = pieceColor.toString() + "\t" + type + "\t" + level
 
     override fun move(board: BoardView): Move {
         val moveCounter = AtomicInteger(0)
@@ -31,13 +29,11 @@ class ComputerPlayer(
         return moveValue.move
     }
 
-    fun alphaBeta(depth: Int, board: BoardView, alfa: Int, beta: Int, moveCounter: AtomicInteger): MoveValue {
-        return when {
-            depth == 0 -> leafValue(board)
-            (level - depth) % 2 == 0 -> // maximizing player = current player (as depth = level)
-                alphaBetaMax(depth, board, alfa, beta, moveCounter)
-            else -> alphaBetaMin(depth, board, alfa, beta, moveCounter)
-        }
+    fun alphaBeta(depth: Int, board: BoardView, alfa: Int, beta: Int, moveCounter: AtomicInteger): MoveValue = when {
+        depth == 0 -> leafValue(board)
+        (level - depth) % 2 == 0 -> // maximizing player = current player (as depth = level)
+            alphaBetaMax(depth, board, alfa, beta, moveCounter)
+        else -> alphaBetaMin(depth, board, alfa, beta, moveCounter)
     }
 
     private fun alphaBetaMin(
@@ -74,9 +70,7 @@ class ComputerPlayer(
         return moveValue
     }
 
-    private fun leafValue(board: BoardView): MoveValue {
-        return MoveValue(noMoves, strategy.apply(board, pieceColor))
-    }
+    private fun leafValue(board: BoardView) = MoveValue(noMoves, strategy(board, pieceColor))
 
     private fun alphaBetaMax(
         depth: Int,

@@ -6,26 +6,25 @@ import yagoc.board.BoardRules.moveDoesNotCreateCheck
 import java.util.stream.Stream
 
 class King(pieceColor: PieceColor) : Piece(PieceType.King, pieceColor) {
-    public override fun isValidForPiece(board: BoardView, move: Move): Boolean {
-        return move.fileDistanceAbs() <= 1 && move.rankDistanceAbs() <= 1 || isCorrectCastling(board, move)
-    }
+    public override fun isValidForPiece(board: BoardView, move: Move) =
+        move.rankDistanceAbs() <= 1 && (move.fileDistanceAbs() <= 1 || isCorrectCastling(board, move))
 
-    public override fun generateMovesForPiece(board: BoardView, from: Square): Stream<Move> {
-        val piece = board.pieceAt(from)
-        return Stream.of(
-            from.next2File(piece.color),
-            from.previous2File(piece.color),
-            from.nextRank(piece.color),
-            from.nextRank(piece.color).previousFile(piece.color),
-            from.nextRank(piece.color).nextFile(piece.color),
-            from.previousRank(piece.color),
-            from.previousRank(piece.color).nextFile(piece.color),
-            from.previousRank(piece.color).previousFile(piece.color),
-            from.nextFile(piece.color),
-            from.previousFile(piece.color)
-        ).filter { obj: Square -> obj.exists() }
-            .map { to: Square -> Move(piece, from, to) }
-    }
+    public override fun generateMovesForPiece(board: BoardView, from: Square) =
+        board.pieceAt(from).let { piece ->
+            Stream.of(
+                from.next2File(piece.color),
+                from.previous2File(piece.color),
+                from.nextRank(piece.color),
+                from.nextRank(piece.color).previousFile(piece.color),
+                from.nextRank(piece.color).nextFile(piece.color),
+                from.previousRank(piece.color),
+                from.previousRank(piece.color).nextFile(piece.color),
+                from.previousRank(piece.color).previousFile(piece.color),
+                from.nextFile(piece.color),
+                from.previousFile(piece.color)
+            ).filter { obj: Square -> obj.exists() }
+                .map { to: Square -> Move(piece, from, to) }
+        }
 
     private fun isCorrectCastling(board: BoardView, move: Move): Boolean {
         return when {

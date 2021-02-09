@@ -89,8 +89,8 @@ class BoardTest {
             -K------
         """.toBoard()
 
-        assertThat(BoardRules.isInCheck(expected, PieceColor.whiteSet), equalTo(true))
-        assertThat(BoardRules.isInCheck(expected, PieceColor.blackSet), equalTo(false))
+        assertThat(BoardRules.isInCheck(expected, PieceColor.WhiteSet), equalTo(true))
+        assertThat(BoardRules.isInCheck(expected, PieceColor.BlackSet), equalTo(false))
     }
 
     @Test

@@ -18,7 +18,7 @@ class GenerationOfComputerMovesTest {
     @Test
     @Timeout(3500, unit = TimeUnit.MILLISECONDS) // Before migration to Kotlin, it was always under 4s
     fun `can generate moves fast`() {
-        val level3 = ComputerPlayer("level3", PieceColor.whiteSet, 4, PlayerStrategy.F1)
+        val level3 = ComputerPlayer("level3", PieceColor.WhiteSet, 4, PlayerStrategy.F1)
 
         val board = """
             R---K-NR

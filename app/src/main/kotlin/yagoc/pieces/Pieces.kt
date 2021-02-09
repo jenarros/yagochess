@@ -3,47 +3,46 @@ package yagoc.pieces
 import yagoc.board.BoardView
 import yagoc.board.Move
 import yagoc.board.Square
-import java.util.stream.Collectors
 import java.util.stream.Stream
 
 @JvmField
-val blackRook: Piece = Rook(PieceColor.blackSet)
+val blackRook: Piece = Rook(PieceColor.BlackSet)
 
 @JvmField
-val blackKnight: Piece = Knight(PieceColor.blackSet)
+val blackKnight: Piece = Knight(PieceColor.BlackSet)
 
 @JvmField
-val blackBishop: Piece = Bishop(PieceColor.blackSet)
+val blackBishop: Piece = Bishop(PieceColor.BlackSet)
 
 @JvmField
-val blackQueen: Piece = Queen(PieceColor.blackSet)
+val blackQueen: Piece = Queen(PieceColor.BlackSet)
 
 @JvmField
-val blackKing: Piece = King(PieceColor.blackSet)
+val blackKing: Piece = King(PieceColor.BlackSet)
 
 @JvmField
-val blackPawn: Piece = Pawn(PieceColor.blackSet)
+val blackPawn: Piece = Pawn(PieceColor.BlackSet)
 
 @JvmField
-val whiteRook: Piece = Rook(PieceColor.whiteSet)
+val whiteRook: Piece = Rook(PieceColor.WhiteSet)
 
 @JvmField
-val whiteKnight: Piece = Knight(PieceColor.whiteSet)
+val whiteKnight: Piece = Knight(PieceColor.WhiteSet)
 
 @JvmField
-val whiteBishop: Piece = Bishop(PieceColor.whiteSet)
+val whiteBishop: Piece = Bishop(PieceColor.WhiteSet)
 
 @JvmField
-val whiteQueen: Piece = Queen(PieceColor.whiteSet)
+val whiteQueen: Piece = Queen(PieceColor.WhiteSet)
 
 @JvmField
-val whiteKing: Piece = King(PieceColor.whiteSet)
+val whiteKing: Piece = King(PieceColor.WhiteSet)
 
 @JvmField
-val whitePawn: Piece = Pawn(PieceColor.whiteSet)
+val whitePawn: Piece = Pawn(PieceColor.WhiteSet)
 
 @JvmField
-val none: Piece = object : Piece(PieceType.none, PieceColor.none) {
+val none: Piece = object : Piece(PieceType.None, PieceColor.None) {
     public override fun isValidForPiece(board: BoardView, move: Move): Boolean {
         throw RuntimeException("Should not happen")
     }
@@ -52,22 +51,6 @@ val none: Piece = object : Piece(PieceType.none, PieceColor.none) {
         throw RuntimeException("Should not happen")
     }
 }
-
-var all: Collection<Piece> = Stream.of(
-    blackRook,
-    blackKnight,
-    blackBishop,
-    blackQueen,
-    blackKing,
-    blackPawn,
-    whiteRook,
-    whiteKnight,
-    whiteBishop,
-    whiteQueen,
-    whiteKing,
-    whitePawn,
-    none
-).collect(Collectors.toSet())
 
 object Pieces {
     fun parse(c: Char): Piece {

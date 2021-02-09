@@ -9,36 +9,20 @@ import java.util.stream.Stream
 
 abstract class Piece(val pieceType: PieceType, val color: PieceColor) : Serializable {
 
-    fun switchTo(type: PieceType): Piece {
-        return all.stream()
-            .filter { piece: Piece -> type == piece.pieceType && piece.color == color }
-            .findFirst().orElseThrow()
-    }
-
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val piece = o as Piece
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val piece = other as Piece
         return pieceType == piece.pieceType &&
                 color == piece.color
     }
 
-    override fun hashCode(): Int {
-        return Objects.hash(pieceType, color)
-    }
+    override fun hashCode() = Objects.hash(pieceType, color)
 
-    override fun toString(): String {
-        return when (pieceType) {
-            PieceType.none -> {
-                ""
-            }
-            PieceType.Knight -> {
-                "N"
-            }
-            else -> {
-                pieceType.name.substring(0, 1)
-            }
-        }
+    override fun toString() = when (pieceType) {
+        PieceType.None -> ""
+        PieceType.Knight -> "N"
+        else -> pieceType.name.substring(0, 1)
     }
 
     /**
@@ -47,11 +31,9 @@ abstract class Piece(val pieceType: PieceType, val color: PieceColor) : Serializ
      */
     protected abstract fun isValidForPiece(board: BoardView, move: Move): Boolean
 
-    fun isCorrectMove(board: BoardView, move: Move): Boolean {
-        return if (board.pieceAt(move.from).color == board.pieceAt(move.to).color) {
-            false
-        } else isValidForPiece(board, move)
-    }
+    fun isCorrectMove(board: BoardView, move: Move) =
+        board.pieceAt(move.from).notOfSameColor(board.pieceAt(move.to).color) &&
+                isValidForPiece(board, move)
 
     /**
      * These are all potential moves pre-validation, the resulting moves need to be validated.
@@ -62,16 +44,12 @@ abstract class Piece(val pieceType: PieceType, val color: PieceColor) : Serializ
         return generateMovesForPiece(board, from).filter { move: Move -> isCorrectMove(board, move) }
     }
 
-    fun notOfSameColor(pieceColor: PieceColor): Boolean {
-        return this !== none && color != pieceColor
-    }
+    fun notOfSameColor(pieceColor: PieceColor) = this !== none && color != pieceColor
 
-    fun toUniqueChar(): Char {
-        if (PieceColor.blackSet == color) {
-            return toString()[0]
-        } else if (PieceColor.whiteSet == color) {
-            return toString().toLowerCase()[0]
+    fun toUniqueChar() =
+        when {
+            PieceColor.BlackSet == color -> toString()[0]
+            PieceColor.WhiteSet == color -> toString().toLowerCase()[0]
+            else -> '-'
         }
-        return '-'
-    }
 }

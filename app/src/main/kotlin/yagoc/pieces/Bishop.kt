@@ -4,30 +4,26 @@ import yagoc.board.BoardView
 import yagoc.board.Move
 import yagoc.board.Square
 import yagoc.board.square
-import java.util.stream.Stream
+import kotlin.math.max
 import kotlin.math.min
 
 class Bishop(pieceColor: PieceColor) : Piece(PieceType.Bishop, pieceColor) {
-    public override fun isValidForPiece(board: BoardView, move: Move): Boolean {
-        return isCorrectMoveForBishop(board, move)
-    }
+    public override fun isValidForPiece(board: BoardView, move: Move) = isCorrectMoveForBishop(board, move)
 
-    public override fun generateMovesForPiece(board: BoardView, from: Square): Stream<Move> {
-        return generateMovesForBishop(board, from)
-    }
+    public override fun generateMovesForPiece(board: BoardView, from: Square) = generateMovesForBishop(board, from)
 
     companion object {
         @JvmStatic
-        fun generateMovesForBishop(board: BoardView, from: Square): Stream<Move> {
-            val piece = board.pieceAt(from)
-            return from.diagonalSquares().stream().map { to: Square -> Move(piece, from, to) }
-        }
+        fun generateMovesForBishop(board: BoardView, from: Square) =
+            board.pieceAt(from).let {
+                from.diagonalSquares().stream().map { to: Square -> Move(it, from, to) }
+            }
 
         @JvmStatic
         fun isCorrectMoveForBishop(board: BoardView, move: Move): Boolean {
             return if (move.rankDistanceAbs() == move.fileDistanceAbs()) {
                 // walk the move from left to right
-                val ma = Math.max(move.from.file, move.to.file) //y final
+                val rightMostFile = max(move.from.file, move.to.file) //y final
                 var rank: Int
                 var file: Int
 
@@ -49,7 +45,7 @@ class Bishop(pieceColor: PieceColor) : Piece(PieceType.Bishop, pieceColor) {
                 // go through the squares
                 file++
                 rank += direction
-                while (file < ma) {
+                while (file < rightMostFile) {
                     if (board.someAt(square(rank, file))) return false
                     rank += direction
                     file++

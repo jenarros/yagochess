@@ -47,7 +47,5 @@ class SquareBoard(val pieces: Array<Piece> = Array(64) { none }) : Serializable 
         return true
     }
 
-    override fun hashCode(): Int {
-        return pieces.contentHashCode()
-    }
+    override fun hashCode() = pieces.contentHashCode()
 }

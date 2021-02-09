@@ -51,22 +51,24 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
         SwingUtilities.invokeLater { nextMove() }
     }
 
-    fun moveIfPossible(from: Square, to: Square): Boolean {
-        if (finished || !board.isPieceOfCurrentPlayer(board.pieceAt(from))) {
-            return false
-        } else if (board.currentPlayer().isUser) {
-            val move = Move(board.pieceAt(from), from, to)
-            if (from != to && isCorrectMove(board, move) && moveDoesNotCreateCheck(board, move)
-            ) {
-                board.play(move)
-                ifPawnHasReachedFinalRankReplaceWithQueen(board, move)
-                finished = noMoreMovesAllowed(board)
-                logger.info(move.toString())
-                return true
+    fun moveIfPossible(from: Square, to: Square) =
+        when {
+            finished || !board.isPieceOfCurrentPlayer(board.pieceAt(from)) -> false
+            board.currentPlayer().isUser -> {
+                Move(board.pieceAt(from), from, to).let { move ->
+                    if (from != to && isCorrectMove(board, move) && moveDoesNotCreateCheck(board, move)) {
+                        board.play(move)
+                        ifPawnHasReachedFinalRankReplaceWithQueen(board, move)
+                        finished = noMoreMovesAllowed(board)
+                        logger.info(move.toString())
+                        true
+                    } else {
+                        false
+                    }
+                }
             }
+            else -> false
         }
-        return false
-    }
 
     fun ifPawnHasReachedFinalRankReplaceWithQueen(board: Board, move: Move) {
         //TODO What if there is already a queen?
@@ -110,19 +112,19 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
                 board.blackPlayer(
                     ComputerPlayer(
                         "computer",
-                        PieceColor.blackSet,
+                        PieceColor.BlackSet,
                         userOptions.getLevel("computer", 1),
                         PlayerStrategy.F1
                     )
                 )
-                board.whitePlayer(UserPlayer("user", PieceColor.whiteSet))
+                board.whitePlayer(UserPlayer("user", PieceColor.WhiteSet))
             }
             2 -> {
-                board.blackPlayer(UserPlayer("user", PieceColor.blackSet))
+                board.blackPlayer(UserPlayer("user", PieceColor.BlackSet))
                 board.whitePlayer(
                     ComputerPlayer(
                         "computer",
-                        PieceColor.whiteSet,
+                        PieceColor.WhiteSet,
                         userOptions.getLevel("computer", 1),
                         PlayerStrategy.F1
                     )
@@ -132,7 +134,7 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
                 board.blackPlayer(
                     ComputerPlayer(
                         "computer 1",
-                        PieceColor.blackSet,
+                        PieceColor.BlackSet,
                         userOptions.getLevel("computer 1", 1),
                         PlayerStrategy.F1
                     )
@@ -140,15 +142,15 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
                 board.whitePlayer(
                     ComputerPlayer(
                         "computer 2",
-                        PieceColor.whiteSet,
+                        PieceColor.WhiteSet,
                         userOptions.getLevel("computer 2", 1),
                         PlayerStrategy.F1
                     )
                 )
             }
             else -> {
-                board.blackPlayer(UserPlayer("user 1", PieceColor.blackSet))
-                board.whitePlayer(UserPlayer("user 2", PieceColor.whiteSet))
+                board.blackPlayer(UserPlayer("user 1", PieceColor.BlackSet))
+                board.whitePlayer(UserPlayer("user 2", PieceColor.WhiteSet))
             }
         }
         logger.info("name\ttype")

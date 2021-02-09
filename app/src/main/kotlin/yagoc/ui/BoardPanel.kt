@@ -4,7 +4,6 @@ import yagoc.Controller
 import yagoc.board.*
 import yagoc.pieces.*
 import java.awt.*
-import java.awt.event.ActionEvent
 import java.awt.event.MouseEvent
 import java.util.*
 import java.util.stream.IntStream
@@ -197,6 +196,6 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
         font = Font(Font.MONOSPACED, Font.BOLD, boardFontSize)
         addMouseListener(mouseMotionListener)
         addMouseMotionListener(mouseMotionListener)
-        Timer(REFRESH_RATE_MILLISECONDS) { _: ActionEvent -> repaint() }.start()
+        Timer(REFRESH_RATE_MILLISECONDS) { repaint() }.start()
     }
 }

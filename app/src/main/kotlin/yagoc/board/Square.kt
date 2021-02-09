@@ -10,7 +10,7 @@ data class Square(val arrayPosition: Int) : Serializable, Comparable<Square> {
     val file = arrayPosition % 8
 
     fun nextRank(pieceColor: PieceColor): Square {
-        return if (pieceColor == PieceColor.whiteSet) {
+        return if (pieceColor == PieceColor.WhiteSet) {
             square(rank - 1, file)
         } else {
             square(rank + 1, file)
@@ -18,7 +18,7 @@ data class Square(val arrayPosition: Int) : Serializable, Comparable<Square> {
     }
 
     fun next2Rank(pieceColor: PieceColor): Square {
-        return if (pieceColor == PieceColor.whiteSet) {
+        return if (pieceColor == PieceColor.WhiteSet) {
             square(rank - 2, file)
         } else {
             square(rank + 2, file)
@@ -26,7 +26,7 @@ data class Square(val arrayPosition: Int) : Serializable, Comparable<Square> {
     }
 
     fun next2File(pieceColor: PieceColor): Square {
-        return if (pieceColor == PieceColor.whiteSet) {
+        return if (pieceColor == PieceColor.WhiteSet) {
             square(rank, file + 2)
         } else {
             square(rank, file - 2)
@@ -34,7 +34,7 @@ data class Square(val arrayPosition: Int) : Serializable, Comparable<Square> {
     }
 
     fun previous2File(pieceColor: PieceColor): Square {
-        return if (pieceColor == PieceColor.whiteSet) {
+        return if (pieceColor == PieceColor.WhiteSet) {
             square(rank, file - 2)
         } else {
             square(rank, file + 2)
@@ -42,7 +42,7 @@ data class Square(val arrayPosition: Int) : Serializable, Comparable<Square> {
     }
 
     fun nextRankNextFile(pieceColor: PieceColor): Square {
-        return if (pieceColor == PieceColor.whiteSet) {
+        return if (pieceColor == PieceColor.WhiteSet) {
             square(rank - 1, file + 1)
         } else {
             square(rank + 1, file - 1)
@@ -50,7 +50,7 @@ data class Square(val arrayPosition: Int) : Serializable, Comparable<Square> {
     }
 
     fun nextRankPreviousFile(pieceColor: PieceColor): Square {
-        return if (pieceColor == PieceColor.whiteSet) {
+        return if (pieceColor == PieceColor.WhiteSet) {
             square(rank - 1, file - 1)
         } else {
             square(rank + 1, file + 1)
@@ -58,7 +58,7 @@ data class Square(val arrayPosition: Int) : Serializable, Comparable<Square> {
     }
 
     fun previousFile(pieceColor: PieceColor): Square {
-        return if (pieceColor == PieceColor.whiteSet) {
+        return if (pieceColor == PieceColor.WhiteSet) {
             square(rank, file - 1)
         } else {
             square(rank, file + 1)
@@ -66,7 +66,7 @@ data class Square(val arrayPosition: Int) : Serializable, Comparable<Square> {
     }
 
     fun nextFile(pieceColor: PieceColor): Square {
-        return if (pieceColor == PieceColor.whiteSet) {
+        return if (pieceColor == PieceColor.WhiteSet) {
             square(rank, file + 1)
         } else {
             square(rank, file - 1)
@@ -74,7 +74,7 @@ data class Square(val arrayPosition: Int) : Serializable, Comparable<Square> {
     }
 
     fun previousRank(pieceColor: PieceColor): Square {
-        return if (pieceColor == PieceColor.whiteSet) {
+        return if (pieceColor == PieceColor.WhiteSet) {
             square(rank + 1, file)
         } else {
             square(rank - 1, file)
@@ -82,7 +82,7 @@ data class Square(val arrayPosition: Int) : Serializable, Comparable<Square> {
     }
 
     fun previous2Rank(pieceColor: PieceColor): Square {
-        return if (pieceColor == PieceColor.whiteSet) {
+        return if (pieceColor == PieceColor.WhiteSet) {
             square(rank + 2, file)
         } else {
             square(rank - 2, file)

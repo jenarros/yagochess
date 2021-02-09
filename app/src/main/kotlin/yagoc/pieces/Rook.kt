@@ -4,18 +4,13 @@ import yagoc.board.BoardView
 import yagoc.board.Move
 import yagoc.board.Square
 import yagoc.board.square
-import java.util.stream.Stream
 import kotlin.math.max
 import kotlin.math.min
 
 class Rook(pieceColor: PieceColor) : Piece(PieceType.Rook, pieceColor) {
-    public override fun isValidForPiece(board: BoardView, move: Move): Boolean {
-        return isCorrectMoveForRook(board, move)
-    }
+    public override fun isValidForPiece(board: BoardView, move: Move): Boolean = isCorrectMoveForRook(board, move)
 
-    public override fun generateMovesForPiece(board: BoardView, from: Square): Stream<Move> {
-        return generateMovesForRook(board, from)
-    }
+    public override fun generateMovesForPiece(board: BoardView, from: Square) = generateMovesForRook(board, from)
 
     companion object {
         @JvmStatic
@@ -46,10 +41,10 @@ class Rook(pieceColor: PieceColor) : Piece(PieceType.Rook, pieceColor) {
         }
 
         @JvmStatic
-        fun generateMovesForRook(board: BoardView, from: Square): Stream<Move> {
-            val piece = board.pieceAt(from)
-            return from.straightSquares().stream()
-                .map { to: Square -> Move(piece, from, to) }
-        }
+        fun generateMovesForRook(board: BoardView, from: Square) =
+            board.pieceAt(from).let { piece ->
+                from.straightSquares().stream()
+                    .map { to: Square -> Move(piece, from, to) }
+            }
     }
 }

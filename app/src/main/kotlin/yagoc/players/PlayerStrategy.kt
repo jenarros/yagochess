@@ -10,9 +10,7 @@ import java.io.Serializable
 import kotlin.math.abs
 
 class PlayerStrategy(private val strategy: (BoardView, PieceColor) -> Int) : Serializable {
-    fun apply(board: BoardView, pieceColor: PieceColor): Int {
-        return strategy(board, pieceColor)
-    }
+    operator fun invoke(board: BoardView, pieceColor: PieceColor) = strategy(board, pieceColor)
 
     companion object {
         @JvmField
@@ -24,7 +22,7 @@ class PlayerStrategy(private val strategy: (BoardView, PieceColor) -> Int) : Ser
                     when (piece.pieceType) {
                         PieceType.Pawn -> {
                             acc += 100
-                            acc += if (piece.color === PieceColor.blackSet) square.rank * 20 else (7 - square.rank) * 20
+                            acc += if (piece.color === PieceColor.BlackSet) square.rank * 20 else (7 - square.rank) * 20
 
                             // covered pawn is better
                             if (square.nextRank(color)
@@ -35,7 +33,7 @@ class PlayerStrategy(private val strategy: (BoardView, PieceColor) -> Int) : Ser
                         }
                         PieceType.Knight -> {
                             acc += (300 + (3.5 - abs(3.5 - square.file)) * 20).toInt()
-                            acc += if (piece.color === PieceColor.blackSet) (abs(3.5 - square.rank) * 10).toInt() else (abs(
+                            acc += if (piece.color === PieceColor.BlackSet) (abs(3.5 - square.rank) * 10).toInt() else (abs(
                                 3.5 - square.rank
                             ) * 10).toInt()
                         }
@@ -43,7 +41,7 @@ class PlayerStrategy(private val strategy: (BoardView, PieceColor) -> Int) : Ser
                         PieceType.Rook -> acc += 500
                         PieceType.Queen -> {
                             acc += (940 + (3.5 - abs(3.5 - square.file)) * 20).toInt()
-                            acc += if (piece.color === PieceColor.blackSet) (abs(3.5 - square.rank) * 10).toInt() else (abs(
+                            acc += if (piece.color === PieceColor.BlackSet) (abs(3.5 - square.rank) * 10).toInt() else (abs(
                                 3.5 - square.rank
                             ) * 10).toInt()
                         }
@@ -55,7 +53,7 @@ class PlayerStrategy(private val strategy: (BoardView, PieceColor) -> Int) : Ser
                     when (piece.pieceType) {
                         PieceType.Pawn -> {
                             acc -= 100
-                            acc -= if (piece.color === PieceColor.blackSet) square.rank * 30 else (7 - square.rank) * 30
+                            acc -= if (piece.color === PieceColor.BlackSet) square.rank * 30 else (7 - square.rank) * 30
                             if (square.nextRank(color)
                                     .exists() && square.file - 1 > 0 && square.file + 1 < 8 && (board.pieceAt(
                                     square.nextRankPreviousFile(color)
@@ -108,12 +106,10 @@ class PlayerStrategy(private val strategy: (BoardView, PieceColor) -> Int) : Ser
             }.sum()
         }
 
-        fun isPieceOurs(board: BoardView, pieceColor: PieceColor, square: Square): Boolean {
-            return board.pieceAt(square).color === pieceColor
-        }
+        fun isPieceOurs(board: BoardView, pieceColor: PieceColor, square: Square) =
+            board.pieceAt(square).color === pieceColor
 
-        fun isPieceTheirs(board: BoardView, color: PieceColor, square: Square): Boolean {
-            return board.pieceAt(square).color !== color && !board.noneAt(square)
-        }
+        fun isPieceTheirs(board: BoardView, color: PieceColor, square: Square) =
+            board.pieceAt(square).color !== color && !board.noneAt(square)
     }
 }
