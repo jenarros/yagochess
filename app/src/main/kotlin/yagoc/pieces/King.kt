@@ -28,45 +28,40 @@ class King(pieceColor: PieceColor) : Piece(PieceType.King, pieceColor) {
     }
 
     private fun isCorrectCastling(board: BoardView, move: Move): Boolean {
-        if ((move.from.rank == 7 && move.fromPiece == whiteKing && !board.hasWhiteKingMoved() ||
-                    move.from.rank == 0 && move.fromPiece == blackKing && !board.hasBlackKingMoved()) &&
-            move.hasSameRank() && !isInCheck(board, move.fromPiece.color)
-        ) {
-            if (move.to.file == 2 && board.pieceAt(square(move.from.rank, 0)) == move.fromPiece
-                    .switchTo(PieceType.Rook)
-            ) { // queenside
-                // white set
-                return if (move.fromPiece.color == PieceColor.whiteSet && !board.hasWhiteLeftRookMoved() &&
-                    board.noneAt(b1Square) && board.noneAt(c1Square) &&
-                    board.noneAt(d1Square) &&
-                    moveDoesNotCreateCheck(board, move.from, d1Square) &&
-                    moveDoesNotCreateCheck(board, move.from, c1Square)
-                ) {
-                    true
-                } else move.fromPiece
-                    .color == PieceColor.blackSet && !board.hasBlackLeftRookMoved() &&
-                        board.noneAt(b8Square) && board.noneAt(c8Square) &&
-                        board.noneAt(d8Square) &&
-                        moveDoesNotCreateCheck(board, move.from, d8Square) &&
-                        moveDoesNotCreateCheck(board, move.from, c8Square)
-                // black set
-            } else if (move.to.file == 6 && board.pieceAt(square(move.from.rank, 7)) == move.fromPiece
-                    .switchTo(PieceType.Rook)
-            ) { // kingside
-                // white set
-                return if (move.fromPiece.color == PieceColor.whiteSet && !board.hasWhiteRightRookMoved() &&
-                    board.noneAt(f1Square) && board.noneAt(g1Square) &&
-                    moveDoesNotCreateCheck(board, move.from, g1Square) &&
-                    moveDoesNotCreateCheck(board, move.from, f1Square)
-                ) {
-                    true
-                } else move.fromPiece.color == PieceColor.blackSet && !board.hasBlackRightRookMoved() &&
-                        board.noneAt(f8Square) && board.noneAt(g8Square) &&
-                        moveDoesNotCreateCheck(board, move.from, g8Square) &&
-                        moveDoesNotCreateCheck(board, move.from, f8Square)
-                // black set
+        return when {
+            move.from == e8Square && !board.hasBlackKingMoved() -> when {
+                move.to == c8Square && board.pieceAt(a8Square) == blackRook && !board.hasBlackLeftRookMoved() ->
+                    // black set, queenside
+                    board.noneAt(b8Square) &&
+                            board.noneAt(c8Square) &&
+                            board.noneAt(d8Square) &&
+                            moveDoesNotCreateCheck(board, move.from, d8Square) &&
+                            moveDoesNotCreateCheck(board, move.from, c8Square)
+                // black set, blackside
+                move.to == g8Square && board.pieceAt(h8Square) == blackRook && !board.hasBlackLeftRookMoved() ->
+                    board.noneAt(f8Square) &&
+                            board.noneAt(g8Square) &&
+                            moveDoesNotCreateCheck(board, move.from, g8Square) &&
+                            moveDoesNotCreateCheck(board, move.from, f8Square)
+                else -> false
             }
-        }
-        return false
+            move.from == e1Square && !board.hasWhiteKingMoved() -> when {
+                // white set, queenside
+                move.to == c1Square && board.pieceAt(a1Square) == whiteRook && !board.hasWhiteLeftRookMoved() ->
+                    board.noneAt(b1Square) &&
+                            board.noneAt(c1Square) &&
+                            board.noneAt(d1Square) &&
+                            moveDoesNotCreateCheck(board, move.from, d1Square) &&
+                            moveDoesNotCreateCheck(board, move.from, c1Square)
+                // white set, kingside
+                move.to == g1Square && board.pieceAt(h1Square) == whiteRook && !board.hasWhiteRightRookMoved() ->
+                    board.noneAt(f1Square) &&
+                            board.noneAt(g1Square) &&
+                            moveDoesNotCreateCheck(board, move.from, g1Square) &&
+                            moveDoesNotCreateCheck(board, move.from, f1Square)
+                else -> false
+            }
+            else -> false
+        } && !isInCheck(board, move.fromPiece.color)
     }
 }
