@@ -21,3 +21,7 @@ jobs:
           architecture: x64
       - name: Build
         run: ./gradlew build
+      - uses: actions/upload-artifact@v2
+          with:
+            name: Package
+            path: yagoc-desktop/build/distributions/*.zip
