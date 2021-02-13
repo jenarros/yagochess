@@ -87,24 +87,24 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
 
         private fun addMenuBar(yagocWindow: YagocWindow, controller: Controller) {
             val loadMenuItem = JMenuItem("Open")
-            loadMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_O, yagocWindow.toolkit.menuShortcutKeyMaskEx)
+            loadMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_O, yagocWindow.toolkit.menuShortcutKeyMask)
             loadMenuItem.addActionListener(yagocWindow::open)
             val pauseMenuItem = JMenuItem("Pause")
-            pauseMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_P, yagocWindow.toolkit.menuShortcutKeyMaskEx)
+            pauseMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_P, yagocWindow.toolkit.menuShortcutKeyMask)
             pauseMenuItem.addActionListener { controller.togglePause() }
             val restartGameMenuItem = JMenuItem("Reset")
             restartGameMenuItem.accelerator =
-                KeyStroke.getKeyStroke(KeyEvent.VK_R, yagocWindow.toolkit.menuShortcutKeyMaskEx)
+                KeyStroke.getKeyStroke(KeyEvent.VK_R, yagocWindow.toolkit.menuShortcutKeyMask)
             restartGameMenuItem.addActionListener { controller.newBoard() }
             val saveMenuItem = JMenuItem("Save")
-            saveMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_S, yagocWindow.toolkit.menuShortcutKeyMaskEx)
+            saveMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_S, yagocWindow.toolkit.menuShortcutKeyMask)
             saveMenuItem.addActionListener(yagocWindow::save)
             val optionsMenuItem = JMenuItem("Preferences...")
             optionsMenuItem.accelerator =
-                KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, yagocWindow.toolkit.menuShortcutKeyMaskEx)
+                KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, yagocWindow.toolkit.menuShortcutKeyMask)
             optionsMenuItem.addActionListener { controller.configurePlayers() }
             val undo = JMenuItem("Undo")
-            undo.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_Z, yagocWindow.toolkit.menuShortcutKeyMaskEx)
+            undo.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_Z, yagocWindow.toolkit.menuShortcutKeyMask)
             undo.addActionListener { e: ActionEvent -> controller.undo() }
             val menuBar = JMenuBar()
             val menu = JMenu("File")

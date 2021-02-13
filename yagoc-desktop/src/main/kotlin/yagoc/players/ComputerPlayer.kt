@@ -50,7 +50,7 @@ class ComputerPlayer(
             return MoveValue(noMoves, Int.MAX_VALUE - (level - depth + 1))
         }
         var betaMoveValue: MoveValue
-        var moveValue = MoveValue(moves.stream().findFirst().orElseThrow(), beta)
+        var moveValue = MoveValue(moves.first(), beta)
         for (move in moves) {
             processedMoves.getAndIncrement()
 
@@ -86,7 +86,7 @@ class ComputerPlayer(
             return MoveValue(noMoves, Int.MIN_VALUE + (level - depth + 1))
         }
         var alphaMoveValue: MoveValue
-        var moveValue = MoveValue(moves.stream().findFirst().orElseThrow(), alpha)
+        var moveValue = MoveValue(moves.first(), alpha)
         for (move in moves) {
             processedMoves.getAndIncrement()
 
