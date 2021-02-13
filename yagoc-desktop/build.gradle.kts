@@ -41,7 +41,7 @@ tasks.register("createOSXImage", Exec::class) {
 
     commandLine(
         listOf(
-            "javapackager",
+            System.getenv("JAVA_HOME") + "/bin/javapackager",
             "-deploy",
             "-name", "Yagochess",
             "-title", "Yagochess (Yet Another Game Of Chess)",
