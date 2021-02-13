@@ -53,7 +53,7 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
         return textPane
     }
 
-    fun open(e: ActionEvent) {
+    fun open() {
         val fDialog = FileDialog(this)
         fDialog.mode = FileDialog.LOAD
         fDialog.isVisible = true
@@ -72,7 +72,7 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
         }
     }
 
-    fun save(e: ActionEvent) {
+    fun save() {
         try {
             val fDialog = FileDialog(this)
             fDialog.mode = FileDialog.SAVE
@@ -110,7 +110,7 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
         private fun addMenuBar(yagocWindow: YagocWindow, controller: Controller) {
             val loadMenuItem = JMenuItem("Open")
             loadMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_O, yagocWindow.toolkit.menuShortcutKeyMask)
-            loadMenuItem.addActionListener(yagocWindow::open)
+            loadMenuItem.addActionListener { yagocWindow.open() }
             val pauseMenuItem = JMenuItem("Pause")
             pauseMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_P, yagocWindow.toolkit.menuShortcutKeyMask)
             pauseMenuItem.addActionListener { controller.togglePause() }
@@ -120,7 +120,7 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
             restartGameMenuItem.addActionListener { controller.newBoard() }
             val saveMenuItem = JMenuItem("Save")
             saveMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_S, yagocWindow.toolkit.menuShortcutKeyMask)
-            saveMenuItem.addActionListener(yagocWindow::save)
+            saveMenuItem.addActionListener { yagocWindow.save() }
             val optionsMenuItem = JMenuItem("Preferences...")
             optionsMenuItem.accelerator =
                 KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, yagocWindow.toolkit.menuShortcutKeyMask)
