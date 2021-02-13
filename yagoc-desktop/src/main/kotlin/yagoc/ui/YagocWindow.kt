@@ -15,7 +15,29 @@ import javax.swing.*
 import kotlin.system.exitProcess
 
 class YagocWindow(private val controller: Controller, board: BoardView) : JFrame() {
-    private val boardPanel: BoardPanel
+    private val boardPanel: BoardPanel = BoardPanel(controller, board)
+    private val textPane = textpane().also {
+        logger = Logger(it)
+    }
+
+    private val scrollPane = JScrollPane(textPane).also {
+        it.preferredSize = Dimension(LOG_WIDTH, boardPanel.boardAndBorderSize / 2)
+        it.maximumSize = Dimension(LOG_WIDTH, boardPanel.boardAndBorderSize / 2)
+        it.verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
+        it.isVisible = false
+    }
+
+    init {
+        enableEvents(AWTEvent.WINDOW_EVENT_MASK)
+        centerInScreen()
+        UIManager.put("OptionPane.messageFont", Font(Font.MONOSPACED, Font.PLAIN, menuFontSize))
+        UIManager.put("OptionPane.buttonFont", Font(Font.MONOSPACED, Font.PLAIN, menuFontSize))
+        contentPane.layout = BorderLayout()
+        contentPane.add(boardPanel, BorderLayout.WEST)
+        isResizable = false
+        addMenuBar(this, controller)
+        pack()
+    }
 
     private fun centerInScreen() {
         val dimension = toolkit.screenSize
@@ -80,7 +102,7 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
         const val BORDER_SIZE = 20
         const val IMAGE_SIZE = 40
         const val SQUARE_SIZE = 60
-        const val LOG_HEIGHT = 200
+        const val LOG_WIDTH = 400
         val lightSquaresColor = Color(138, 120, 93)
         val darkSquaresColor = Color(87, 58, 46)
         val frameColor = Color.DARK_GRAY
@@ -115,28 +137,27 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
             menu.add(saveMenuItem)
             menu.add(undo)
             menuBar.add(menu)
+            val view = JMenu("View")
+            val showLog = JMenuItem("Toggle Log")
+            showLog.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_L, yagocWindow.toolkit.menuShortcutKeyMask)
+            showLog.addActionListener { e: ActionEvent ->
+                yagocWindow.toggleLog()
+            }
+            view.add(showLog)
+            menuBar.add(view)
             yagocWindow.jMenuBar = menuBar
         }
     }
 
-    init {
-        enableEvents(AWTEvent.WINDOW_EVENT_MASK)
-        val textPane = textpane()
-        logger = Logger(textPane)
-        boardPanel = BoardPanel(controller, board)
-        centerInScreen()
-        val scrollPane = JScrollPane(textPane)
-        scrollPane.preferredSize = Dimension(boardPanel.boardAndBorderSize, LOG_HEIGHT)
-        scrollPane.maximumSize = Dimension(boardPanel.boardAndBorderSize, LOG_HEIGHT)
-        scrollPane.verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS
-        val cont = contentPane
-        cont.layout = BorderLayout()
-        UIManager.put("OptionPane.messageFont", Font(Font.MONOSPACED, Font.PLAIN, menuFontSize))
-        UIManager.put("OptionPane.buttonFont", Font(Font.MONOSPACED, Font.PLAIN, menuFontSize))
-        cont.add(boardPanel, BorderLayout.WEST)
-        cont.add(scrollPane, BorderLayout.SOUTH)
-        isResizable = false
-        addMenuBar(this, controller)
-        pack()
+    fun toggleLog() {
+        if (scrollPane.isVisible) {
+            scrollPane.isVisible = false
+            contentPane.remove(scrollPane)
+            setSize(size.width - LOG_WIDTH, size.height)
+        } else {
+            scrollPane.isVisible = true
+            contentPane.add(scrollPane, BorderLayout.EAST)
+            setSize(size.width + LOG_WIDTH, size.height)
+        }
     }
 }

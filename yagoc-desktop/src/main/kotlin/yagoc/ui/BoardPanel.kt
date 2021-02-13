@@ -119,7 +119,7 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
         val dimension = toolkit.screenSize
         val originalBoardAndBorderSize = YagocWindow.SQUARE_SIZE * 8 + YagocWindow.BORDER_SIZE * 2
         return min(
-            (dimension.height - YagocWindow.LOG_HEIGHT) / originalBoardAndBorderSize,
+            (dimension.height - YagocWindow.LOG_WIDTH) / originalBoardAndBorderSize,
             dimension.width / originalBoardAndBorderSize
         ) * value
     }

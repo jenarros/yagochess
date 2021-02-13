@@ -22,10 +22,8 @@ class ComputerPlayer(
 
     override fun move(board: BoardView): Move {
         val moveCounter = AtomicInteger(0)
-        val start = System.currentTimeMillis()
         val moveValue = alphaBeta(level, board, Int.MIN_VALUE, Int.MAX_VALUE, moveCounter)
-        val elapsed = System.currentTimeMillis() - start + 1
-        Yagoc.logger.info("alpha-beta: processed = " + moveCounter + " moves in " + elapsed + "ms " + moveCounter.toInt() / elapsed + " moves/ms,  minimax = " + moveValue.value)
+        Yagoc.logger.info("processed = " + moveCounter + ", minimax = " + moveValue.value)
         return moveValue.move
     }
 

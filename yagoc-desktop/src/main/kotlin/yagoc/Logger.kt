@@ -18,7 +18,7 @@ class Logger {
     }
 
     fun info(message: String) {
-        if (textPanel != null) {
+        if (textPanel != null && textPanel.graphics != null) {
             textPanel.styledDocument.insertString(textPanel.styledDocument.length, message + "\n", info)
             textPanel.caretPosition = textPanel.document.length
             textPanel.update(textPanel.graphics)
@@ -28,7 +28,7 @@ class Logger {
     }
 
     fun warn(message: String) {
-        if (textPanel != null) {
+        if (textPanel != null && textPanel.graphics != null) {
             textPanel.styledDocument.insertString(textPanel.styledDocument.length, message + "\n", warn)
             textPanel.caretPosition = textPanel.document.length
             textPanel.update(textPanel.graphics)
