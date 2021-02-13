@@ -30,18 +30,14 @@ jobs:
       #      - name: Setup tmate session
       #        uses: mxschmitt/action-tmate@v3
       - name: Build
-        run: ./gradlew --stacktrace distZip createOSXImage
+        run: ./gradlew --stacktrace distTar createOSXImage
+      - name: Build OSX image
+        run: ./gradlew --stacktrace createOSXImage
       - uses: actions/upload-artifact@v2
         with:
           name: Generic Java (Requires Java Runtime 15 or newer)
-          path: yagoc-desktop/build/distributions/Yagochess.zip
-      - name: "Tar OSX app"
-        run: |
-          cd yagoc-desktop/build/distributions
-          pwd
-          ls
-          tar -cvf yagochess.tar yagochess.app
+          path: yagoc-desktop/build/distributions/*.tar
       - uses: actions/upload-artifact@v2
         with:
           name: OSX
-          path: yagoc-desktop/build/distributions/yagochess.tar
+          path: yagoc-desktop/build/distributions/*.dmg
