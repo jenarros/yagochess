@@ -28,12 +28,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Build
-        run: ./gradlew createOSXImage
+        run: ./gradlew --stacktrace createOSXImage
       - uses: actions/upload-artifact@v2
         with:
           name: Generic Java 8+
-          path: jenm.yagoc-desktop/build/distributions/*.zip
+          path: yagoc-desktop/build/distributions/*.zip
       - uses: actions/upload-artifact@v2
         with:
           name: OSX - bundled JRE
-          path: jenm.yagoc-desktop/build/bundles/*.app
+          path: yagoc-desktop/build/bundles/*.app
