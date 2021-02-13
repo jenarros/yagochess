@@ -29,8 +29,10 @@ jobs:
             ${{ runner.os }}-gradle-
       #      - name: Setup tmate session
       #        uses: mxschmitt/action-tmate@v3
+      - name: Generate version
+        run: ./gradlew --stacktrace distTar -Pversion=0.$GITHUB_RUN_NUMBER
       - name: Build
-        run: ./gradlew --stacktrace distTar
+        run: ./gradlew --stacktrace distTar -Pversion=0.$GITHUB_RUN_NUMBER
       - name: Build OSX image
         run: ./gradlew --stacktrace createOSXImage
       - uses: actions/upload-artifact@v2

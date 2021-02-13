@@ -45,7 +45,7 @@ tasks.register("createOSXImage", Exec::class) {
             System.getenv("JAVA_HOME") + "/bin/jpackage",
             "--name", "yagochess",
             "--input", project.buildDir.absolutePath + "/libs",
-            "--main-jar", "yagoc-desktop-all.jar",
+            "--main-jar", "yagoc-desktop-" + project.version + "-all.jar",
             "--main-class", "jenm.yagoc.Yagoc",
             "--add-modules", "java.desktop",
             "--type", "dmg",

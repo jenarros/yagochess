@@ -6,7 +6,7 @@ Run with:
 
 ## TODO
 ### Distribution
-
+- Add Versioning
 - Provide windows build
 
 ### Implementation
