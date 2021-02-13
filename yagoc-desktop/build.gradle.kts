@@ -38,7 +38,7 @@ project.setProperty("mainClassName", "jenm.yagoc.Yagoc")
 
 tasks.register("createOSXImage", Exec::class) {
     dependsOn(tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>())
-    description = "Build the OSX Image for this platform using javapackager"
+    description = "Build the OSX DMG package."
 
     commandLine(
         listOf(
