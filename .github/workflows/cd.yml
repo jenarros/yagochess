@@ -34,10 +34,10 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: Generic Java (Requires Java Runtime 15 or newer)
-          path: yagoc-desktop/build/distributions/Yagochess*.zip
+          path: yagoc-desktop/build/distributions/Yagochess.zip
       - name: "Tar OSX app"
-        run: cd yagoc-desktop/build/distributions && tar -cvf Yagochess.tar Yagochess*.app
+        run: cd yagoc-desktop/build/distributions && tar -cvf Yagochess.tar Yagochess.app
       - uses: actions/upload-artifact@v2
         with:
           name: OSX
-          path: yagoc-desktop/build/distributions/Yagochess*.tar
+          path: yagoc-desktop/build/distributions/Yagochess.tar
