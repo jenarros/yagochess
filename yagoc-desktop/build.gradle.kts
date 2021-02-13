@@ -30,7 +30,7 @@ application {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "15"
 }
 
 project.setProperty("mainClassName", "jenm.yagoc.Yagoc")
@@ -41,20 +41,19 @@ tasks.register("createOSXImage", Exec::class) {
 
     commandLine(
         listOf(
-            System.getenv("JAVA_HOME") + "/bin/javapackager",
-            "-deploy",
-            "-name", "Yagochess",
-            "-title", "Yagochess (Yet Another Game Of Chess)",
-            "-vendor", "José Eduardo Narros Martínez",
-            "-native", "image",
-            "-Bruntime=" + System.getenv("JAVA_HOME"),
-            "-srcfiles", project.buildDir.absolutePath + "/libs/yagoc-desktop-all.jar",
-            "-outdir", project.buildDir.absolutePath,
-            "-outfile", "Yagochess",
-            "-appclass", "jenm.yagoc.Yagoc",
-            "-BdropinResourcesRoot=" + projectDir.absolutePath + "/src/main/resources",
-            "-nosign",
-            "-v"
+            System.getenv("JAVA_HOME") + "/bin/jpackage",
+            "--name", "Yagochess",
+            "--input", project.buildDir.absolutePath + "/libs",
+            "--main-jar", "yagoc-desktop-all.jar",
+            "--main-class", "jenm.yagoc.Yagoc",
+            "--type", "app-image",
+            "--java-options", "--enable-preview",
+            "--dest", project.buildDir.absolutePath,
+            "--license-file", "../LICENSE",
+            "--description", "Yagochess is a game of chess focused on simplicity of both design and implementation.",
+            "--vendor", "José Eduardo Narros Martínez",
+            "--resource-dir", projectDir.absolutePath + "/src/main/resources",
+            "--verbose"
         )
     )
 }
