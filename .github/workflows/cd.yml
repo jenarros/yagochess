@@ -19,6 +19,14 @@ jobs:
         with:
           java-version: '8'
           architecture: x64
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
       - name: Build
         run: ./gradlew createOSXImage
       - uses: actions/upload-artifact@v2
