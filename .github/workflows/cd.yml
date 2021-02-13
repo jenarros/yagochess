@@ -16,12 +16,12 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
         with:
-          java-version: '15'
+          java-version: '11'
           java-package: jdk
           architecture: x64
       - name: Build
         run: ./gradlew build
       - uses: actions/upload-artifact@v2
         with:
-          name: Package
+          name: Generic Java 11+
           path: yagoc-desktop/build/distributions/*.zip

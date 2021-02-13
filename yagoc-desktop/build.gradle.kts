@@ -28,5 +28,5 @@ application {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = "14"
+    kotlinOptions.jvmTarget = "11"
 }
