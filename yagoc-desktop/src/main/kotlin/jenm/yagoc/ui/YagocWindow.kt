@@ -107,26 +107,30 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
         val frameColor = Color.DARK_GRAY
 
         private fun addMenuBar(yagocWindow: YagocWindow, controller: Controller) {
-            val loadMenuItem = JMenuItem("Open")
-            loadMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_O, yagocWindow.toolkit.menuShortcutKeyMask)
-            loadMenuItem.addActionListener { yagocWindow.open() }
-            val pauseMenuItem = JMenuItem("Pause")
-            pauseMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_P, yagocWindow.toolkit.menuShortcutKeyMask)
-            pauseMenuItem.addActionListener { controller.togglePause() }
-            val restartGameMenuItem = JMenuItem("Reset")
-            restartGameMenuItem.accelerator =
-                KeyStroke.getKeyStroke(KeyEvent.VK_R, yagocWindow.toolkit.menuShortcutKeyMask)
-            restartGameMenuItem.addActionListener { controller.newBoard() }
-            val saveMenuItem = JMenuItem("Save")
-            saveMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_S, yagocWindow.toolkit.menuShortcutKeyMask)
-            saveMenuItem.addActionListener { yagocWindow.save() }
-            val optionsMenuItem = JMenuItem("Preferences...")
-            optionsMenuItem.accelerator =
-                KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, yagocWindow.toolkit.menuShortcutKeyMask)
-            optionsMenuItem.addActionListener { controller.configurePlayers() }
-            val undo = JMenuItem("Undo")
-            undo.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_Z, yagocWindow.toolkit.menuShortcutKeyMask)
-            undo.addActionListener { controller.undo() }
+            val loadMenuItem = JMenuItem("Open").also {
+                it.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_O, yagocWindow.toolkit.menuShortcutKeyMaskEx)
+                it.addActionListener { yagocWindow.open() }
+            }
+            val pauseMenuItem = JMenuItem("Pause").also {
+                it.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_P, yagocWindow.toolkit.menuShortcutKeyMaskEx)
+                it.addActionListener { controller.togglePause() }
+            }
+            val restartGameMenuItem = JMenuItem("Reset").also {
+                it.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_R, yagocWindow.toolkit.menuShortcutKeyMaskEx)
+                it.addActionListener { controller.newBoard() }
+            }
+            val saveMenuItem = JMenuItem("Save").also {
+                it.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_S, yagocWindow.toolkit.menuShortcutKeyMaskEx)
+                it.addActionListener { yagocWindow.save() }
+            }
+            val optionsMenuItem = JMenuItem("Preferences...").also {
+                it.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, yagocWindow.toolkit.menuShortcutKeyMaskEx)
+                it.addActionListener { controller.configurePlayers() }
+            }
+            val undo = JMenuItem("Undo").also {
+                it.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_Z, yagocWindow.toolkit.menuShortcutKeyMaskEx)
+                it.addActionListener { controller.undo() }
+            }
             val menuBar = JMenuBar()
             val menu = JMenu("File")
             menu.add(loadMenuItem)
@@ -136,10 +140,12 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
             menu.add(saveMenuItem)
             menu.add(undo)
             menuBar.add(menu)
+
             val view = JMenu("View")
-            val showLog = JMenuItem("Toggle Log")
-            showLog.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_L, yagocWindow.toolkit.menuShortcutKeyMask)
-            showLog.addActionListener { yagocWindow.toggleLog() }
+            val showLog = JMenuItem("Toggle Log").also {
+                it.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_L, yagocWindow.toolkit.menuShortcutKeyMaskEx)
+                it.addActionListener { yagocWindow.toggleLog() }
+            }
             view.add(showLog)
             menuBar.add(view)
             yagocWindow.jMenuBar = menuBar

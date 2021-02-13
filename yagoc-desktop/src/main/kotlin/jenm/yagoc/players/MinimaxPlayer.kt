@@ -10,7 +10,7 @@ import jenm.yagoc.pieces.blackPawn
 import java.io.Serializable
 import java.util.concurrent.atomic.AtomicInteger
 
-class ComputerPlayer(
+class MinimaxPlayer(
     name: String,
     pieceColor: PieceColor,
     private val level: Int,

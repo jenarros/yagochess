@@ -8,7 +8,7 @@ import jenm.yagoc.board.BoardRules.noMoreMovesAllowed
 import jenm.yagoc.board.Move
 import jenm.yagoc.board.Square
 import jenm.yagoc.pieces.*
-import jenm.yagoc.players.ComputerPlayer
+import jenm.yagoc.players.MinimaxPlayer
 import jenm.yagoc.players.PlayerStrategy
 import jenm.yagoc.players.UserPlayer
 import jenm.yagoc.ui.UserOptionDialog
@@ -110,7 +110,7 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
         when (game) {
             1 -> {
                 board.blackPlayer(
-                    ComputerPlayer(
+                    MinimaxPlayer(
                         "computer",
                         PieceColor.BlackSet,
                         userOptions.getLevel("computer", 1),
@@ -122,7 +122,7 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
             2 -> {
                 board.blackPlayer(UserPlayer("user", PieceColor.BlackSet))
                 board.whitePlayer(
-                    ComputerPlayer(
+                    MinimaxPlayer(
                         "computer",
                         PieceColor.WhiteSet,
                         userOptions.getLevel("computer", 1),
@@ -132,7 +132,7 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
             }
             3 -> {
                 board.blackPlayer(
-                    ComputerPlayer(
+                    MinimaxPlayer(
                         "computer 1",
                         PieceColor.BlackSet,
                         userOptions.getLevel("computer 1", 1),
@@ -140,7 +140,7 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
                     )
                 )
                 board.whitePlayer(
-                    ComputerPlayer(
+                    MinimaxPlayer(
                         "computer 2",
                         PieceColor.WhiteSet,
                         userOptions.getLevel("computer 2", 1),

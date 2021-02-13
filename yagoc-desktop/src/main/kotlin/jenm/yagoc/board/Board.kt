@@ -4,7 +4,7 @@ import jenm.yagoc.board.MoveLog.Companion.castling
 import jenm.yagoc.board.MoveLog.Companion.enPassant
 import jenm.yagoc.board.MoveLog.Companion.normalMove
 import jenm.yagoc.pieces.*
-import jenm.yagoc.players.ComputerPlayer
+import jenm.yagoc.players.MinimaxPlayer
 import jenm.yagoc.players.Player
 import jenm.yagoc.players.PlayerStrategy
 import jenm.yagoc.players.UserPlayer
@@ -23,7 +23,7 @@ class Board : BoardView {
     private var blackKingMoved = false
     private var drawCounter = 0
     private var moveCounter = 0
-    private var blackPlayer: Player = ComputerPlayer("computer 1", PieceColor.BlackSet, 3, PlayerStrategy.F1)
+    private var blackPlayer: Player = MinimaxPlayer("computer 1", PieceColor.BlackSet, 3, PlayerStrategy.F1)
     private var whitePlayer: Player = UserPlayer("user 1", PieceColor.WhiteSet)
     private var currentPlayer: Player = whitePlayer
 
@@ -55,7 +55,7 @@ class Board : BoardView {
 
     fun reset() {
         Arrays.fill(enPassant, -5)
-        blackPlayer = ComputerPlayer("computer 1", PieceColor.BlackSet, 3, PlayerStrategy.F1)
+        blackPlayer = MinimaxPlayer("computer 1", PieceColor.BlackSet, 3, PlayerStrategy.F1)
         whitePlayer = UserPlayer("user 1", PieceColor.WhiteSet)
         currentPlayer = whitePlayer
         squareBoard.reset()
