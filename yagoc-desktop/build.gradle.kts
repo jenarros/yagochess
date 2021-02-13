@@ -47,6 +47,7 @@ tasks.register("createOSXImage", Exec::class) {
             "--input", project.buildDir.absolutePath + "/libs",
             "--main-jar", "yagoc-desktop-all.jar",
             "--main-class", "jenm.yagoc.Yagoc",
+            "--add-modules", "java.desktop",
             "--type", "dmg",
             "--java-options", "--enable-preview",
             "--dest", project.buildDir.absolutePath + "/distributions",

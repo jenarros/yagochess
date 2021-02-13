@@ -30,7 +30,7 @@ jobs:
       #      - name: Setup tmate session
       #        uses: mxschmitt/action-tmate@v3
       - name: Build
-        run: ./gradlew --stacktrace distTar createOSXImage
+        run: ./gradlew --stacktrace distTar
       - name: Build OSX image
         run: ./gradlew --stacktrace createOSXImage
       - uses: actions/upload-artifact@v2
