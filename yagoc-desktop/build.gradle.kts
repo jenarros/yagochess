@@ -27,6 +27,7 @@ tasks.test {
 
 application {
     mainClass.set("jenm.yagoc.Yagoc")
+    applicationName = "yagochess"
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
@@ -42,7 +43,7 @@ tasks.register("createOSXImage", Exec::class) {
     commandLine(
         listOf(
             System.getenv("JAVA_HOME") + "/bin/jpackage",
-            "--name", "Yagochess",
+            "--name", "yagochess",
             "--input", project.buildDir.absolutePath + "/libs",
             "--main-jar", "yagoc-desktop-all.jar",
             "--main-class", "jenm.yagoc.Yagoc",
