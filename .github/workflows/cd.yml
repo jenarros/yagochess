@@ -30,7 +30,9 @@ jobs:
       #      - name: Setup tmate session
       #        uses: mxschmitt/action-tmate@v3
       - name: Generate version
-        run: ./gradlew --stacktrace distTar -Pversion=0.$GITHUB_RUN_NUMBER
+        run: |
+          echo "0.$GITHUB_RUN_NUMBER" > build/version
+          cat build/version
       - name: Build
         run: ./gradlew --stacktrace distTar -Pversion=0.$GITHUB_RUN_NUMBER
       - name: Build OSX image

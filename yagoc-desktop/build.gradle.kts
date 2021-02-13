@@ -54,6 +54,7 @@ tasks.register("createOSXImage", Exec::class) {
             "--license-file", "../LICENSE",
             "--description", "Yagochess is a game of chess focused on simplicity of both design and implementation.",
             "--vendor", "José Eduardo Narros Martínez",
+            "--app-version", project.version,
             "--resource-dir", projectDir.absolutePath + "/src/main/resources",
             "--verbose"
         )
