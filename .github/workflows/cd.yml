@@ -38,4 +38,4 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: OSX
-          path: yagoc-desktop/build/distributions/*.dmg
+          path: yagoc-desktop/build/distributions/*.app
