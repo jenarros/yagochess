@@ -23,8 +23,8 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: Generic Java 8+
-          path: yagoc-desktop/build/distributions/*.zip
+          path: jenm.yagoc-desktop/build/distributions/*.zip
       - uses: actions/upload-artifact@v2
         with:
           name: OSX - bundled JRE
-          path: yagoc-desktop/build/bundles/*.app
+          path: jenm.yagoc-desktop/build/bundles/*.app

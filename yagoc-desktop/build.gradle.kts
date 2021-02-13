@@ -26,14 +26,14 @@ tasks.test {
 }
 
 application {
-    mainClass.set("yagoc.Yagoc")
+    mainClass.set("jenm.yagoc.Yagoc")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-project.setProperty("mainClassName", "yagoc.Yagoc")
+project.setProperty("mainClassName", "jenm.yagoc.Yagoc")
 
 tasks.register("createOSXImage", Exec::class) {
     dependsOn(tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>())
@@ -51,7 +51,7 @@ tasks.register("createOSXImage", Exec::class) {
             "-srcfiles", project.buildDir.absolutePath + "/libs/yagoc-desktop-all.jar",
             "-outdir", project.buildDir.absolutePath,
             "-outfile", "Yagochess",
-            "-appclass", "yagoc.Yagoc",
+            "-appclass", "jenm.yagoc.Yagoc",
             "-BdropinResourcesRoot=" + projectDir.absolutePath + "/src/main/resources",
             "-nosign",
             "-v"

@@ -1,2 +1,2 @@
-rootProject.name = "yagoc"
+rootProject.name = "yagochess"
 include("yagoc-desktop")
