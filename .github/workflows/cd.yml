@@ -31,6 +31,7 @@ jobs:
       #        uses: mxschmitt/action-tmate@v3
       - name: Generate version
         run: |
+          mkdir build
           echo "0.$GITHUB_RUN_NUMBER" > build/version
           cat build/version
       - name: Build
