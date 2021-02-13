@@ -35,21 +35,26 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 
 project.setProperty("mainClassName", "yagoc.Yagoc")
 
-tasks.register("createMacImage", Exec::class) {
+tasks.register("createOSXImage", Exec::class) {
     dependsOn(tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>())
     description = "Build the OSX Image for this platform using javapackager"
 
-    executable = "javapackager"
-    args = listOf(
-        "-deploy",
-        "-native", "image",
-        "-Bruntime="+ System.getenv("JAVA_HOME"),
-        "-srcfiles", project.buildDir.absolutePath + "/libs/yagoc-desktop-all.jar",
-        "-outdir", project.buildDir.absolutePath,
-        "-outfile", "Yagochess.app",
-        "-appclass", "yagoc.Yagoc",
-        "-BdropinResourcesRoot="+projectDir.absolutePath+"/src/main/resources",
-        "-nosign",
-        "-v"
+    commandLine(
+        listOf(
+            "javapackager",
+            "-deploy",
+            "-name", "Yagochess",
+            "-title", "Yagochess (Yet Another Game Of Chess)",
+            "-vendor", "José Eduardo Narros Martínez",
+            "-native", "image",
+            "-Bruntime=" + System.getenv("JAVA_HOME"),
+            "-srcfiles", project.buildDir.absolutePath + "/libs/yagoc-desktop-all.jar",
+            "-outdir", project.buildDir.absolutePath,
+            "-outfile", "Yagochess",
+            "-appclass", "yagoc.Yagoc",
+            "-BdropinResourcesRoot=" + projectDir.absolutePath + "/src/main/resources",
+            "-nosign",
+            "-v"
+        )
     )
 }

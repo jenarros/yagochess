@@ -20,8 +20,12 @@ jobs:
           java-package: jdk
           architecture: x64
       - name: Build
-        run: ./gradlew build
+        run: ./gradlew createOSXImage
       - uses: actions/upload-artifact@v2
         with:
           name: Generic Java 8+
           path: yagoc-desktop/build/distributions/*.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: OSX - bundled JRE
+          path: yagoc-desktop/build/bundles/*.app
