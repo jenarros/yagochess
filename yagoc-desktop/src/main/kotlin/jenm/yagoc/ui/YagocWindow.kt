@@ -6,7 +6,6 @@ import jenm.yagoc.Yagoc.logger
 import jenm.yagoc.board.Board
 import jenm.yagoc.board.BoardView
 import java.awt.*
-import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import java.awt.event.WindowEvent
 import java.io.FileInputStream
@@ -127,7 +126,7 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
             optionsMenuItem.addActionListener { controller.configurePlayers() }
             val undo = JMenuItem("Undo")
             undo.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_Z, yagocWindow.toolkit.menuShortcutKeyMask)
-            undo.addActionListener { e: ActionEvent -> controller.undo() }
+            undo.addActionListener { controller.undo() }
             val menuBar = JMenuBar()
             val menu = JMenu("File")
             menu.add(loadMenuItem)
@@ -140,9 +139,7 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
             val view = JMenu("View")
             val showLog = JMenuItem("Toggle Log")
             showLog.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_L, yagocWindow.toolkit.menuShortcutKeyMask)
-            showLog.addActionListener { e: ActionEvent ->
-                yagocWindow.toggleLog()
-            }
+            showLog.addActionListener { yagocWindow.toggleLog() }
             view.add(showLog)
             menuBar.add(view)
             yagocWindow.jMenuBar = menuBar
