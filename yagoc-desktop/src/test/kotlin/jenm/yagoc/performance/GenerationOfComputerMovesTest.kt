@@ -18,7 +18,7 @@ class GenerationOfComputerMovesTest {
     @Test
     @Timeout(3500, unit = TimeUnit.MILLISECONDS) // Before migration to Kotlin, it was always under 4s
     fun `can generate moves fast`() {
-        val level3 = MinimaxPlayer("level3", PieceColor.WhiteSet, 4, PlayerStrategy.F1)
+        val minimaxPlayer = MinimaxPlayer("level3", PieceColor.WhiteSet, 4, PlayerStrategy.F1)
 
         val board = """
             R---K-NR
@@ -31,8 +31,8 @@ class GenerationOfComputerMovesTest {
             --r-k-n-
         """.toBoard()
 
-        level3.alphaBeta(4, board, Int.MIN_VALUE, Int.MAX_VALUE, counter)
+        minimaxPlayer.alphaBeta(4, board, Int.MIN_VALUE, Int.MAX_VALUE)
 
-        assertThat(counter.get(), equalTo(273007))
+        assertThat(minimaxPlayer.processedMoveCounter.get(), equalTo(273008))
     }
 }
