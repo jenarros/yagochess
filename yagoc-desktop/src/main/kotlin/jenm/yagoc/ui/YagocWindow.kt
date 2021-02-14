@@ -1,7 +1,6 @@
 package jenm.yagoc.ui
 
 import jenm.yagoc.Controller
-import jenm.yagoc.Logger
 import jenm.yagoc.Yagoc.logger
 import jenm.yagoc.board.Board
 import jenm.yagoc.board.BoardView
@@ -13,11 +12,8 @@ import java.io.ObjectInputStream
 import javax.swing.*
 import kotlin.system.exitProcess
 
-class YagocWindow(private val controller: Controller, board: BoardView) : JFrame() {
+class YagocWindow(private val controller: Controller, board: BoardView, val textPane: JTextPane) : JFrame() {
     private val boardPanel: BoardPanel = BoardPanel(controller, board)
-    private val textPane = textpane().also {
-        logger = Logger(it)
-    }
 
     private val scrollPane = JScrollPane(textPane).also {
         it.preferredSize = Dimension(LOG_WIDTH, boardPanel.boardAndBorderSize / 2)
@@ -33,8 +29,11 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
         UIManager.put("OptionPane.buttonFont", Font(Font.MONOSPACED, Font.PLAIN, menuFontSize))
         contentPane.layout = BorderLayout()
         contentPane.add(boardPanel, BorderLayout.WEST)
+        contentPane.add(scrollPane, BorderLayout.EAST)
         isResizable = false
         addMenuBar(this, controller)
+        iconImage = toolkit.getImage(this.javaClass.getResource("/img/black_pawn.gif"))
+        Taskbar.getTaskbar().iconImage = toolkit.getImage(this.javaClass.getResource("/img/black_pawn.gif"))
         pack()
     }
 
@@ -43,13 +42,6 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
         val x = ((dimension.getWidth() - width) / 2 - boardPanel.boardAndBorderSize / 2).toInt()
         val y = ((dimension.getHeight() - height) / 2 - boardPanel.boardAndBorderSize / 2).toInt()
         this.setLocation(x, y)
-    }
-
-    private fun textpane(): JTextPane {
-        val textPane = JTextPane()
-        textPane.isEditable = false
-        textPane.font = Font(Font.MONOSPACED, Font.PLAIN, 12)
-        return textPane
     }
 
     fun open() {
@@ -66,7 +58,7 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
                     }
                 }
             } catch (exc: Exception) {
-                logger.warn("Could not read file: $exc")
+                logger.debug("Could not read file: $exc")
             }
         }
     }
@@ -82,7 +74,7 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
                 logger.info("Saved game to $absolutePath")
             }
         } catch (exc: Exception) {
-            logger.warn("Could not write file:$exc")
+            logger.debug("Could not write file:$exc")
         }
     }
 
@@ -155,11 +147,9 @@ class YagocWindow(private val controller: Controller, board: BoardView) : JFrame
     fun toggleLog() {
         if (scrollPane.isVisible) {
             scrollPane.isVisible = false
-            contentPane.remove(scrollPane)
             setSize(size.width - LOG_WIDTH, size.height)
         } else {
             scrollPane.isVisible = true
-            contentPane.add(scrollPane, BorderLayout.EAST)
             setSize(size.width + LOG_WIDTH, size.height)
         }
     }

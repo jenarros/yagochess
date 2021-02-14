@@ -12,7 +12,6 @@ import javax.swing.Timer
 import javax.swing.event.MouseInputListener
 import kotlin.math.floor
 import kotlin.math.min
-
 class BoardPanel(private val controller: Controller, private val board: BoardView) : JPanel() {
     private val images = images()
     private val mouseMotionListener = AccionListener()
@@ -128,23 +127,22 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
     val boardSize = squareSize * 8
     val boardFontSize = scale(YagocWindow.BOARD_FONT_SIZE)
 
-    private fun images(): Map<Piece, Image> {
-        val t = toolkit
-        val images: MutableMap<Piece, Image> = HashMap()
-        images[whitePawn] = t.getImage(this.javaClass.getResource("/img/white_pawn.gif"))
-        images[whiteKnight] = t.getImage(this.javaClass.getResource("/img/white_knight.gif"))
-        images[whiteBishop] = t.getImage(this.javaClass.getResource("/img/white_bishop.gif"))
-        images[whiteRook] = t.getImage(this.javaClass.getResource("/img/white_rook.gif"))
-        images[whiteQueen] = t.getImage(this.javaClass.getResource("/img/white_queen.gif"))
-        images[whiteKing] = t.getImage(this.javaClass.getResource("/img/white_king.gif"))
-        images[blackPawn] = t.getImage(this.javaClass.getResource("/img/black_pawn.gif"))
-        images[blackKnight] = t.getImage(this.javaClass.getResource("/img/black_knight.gif"))
-        images[blackBishop] = t.getImage(this.javaClass.getResource("/img/black_bishop.gif"))
-        images[blackRook] = t.getImage(this.javaClass.getResource("/img/black_rook.gif"))
-        images[blackQueen] = t.getImage(this.javaClass.getResource("/img/black_queen.gif"))
-        images[blackKing] = t.getImage(this.javaClass.getResource("/img/black_king.gif"))
-        return images
-    }
+    private fun images(): Map<Piece, Image> =
+        HashMap<Piece, Image>().also {
+            it[whitePawn] = toolkit.getImage(this.javaClass.getResource("/img/white_pawn.gif"))
+            it[whiteKnight] = toolkit.getImage(this.javaClass.getResource("/img/white_knight.gif"))
+            it[whiteBishop] = toolkit.getImage(this.javaClass.getResource("/img/white_bishop.gif"))
+            it[whiteRook] = toolkit.getImage(this.javaClass.getResource("/img/white_rook.gif"))
+            it[whiteQueen] = toolkit.getImage(this.javaClass.getResource("/img/white_queen.gif"))
+            it[whiteKing] = toolkit.getImage(this.javaClass.getResource("/img/white_king.gif"))
+            it[blackPawn] = toolkit.getImage(this.javaClass.getResource("/img/black_pawn.gif"))
+            it[blackKnight] = toolkit.getImage(this.javaClass.getResource("/img/black_knight.gif"))
+            it[blackBishop] = toolkit.getImage(this.javaClass.getResource("/img/black_bishop.gif"))
+            it[blackRook] = toolkit.getImage(this.javaClass.getResource("/img/black_rook.gif"))
+            it[blackQueen] = toolkit.getImage(this.javaClass.getResource("/img/black_queen.gif"))
+            it[blackKing] = toolkit.getImage(this.javaClass.getResource("/img/black_king.gif"))
+        }
+
 
     internal inner class AccionListener : MouseInputListener {
         var selectedSquare: Square? = null

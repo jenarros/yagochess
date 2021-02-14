@@ -23,7 +23,7 @@ class MinimaxPlayer(
 
         val moveValue = alphaBeta(level, board, Int.MIN_VALUE, Int.MAX_VALUE)
 
-        Yagoc.logger.info("processed = " + processedMoveCounter + ", minimax = " + moveValue.value)
+        Yagoc.logger.debug("processed = " + processedMoveCounter + ", minimax = " + moveValue.value)
 
         return (moveValue as NodeBoardValue).move
     }
