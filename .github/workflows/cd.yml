@@ -36,9 +36,9 @@ jobs:
           cat build/version
           export VERSION=$(cat build/version)
       - name: Build
-        run: ./gradlew --stacktrace distTar -Pversion=VERSION
+        run: ./gradlew --stacktrace distTar -Pversion=$VERSION
       - name: Build OSX image
-        run: ./gradlew --stacktrace createOSXImage -Pversion=VERSION
+        run: ./gradlew --stacktrace createOSXImage -Pversion=$VERSION
       - uses: actions/upload-artifact@v2
         with:
           name: Generic Java (Requires Java Runtime 15 or newer)
