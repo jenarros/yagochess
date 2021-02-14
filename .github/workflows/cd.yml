@@ -32,7 +32,7 @@ jobs:
       - name: Generate version
         run: |
           mkdir build
-          echo "$(date +%Y%-m%d).${GITHUB_SHA:0:7}" > build/version
+          echo "$(date +%Y%-m%d)_${GITHUB_SHA:0:7}" > build/version
           cat build/version
       - name: Build
         run: ./gradlew --stacktrace distTar -Pversion=$(cat build/version)
