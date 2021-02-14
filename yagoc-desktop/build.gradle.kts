@@ -1,7 +1,6 @@
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.4.30"
     id("com.github.johnrengelman.shadow") version "6.1.0"
-    application
     java
 }
 
@@ -25,16 +24,17 @@ tasks.test {
     }
 }
 
-application {
-    mainClass.set("jenm.yagoc.Yagoc")
-    applicationName = "yagochess"
+tasks.withType<Jar>().configureEach {
+    manifest {
+        attributes["Main-Class"] = "jenm.yagoc.Yagoc"
+        attributes[project.name + "-version"] = project.version
+        attributes[project.name + "-sha"] = project.property("sha")
+    }
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions.jvmTarget = "15"
+    kotlinOptions.jvmTarget = "11"
 }
-
-project.setProperty("mainClassName", "jenm.yagoc.Yagoc")
 
 tasks.register("createOSXImage", Exec::class) {
     dependsOn(tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>())

@@ -6,7 +6,7 @@ Run with:
 
 ## TODO
 ### Distribution
-- Add Versioning
+- Change Versioning to yyyymmdd.
 - Provide windows build
 
 ### Implementation
