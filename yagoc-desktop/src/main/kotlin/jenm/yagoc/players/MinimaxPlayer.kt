@@ -25,7 +25,7 @@ class MinimaxPlayer(
 
         Yagoc.logger.info("processed = " + processedMoveCounter + ", minimax = " + moveValue.value)
 
-        return if (moveValue is NodeBoardValue) moveValue.move else throw RuntimeException("There are no more moves")
+        return (moveValue as NodeBoardValue).move
     }
 
     fun alphaBeta(depth: Int, board: BoardView, alfa: Int, beta: Int): BoardValue {
@@ -35,44 +35,46 @@ class MinimaxPlayer(
             leafValue(board)
         } else {
             val moves = generateMoves(board)
-
             when {
                 moves.isEmpty() -> LeafBoardValue(alphaBetaDefault(depth))
-                isMaxPlayer(depth) -> alphaBetaMax(depth, board, alfa, beta, moves.iterator())
-                else -> alphaBetaMin(depth, board, alfa, beta, moves.iterator())
+                isMaxPlayer(depth) -> alphaBetaMax(depth, board, alfa, beta, moves)
+                else -> alphaBetaMin(depth, board, alfa, beta, moves)
             }
         }
     }
-
-    private fun alphaBetaDefault(depth: Int) = if (isMaxPlayer(depth)) Int.MIN_VALUE else Int.MAX_VALUE
 
     /**
      * maximizing player = current player (as depth = level)
      */
     private fun isMaxPlayer(depth: Int) = (level - depth) % 2 == 0
 
+    private fun alphaBetaDefault(depth: Int) =
+        if (isMaxPlayer(depth)) Int.MIN_VALUE + (level - depth + 1)
+        else Int.MAX_VALUE - (level - depth + 1)
+
     private fun alphaBetaMin(
         depth: Int,
         board: BoardView,
         alpha: Int,
         beta: Int,
-        moves: Iterator<Move>
+        moves: Collection<Move>,
     ): BoardValue {
-        var betaValue: BoardValue = LeafBoardValue(beta)
-
-        do {
-            val move = moves.next()
+        var betaValue: BoardValue = NodeBoardValue(moves.first(), beta)
+        for (move in moves) {
             // beta = min[beta, AlphaBeta(N_k,alpha,beta)]
             betaValue = min(
                 betaValue,
-                board.playAndUndo(move) { alphaBeta(depth - 1, board, alpha, betaValue.value) }
+                NodeBoardValue(
+                    move,
+                    board.playAndUndo(move) { alphaBeta(depth - 1, board, alpha, betaValue.value) }.value
+                )
             )
 
             // beta cutoff
-            if (alpha >= betaValue.value) {
-                return NodeBoardValue(move, alpha)
+            if (alpha >= betaValue.value && betaValue is NodeBoardValue) {
+                return NodeBoardValue(betaValue.move, alpha)
             }
-        } while (moves.hasNext())
+        }
 
         return betaValue
     }
@@ -84,24 +86,25 @@ class MinimaxPlayer(
         board: BoardView,
         alpha: Int,
         beta: Int,
-        moves: Iterator<Move>
+        moves: Collection<Move>,
     ): BoardValue {
-        var alphaValue: BoardValue = LeafBoardValue(alpha)
-
-        do {
-            val move = moves.next()
+        var moveValue: BoardValue = NodeBoardValue(moves.first(), alpha)
+        for (move in moves) {
             // alpha = max[alpha, AlphaBeta(N_k,alpha,beta)
-            alphaValue = max(
-                alphaValue,
-                board.playAndUndo(move) { alphaBeta(depth - 1, board, alphaValue.value, beta) }
+            moveValue = max(
+                NodeBoardValue(
+                    move,
+                    board.playAndUndo(move) { alphaBeta(depth - 1, board, moveValue.value, beta) }.value
+                ),
+                moveValue
             )
 
             // alpha cutoff
-            if (alphaValue.value >= beta) {
-                return NodeBoardValue(move, beta)
+            if (moveValue.value >= beta && moveValue is NodeBoardValue) {
+                return NodeBoardValue(moveValue.move, beta)
             }
-        } while (moves.hasNext())
+        }
 
-        return alphaValue
+        return moveValue
     }
 }

@@ -116,7 +116,7 @@ data class Square(val arrayPosition: Int) : Serializable, Comparable<Square> {
     }
 
     override fun toString(): String {
-        return "(" + Move.RANK_NAMES[rank] + ", " + Move.FILE_NAMES[file] + ')'
+        return Move.FILE_NAMES[file] + Move.RANK_NAMES[rank]
     }
 
     /**

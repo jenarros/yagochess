@@ -1,4 +1,4 @@
-package jenm.yagoc.performance
+package jenm.yagoc.regression
 
 class UsingEnumValuesTest {
 //
