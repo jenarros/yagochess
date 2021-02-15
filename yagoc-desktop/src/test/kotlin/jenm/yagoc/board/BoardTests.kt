@@ -7,7 +7,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 
-class BoardTest {
+class BoardTests {
     @Test
     fun `can parse and print board`() {
         val expected = """

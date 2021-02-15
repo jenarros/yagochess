@@ -9,7 +9,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 
-class PawnTest {
+class PawnTests {
     @Test
     fun `can move 1 square or two squares straigh ahead if it is in the starting rank`() {
         val test = BoardSpec(

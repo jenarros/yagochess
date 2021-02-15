@@ -24,9 +24,10 @@ tasks.test {
     }
 }
 
+val yagocClass = "jenm.yagoc.Yagoc"
 tasks.withType<Jar>().configureEach {
     manifest {
-        attributes["Main-Class"] = "jenm.yagoc.Yagoc"
+        attributes["Main-Class"] = yagocClass
         attributes[project.name + "-version"] = project.version
         attributes[project.name + "-sha"] = project.property("sha")
     }
@@ -34,6 +35,13 @@ tasks.withType<Jar>().configureEach {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions.jvmTarget = "11"
+}
+
+tasks.register("runApp", JavaExec::class) {
+    group = "Execution"
+    description = "Run the application"
+    classpath = sourceSets["main"].runtimeClasspath
+    main = yagocClass
 }
 
 tasks.register("createOSXImage", Exec::class) {
@@ -46,7 +54,7 @@ tasks.register("createOSXImage", Exec::class) {
             "--name", "yagochess",
             "--input", project.buildDir.absolutePath + "/libs",
             "--main-jar", "yagoc-desktop-" + project.version + "-all.jar",
-            "--main-class", "jenm.yagoc.Yagoc",
+            "--main-class", yagocClass,
             "--add-modules", "java.desktop",
             "--type", "dmg",
             "--java-options", "--enable-preview",

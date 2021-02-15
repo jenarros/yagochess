@@ -8,7 +8,7 @@ import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.hasItem
 import org.junit.jupiter.api.Test
 
-class KnightTest {
+class KnightTests {
     @Test
     fun `standard 8 squares`() {
         val test = BoardSpec(

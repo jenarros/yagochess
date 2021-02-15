@@ -8,7 +8,7 @@ import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.hasItem
 import org.junit.jupiter.api.Test
 
-class BishopTest {
+class BishopTests {
     @Test
     fun `can move diagonally to the end of the board`() {
         val test = BoardSpec(

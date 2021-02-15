@@ -6,7 +6,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 
-class KingTest {
+class KingTests {
     @Test
     fun `can move 1 square in all directions`() {
         val test = BoardSpec(

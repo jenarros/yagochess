@@ -1,22 +1,42 @@
 # Yet Another Game of Chess
-Run with:
+
+Simple game of chess I initially wrote in Java as part of a Computer Science course in 2003. Recently rewritten in
+Kotlin.
+
+Design and implementation details are discussed in the [wiki](https://github.com/jenarros/yagochess/wiki).
+
+## Play game from source
+
+You will need Java 11+ to compile and run the game.
+
 ```
-./gradlew run
+git clone git@github.com:jenarros/yagochess.git
+cd yagochess
+./gradlew yagoc-desktop:runApp
 ```
 
 ## TODO
+
 ### Distribution
+
 - Provide windows build
 
-### Implementation
-
-- Make alphabeta iterative
-
 ### Performance
-- Review if additional use of @JvmStatic and @JvmField
 
-### Gameplay
+- Review if additional performance improvements can be done
+- Make alphabeta algorithm iterative
+
+## Gameplay
+
+- Implement checkmate due to repeated configuration 3 times
+
+## UI
+
+- Implement console UI
+- Tidy up settings popups
 - Separate debug log from move log
-- Serialize games in plain text instead of binary
 - Should restart reset to defaults or to current options?
-- Checkmate due to repeated configuration 3 times
+
+## Open/Save
+
+- Serialize games in plain text instead of binary. Use algebraic notation.
