@@ -13,6 +13,7 @@ on:
 jobs:
   build:
     runs-on: macos-10.15
+
     steps:
       - uses: actions/checkout@v2
       - name: Set up Java 15
@@ -35,7 +36,7 @@ jobs:
           mkdir build
           echo "$(date +%Y.%-m.%d)" > build/version
           echo "${GITHUB_SHA:0:7}" > build/sha
-          echo "BUILD_VERSION=$(cat build/version) >> $GITHUB_ENV
+          echo "BUILD_VERSION=$(cat build/version)" >> $GITHUB_ENV
           echo "BUILD_SHA=$(cat build/sha)" >> $GITHUB_ENV
       - name: Build
         run: ./gradlew --stacktrace build -Pversion=$BUILD_VERSION -Psha=$BUILD_SHA
