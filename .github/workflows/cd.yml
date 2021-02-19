@@ -3,6 +3,8 @@ name: CI
 on:
   push:
     branches: [ main ]
+    tags:
+      - 'v*'
   pull_request:
     branches: [ main ]
 
@@ -46,3 +48,22 @@ jobs:
         with:
           name: OSX
           path: yagoc-desktop/build/distributions/*.dmg
+      - uses: actions/create-release@v1
+        id: create_release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - uses: actions/upload-release-asset@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: yagoc-desktop/build/libs/*-all.jar
+          asset_name: yagoc-desktop.jar
+          asset_content_type: application/zip
