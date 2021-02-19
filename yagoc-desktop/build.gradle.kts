@@ -46,7 +46,7 @@ tasks.register("runApp", JavaExec::class) {
 
 val jpackageDefaults = mutableListOf(
     System.getenv("JAVA_HOME") + "/bin/jpackage",
-    "--name", "yagochess",
+    "--name", "Yagochess",
     "--input", project.buildDir.absolutePath + "/libs",
     "--main-jar", "yagoc-desktop-" + project.version + "-all.jar",
     "--main-class", yagocClass,
