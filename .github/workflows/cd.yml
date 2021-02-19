@@ -3,8 +3,8 @@ name: CI
 on:
   push:
     branches: [ main ]
-    tags:
-      - 'v*'
+  #    tags:
+  #      - 'v*'
   pull_request:
     branches: [ main ]
 
@@ -13,6 +13,7 @@ on:
 jobs:
   build:
     runs-on: macos-10.15
+
     steps:
       - uses: actions/checkout@v2
       - name: Set up Java 15
@@ -35,7 +36,7 @@ jobs:
           mkdir build
           echo "$(date +%Y.%-m.%d)" > build/version
           echo "${GITHUB_SHA:0:7}" > build/sha
-          echo "BUILD_VERSION=$(cat build/version) >> $GITHUB_ENV
+          echo "BUILD_VERSION=$(cat build/version)" >> $GITHUB_ENV
           echo "BUILD_SHA=$(cat build/sha)" >> $GITHUB_ENV
       - name: Build
         run: ./gradlew --stacktrace build -Pversion=$BUILD_VERSION -Psha=$BUILD_SHA
@@ -51,7 +52,7 @@ jobs:
           path: yagoc-desktop/build/distributions/*.dmg
       - uses: actions/create-release@v1
         id: create_release
-        if: startsWith(github.ref, 'refs/tags/v')
+#        if: startsWith(github.ref, 'refs/tags/v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -60,11 +61,11 @@ jobs:
           draft: false
           prerelease: false
       - uses: actions/upload-release-asset@v1
-        if: startsWith(github.ref, 'refs/tags/v')
+#        if: startsWith(github.ref, 'refs/tags/v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: yagoc-desktop/build/libs/yagoc-desktop-$BUILD_VERSION-all.jar
-          asset_name: yagoc-desktop.jar
+          asset_path: yagoc-desktop/build/libs/yagoc-desktop-${{ env.BUILD_VERSION }}-all.jar
+          asset_name: yagoc-desktop-${{ env.BUILD_VERSION }}-${{ env.BUILD_SHA}}.jar
           asset_content_type: application/zip
