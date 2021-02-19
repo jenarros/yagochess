@@ -77,6 +77,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: yyagoc-desktop/build/distributions/yagoc-desktop-${{ env.BUILD_VERSION }}.dmg
+          asset_path: yagoc-desktop/build/distributions/yagoc-desktop-${{ env.BUILD_VERSION }}.dmg
           asset_name: yagoc-desktop-${{ env.BUILD_VERSION }}.dmg
           asset_content_type: application/zip
