@@ -39,13 +39,13 @@ jobs:
           echo "BUILD_VERSION=$(cat build/version)" >> $GITHUB_ENV
           echo "BUILD_SHA=$(cat build/sha)" >> $GITHUB_ENV
       - name: Build
-        run: ./gradlew --stacktrace build -Pversion=$BUILD_VERSION -Psha=$BUILD_SHA
+        run: ./gradlew --stacktrace clean check yagoc-desktop:shadowJar -Pversion=$BUILD_VERSION -Psha=$BUILD_SHA
       - name: Build OSX image
-        run: ./gradlew --stacktrace createOSXImage -Pversion=$BUILD_VERSION -Psha=$BUILD_SHA
+        run: ./gradlew --stacktrace yagoc-desktop:createMacDmg -Pversion=$BUILD_VERSION -Psha=$BUILD_SHA
       - uses: actions/upload-artifact@v2
         with:
           name: Generic Java (Requires Java Runtime 11 or newer)
-          path: yagoc-desktop/build/libs/*-all.jar
+          path: yagoc-desktop/build/libs/yagoc-desktop-${{ env.BUILD_VERSION }}-all.jar
       - uses: actions/upload-artifact@v2
         with:
           name: OSX
