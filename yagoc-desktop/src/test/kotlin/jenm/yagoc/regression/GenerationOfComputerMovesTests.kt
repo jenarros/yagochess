@@ -17,9 +17,9 @@ import java.util.concurrent.TimeUnit
 class GenerationOfComputerMovesTests {
 
     @Test
-    @Timeout(3500, unit = TimeUnit.MILLISECONDS) // Before migration to Kotlin, it was always under 4s
+    @Timeout(3000, unit = TimeUnit.MILLISECONDS) // Before migration to Kotlin, it was always under 4s
     fun `can generate moves fast`() {
-        val minimaxPlayer = MinimaxPlayer("level4", PieceColor.WhiteSet, 4, PlayerStrategy.F1)
+        val minimaxPlayer = MinimaxPlayer(PieceColor.WhiteSet, 4, PlayerStrategy.F1)
 
         val board = """
             R---K-NR
@@ -40,7 +40,7 @@ class GenerationOfComputerMovesTests {
     @Test
     @Timeout(500, unit = TimeUnit.MILLISECONDS) // Before migration to Kotlin, it was always under 4s
     fun `minimax - pawn to d5 is second move`() {
-        val minimaxPlayer = MinimaxPlayer("level3", PieceColor.BlackSet, 3, PlayerStrategy.F1)
+        val minimaxPlayer = MinimaxPlayer(PieceColor.BlackSet, 3, PlayerStrategy.F1)
 
         val board = """
             RNBQKBNR

@@ -1,9 +1,10 @@
-package jenm.yagoc.ui
+package jenm.yagoc.ui.swing
 
 import jenm.yagoc.Controller
 import jenm.yagoc.Yagoc.logger
 import jenm.yagoc.board.Board
 import jenm.yagoc.board.BoardView
+import jenm.yagoc.defaultSettings
 import java.awt.*
 import java.awt.event.KeyEvent
 import java.awt.event.WindowEvent
@@ -12,9 +13,9 @@ import java.io.ObjectInputStream
 import javax.swing.*
 import kotlin.system.exitProcess
 
-class YagocWindow(private val controller: Controller, board: BoardView, val textPane: JTextPane) : JFrame() {
+class YagocWindow(private val controller: Controller, board: BoardView, textPane: JTextPane) : JFrame() {
     private val boardPanel: BoardPanel = BoardPanel(controller, board)
-
+    private var settings = defaultSettings
     private val scrollPane = JScrollPane(textPane).also {
         it.preferredSize = Dimension(LOG_WIDTH, boardPanel.boardAndBorderSize / 2)
         it.maximumSize = Dimension(LOG_WIDTH, boardPanel.boardAndBorderSize / 2)
@@ -117,7 +118,18 @@ class YagocWindow(private val controller: Controller, board: BoardView, val text
             }
             val optionsMenuItem = JMenuItem("Preferences...").also {
                 it.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, yagocWindow.toolkit.menuShortcutKeyMaskEx)
-                it.addActionListener { controller.configurePlayers() }
+                it.addActionListener {
+                    controller.pause()
+                    PreferencesPanel(yagocWindow, yagocWindow.settings, { yagocSettings ->
+                        yagocWindow.settings = yagocSettings
+                        SwingUtilities.invokeLater {
+                            controller.configurePlayers(yagocSettings)
+                            controller.resume()
+                        }
+                    }, {
+                        controller.resume()
+                    })
+                }
             }
             val undo = JMenuItem("Undo").also {
                 it.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_Z, yagocWindow.toolkit.menuShortcutKeyMaskEx)

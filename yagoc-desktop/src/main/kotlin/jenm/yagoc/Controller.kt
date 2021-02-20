@@ -7,18 +7,17 @@ import jenm.yagoc.board.BoardRules.moveDoesNotCreateCheck
 import jenm.yagoc.board.BoardRules.noMoreMovesAllowed
 import jenm.yagoc.board.Move
 import jenm.yagoc.board.Square
-import jenm.yagoc.pieces.*
-import jenm.yagoc.players.MinimaxPlayer
-import jenm.yagoc.players.PlayerStrategy
-import jenm.yagoc.players.UserPlayer
-import jenm.yagoc.ui.UserOptionDialog
+import jenm.yagoc.pieces.blackPawn
+import jenm.yagoc.pieces.blackQueen
+import jenm.yagoc.pieces.whitePawn
+import jenm.yagoc.pieces.whiteQueen
+import jenm.yagoc.ui.UIAdapter
 import java.io.FileOutputStream
 import java.io.ObjectOutputStream
 import java.util.*
 import java.util.concurrent.TimeUnit
-import javax.swing.SwingUtilities
 
-class Controller(private val board: Board, private val userOptions: UserOptionDialog) {
+class Controller(private val board: Board, private val uiAdapter: UIAdapter) {
     private val checkpoints = ArrayList<Board>()
     private var finished = false
     private var paused = false
@@ -33,7 +32,7 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
         if (checkpoints.isNotEmpty()) {
             board.resetWith(checkpoints.removeAt(checkpoints.size - 1))
             finished = false
-            SwingUtilities.invokeLater { nextMove() }
+            uiAdapter.invokeLater { nextMove() }
         }
     }
 
@@ -48,12 +47,12 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
         if (moveIfPossible(from, to)) {
             checkpoints.add(copy)
         }
-        SwingUtilities.invokeLater { nextMove() }
+        uiAdapter.invokeLater { nextMove() }
     }
 
-    fun moveIfPossible(from: Square, to: Square) =
+    private fun moveIfPossible(from: Square, to: Square) =
         when {
-            finished || !board.isPieceOfCurrentPlayer(board.pieceAt(from)) -> false
+            finished || paused || !board.isPieceOfCurrentPlayer(board.pieceAt(from)) -> false
             board.currentPlayer().isUser -> {
                 Move(board.pieceAt(from), from, to).let { move ->
                     if (from != to && isCorrectMove(board, move) && moveDoesNotCreateCheck(board, move)) {
@@ -70,7 +69,7 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
             else -> false
         }
 
-    fun ifPawnHasReachedFinalRankReplaceWithQueen(board: Board, move: Move) {
+    private fun ifPawnHasReachedFinalRankReplaceWithQueen(board: Board, move: Move) {
         //TODO What if there is already a queen?
         if (move.fromPiece == blackPawn && move.to.rank == 7) {
             board.pieceAt(move.to, blackQueen)
@@ -79,20 +78,23 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
         }
     }
 
-    fun nextMove() {
+    private fun nextMove() {
         if (finished || paused) return
         else if (board.currentPlayer().isComputer) {
-            val checkpoint = Board(board)
-            val move = board.currentPlayer().move(board)
-            board.play(move)
-            logger.info(move.toString())
-            ifPawnHasReachedFinalRankReplaceWithQueen(board, move)
-            finished = noMoreMovesAllowed(board)
-            checkpoints.add(checkpoint)
-        }
-        if (board.currentPlayer().isComputer) {
-            breath()
-            SwingUtilities.invokeLater { nextMove() }
+            uiAdapter.invokeLater {
+                val checkpoint = Board(board)
+                val move = board.currentPlayer().move(board)
+                board.play(move)
+                logger.info(move.toString())
+                ifPawnHasReachedFinalRankReplaceWithQueen(board, move)
+                finished = noMoreMovesAllowed(board)
+                checkpoints.add(checkpoint)
+
+                if (board.currentPlayer().isComputer) {
+                    breath()
+                    uiAdapter.invokeLater { nextMove() }
+                }
+            }
         }
     }
 
@@ -101,64 +103,22 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
     }
 
     fun newBoard() {
-        board.reset()
+        board.reset(defaultSettings)
     }
 
-    fun configurePlayers() {
-        val game = userOptions.gameType()
-        logger.info("Type $game chosen")
-        when (game) {
-            1 -> {
-                board.blackPlayer(
-                    MinimaxPlayer(
-                        "computer",
-                        PieceColor.BlackSet,
-                        userOptions.getLevel("computer", 1),
-                        PlayerStrategy.F1
-                    )
-                )
-                board.whitePlayer(UserPlayer("user", PieceColor.WhiteSet))
-            }
-            2 -> {
-                board.blackPlayer(UserPlayer("user", PieceColor.BlackSet))
-                board.whitePlayer(
-                    MinimaxPlayer(
-                        "computer",
-                        PieceColor.WhiteSet,
-                        userOptions.getLevel("computer", 1),
-                        PlayerStrategy.F1
-                    )
-                )
-            }
-            3 -> {
-                board.blackPlayer(
-                    MinimaxPlayer(
-                        "computer 1",
-                        PieceColor.BlackSet,
-                        userOptions.getLevel("computer 1", 1),
-                        PlayerStrategy.F1
-                    )
-                )
-                board.whitePlayer(
-                    MinimaxPlayer(
-                        "computer 2",
-                        PieceColor.WhiteSet,
-                        userOptions.getLevel("computer 2", 1),
-                        PlayerStrategy.F1
-                    )
-                )
-            }
-            else -> {
-                board.blackPlayer(UserPlayer("user 1", PieceColor.BlackSet))
-                board.whitePlayer(UserPlayer("user 2", PieceColor.WhiteSet))
-            }
+    fun configurePlayers(yagocSettings: YagocSettings) {
+        uiAdapter.invokeLater {
+            newBoard()
+            board.blackPlayer(yagocSettings.blackPlayer)
+            board.whitePlayer(yagocSettings.whitePlayer)
+            logger.info("name\ttype")
+            logger.info(board.blackPlayer().toString())
+            logger.info(board.whitePlayer().toString())
         }
-        logger.info("name\ttype")
-        logger.info(board.blackPlayer().toString())
-        logger.info(board.whitePlayer().toString())
-
-        if (board.currentPlayer().isComputer) {
-            SwingUtilities.invokeLater { nextMove() }
+        uiAdapter.invokeLater {
+            if (board.currentPlayer().isComputer) {
+                resume()
+            }
         }
     }
 
@@ -166,7 +126,18 @@ class Controller(private val board: Board, private val userOptions: UserOptionDi
         paused = !paused
         logger.info(if (paused) "Game paused" else "Game resumed")
         if (!paused) {
-            SwingUtilities.invokeLater { nextMove() }
+            uiAdapter.invokeLater { nextMove() }
+        }
+    }
+
+    fun pause() {
+        paused = true
+    }
+
+    fun resume() {
+        uiAdapter.invokeLater {
+            paused = false
+            nextMove()
         }
     }
 

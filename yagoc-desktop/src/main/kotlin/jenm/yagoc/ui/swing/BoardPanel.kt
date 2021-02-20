@@ -1,4 +1,4 @@
-package jenm.yagoc.ui
+package jenm.yagoc.ui.swing
 
 import jenm.yagoc.Controller
 import jenm.yagoc.board.*

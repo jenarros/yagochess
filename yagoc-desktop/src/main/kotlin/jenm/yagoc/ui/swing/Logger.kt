@@ -1,4 +1,4 @@
-package jenm.yagoc.ui
+package jenm.yagoc.ui.swing
 
 import javax.swing.JTextPane
 import javax.swing.text.SimpleAttributeSet

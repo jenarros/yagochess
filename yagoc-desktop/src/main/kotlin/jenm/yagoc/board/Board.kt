@@ -1,8 +1,10 @@
 package jenm.yagoc.board
 
+import jenm.yagoc.YagocSettings
 import jenm.yagoc.board.MoveLog.Companion.castling
 import jenm.yagoc.board.MoveLog.Companion.enPassant
 import jenm.yagoc.board.MoveLog.Companion.normalMove
+import jenm.yagoc.defaultSettings
 import jenm.yagoc.pieces.*
 import jenm.yagoc.players.MinimaxPlayer
 import jenm.yagoc.players.Player
@@ -23,12 +25,12 @@ class Board : BoardView {
     private var blackKingMoved = false
     private var drawCounter = 0
     private var moveCounter = 0
-    private var blackPlayer: Player = MinimaxPlayer("computer 1", PieceColor.BlackSet, 3, PlayerStrategy.F1)
-    private var whitePlayer: Player = UserPlayer("user 1", PieceColor.WhiteSet)
+    private var blackPlayer: Player = MinimaxPlayer(PieceColor.BlackSet, 3, PlayerStrategy.F1)
+    private var whitePlayer: Player = UserPlayer(PieceColor.WhiteSet)
     private var currentPlayer: Player = whitePlayer
 
-    constructor() {
-        reset()
+    constructor(yagocSettings: YagocSettings) {
+        reset(yagocSettings)
     }
 
     constructor(board: Board) {
@@ -53,10 +55,10 @@ class Board : BoardView {
         moves.addAll(board.moves)
     }
 
-    fun reset() {
+    fun reset(yagocSettings: YagocSettings) {
         Arrays.fill(enPassant, -5)
-        blackPlayer = MinimaxPlayer("computer 1", PieceColor.BlackSet, 3, PlayerStrategy.F1)
-        whitePlayer = UserPlayer("user 1", PieceColor.WhiteSet)
+        blackPlayer = yagocSettings.blackPlayer
+        whitePlayer = yagocSettings.whitePlayer
         currentPlayer = whitePlayer
         squareBoard.reset()
     }
@@ -165,9 +167,12 @@ class Board : BoardView {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
         val that = other as Board
-        return whiteLeftRookMoved == that.whiteLeftRookMoved && whiteRightRookMoved == that.whiteRightRookMoved && whiteKingMoved == that.whiteKingMoved && blackLeftRookMoved == that.blackLeftRookMoved && blackRightRookMoved == that.blackRightRookMoved && blackKingMoved == that.blackKingMoved && drawCounter == that.drawCounter && moveCounter == that.moveCounter && moves == that.moves &&
-                squareBoard == that.squareBoard &&
-                enPassant.contentEquals(that.enPassant) && currentPlayer == that.currentPlayer && blackPlayer == that.blackPlayer && whitePlayer == that.whitePlayer
+        return whiteLeftRookMoved == that.whiteLeftRookMoved && whiteRightRookMoved == that.whiteRightRookMoved &&
+                whiteKingMoved == that.whiteKingMoved && blackLeftRookMoved == that.blackLeftRookMoved &&
+                blackRightRookMoved == that.blackRightRookMoved && blackKingMoved == that.blackKingMoved &&
+                drawCounter == that.drawCounter && moveCounter == that.moveCounter && moves == that.moves &&
+                squareBoard == that.squareBoard && enPassant.contentEquals(that.enPassant) &&
+                currentPlayer == that.currentPlayer && blackPlayer == that.blackPlayer && whitePlayer == that.whitePlayer
     }
 
     override fun <T> playAndUndo(move: Move, callable: Callable<T>): T {
@@ -188,12 +193,13 @@ class Board : BoardView {
     }
 
     private fun updateMovedPieces(move: Move) {
-        if (move.fromPiece == whiteKing) whiteKingMoved =
-            true else if (move.fromPiece == whiteRook && move.from.file == 0) whiteLeftRookMoved =
-            true else if (move.fromPiece == whiteRook && move.from.file == 7) whiteRightRookMoved = true
-        if (move.fromPiece == blackKing) blackKingMoved =
-            true else if (move.fromPiece == blackRook && move.from.file == 0) blackLeftRookMoved =
-            true else if (move.fromPiece == blackRook && move.from.file == 7) blackRightRookMoved = true
+        if (move.fromPiece == whiteKing) whiteKingMoved = true
+        else if (move.fromPiece == whiteRook && move.from.file == 0) whiteLeftRookMoved = true
+        else if (move.fromPiece == whiteRook && move.from.file == 7) whiteRightRookMoved = true
+
+        if (move.fromPiece == blackKing) blackKingMoved = true
+        else if (move.fromPiece == blackRook && move.from.file == 0) blackLeftRookMoved = true
+        else if (move.fromPiece == blackRook && move.from.file == 7) blackRightRookMoved = true
     }
 
     fun undo() {
@@ -314,7 +320,7 @@ class Board : BoardView {
     companion object {
         fun parseBoard(stringBoard: String): Board {
             val cleanStringBoard = stringBoard.replace("[ \t\n]".toRegex(), "")
-            val board = Board()
+            val board = Board(defaultSettings)
             allSquares.forEach { square: Square ->
                 board.pieceAt(
                     square, Pieces.parse(

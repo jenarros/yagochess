@@ -9,11 +9,10 @@ import java.io.Serializable
 import java.util.concurrent.atomic.AtomicInteger
 
 class MinimaxPlayer(
-    name: String,
     pieceColor: PieceColor,
     private val level: Int,
     private val strategy: PlayerStrategy
-) : Player(name, pieceColor, PlayerType.Computer), Serializable {
+) : Player(pieceColor, PlayerType.Computer), Serializable {
     val processedMoveCounter = AtomicInteger(0)
 
     override fun toString() = pieceColor.toString() + "\t" + type + "\t" + level

@@ -68,7 +68,7 @@ object BoardRules {
     fun noMoreMovesAllowed(board: BoardView): Boolean {
         return when {
             isCurrentPlayerCheckmate(board) -> true.also {
-                Yagoc.logger.info("checkmate winner is " + board.oppositePlayer().name)
+                Yagoc.logger.info("checkmate winner is " + board.oppositePlayer().pieceColor)
             }
             isADraw(board) -> true.also {
                 Yagoc.logger.info("draw")
