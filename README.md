@@ -5,7 +5,11 @@ Kotlin.
 
 Design and implementation details are discussed in the [wiki](https://github.com/jenarros/yagochess/wiki).
 
-## Play game from source
+## Binary releases
+
+Binary releases for OSX as well as Java 11+ can be found [here](https://github.com/jenarros/yagochess/releases).
+
+## Playing from source
 
 You will need Java 11+ to compile and run the game.
 
@@ -33,9 +37,7 @@ cd yagochess
 ## UI
 
 - Implement console UI
-- Tidy up settings popups
 - Separate debug log from move log
-- Should restart reset to defaults or to current options?
 
 ## Open/Save
 
