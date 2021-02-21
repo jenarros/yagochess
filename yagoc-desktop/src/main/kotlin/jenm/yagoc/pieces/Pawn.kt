@@ -27,10 +27,11 @@ class Pawn(pieceColor: PieceColor) : Piece(PieceType.Pawn, pieceColor) {
             // capture
             if (board.pieceAt(move.to).notOfSameColor(move.fromPiece.color)) {
                 true
-            } else board.pieceAt(move.to) == none &&
-                    board.enPassant(move.to.file) == board.moveCounter() - 1 &&
-                    move.from.rank == if (move.fromPiece.color == PieceColor.WhiteSet) 3 else 4
-            // en passant
+            } else {
+                board.pieceAt(move.to) == none &&
+                        board.enPassant(move.to.file) == board.moveCounter() - 1 &&
+                        move.from.rank == if (move.fromPiece.color == PieceColor.WhiteSet) 3 else 4
+            }
         } else false
     }
 

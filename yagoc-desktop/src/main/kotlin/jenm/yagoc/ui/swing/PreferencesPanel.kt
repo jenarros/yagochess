@@ -4,7 +4,6 @@ import jenm.yagoc.YagocSettings
 import jenm.yagoc.pieces.PieceColor
 import jenm.yagoc.players.MinimaxPlayer
 import jenm.yagoc.players.Player
-import jenm.yagoc.players.PlayerStrategy
 import jenm.yagoc.players.UserPlayer
 import java.awt.GridLayout
 import java.awt.event.WindowAdapter
@@ -100,7 +99,7 @@ class PreferencesPanel(
 
     private fun AbstractButton.toPlayerType(pieceColor: PieceColor): Player {
         return if (this.text == computerPlayerLabel) {
-            MinimaxPlayer(pieceColor, 3, PlayerStrategy.F1)
+            MinimaxPlayer(pieceColor)
         } else {
             UserPlayer(pieceColor)
         }

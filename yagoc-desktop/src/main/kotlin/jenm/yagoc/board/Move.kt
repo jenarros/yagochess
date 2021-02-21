@@ -47,7 +47,7 @@ data class Move(val fromPiece: Piece, val from: Square, val to: Square) : Serial
     val isCastlingQueenside = isCastling && to.file < from.file
 
     override fun toString(): String {
-        return fromPiece.toString() + " " + RANK_NAMES[from.rank] + FILE_NAMES[from.file] + " " + RANK_NAMES[to.rank] + FILE_NAMES[to.file]
+        return fromPiece.toString() + " " + FILE_NAMES[from.file] + RANK_NAMES[from.rank] + " " + FILE_NAMES[to.file] + RANK_NAMES[to.rank]
     }
 
     companion object {

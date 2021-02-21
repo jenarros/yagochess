@@ -9,6 +9,7 @@ import java.awt.*
 import java.awt.event.MouseEvent
 import java.util.stream.IntStream
 import javax.swing.JPanel
+import javax.swing.SwingUtilities
 import javax.swing.Timer
 import javax.swing.event.MouseInputListener
 import kotlin.math.floor
@@ -160,12 +161,14 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
 
         override fun mouseReleased(e: MouseEvent) {
             val position = e.point
-            val from = selectedSquare
-            if (isInsideTheBoard(position)) {
-                from?.let { controller.move(from, boardSquare(position)) }
-                selectedSquare = null
-                mousePosition = null
+            if (isInsideTheBoard(position) && boardSquare(position) != selectedSquare) {
+                val from = selectedSquare
+                SwingUtilities.invokeLater {
+                    from?.let { controller.move(from, boardSquare(position)) }
+                }
             }
+            mousePosition = null
+            selectedSquare = null
         }
 
         override fun mouseEntered(e: MouseEvent) {}

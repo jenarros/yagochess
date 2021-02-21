@@ -3,6 +3,7 @@ package jenm.yagoc.board
 import jenm.yagoc.pieces.Piece
 import java.io.Serializable
 
+// TODO Converto to data class
 class MoveLog private constructor(
     board: BoardView,
     val move: Move,
@@ -31,6 +32,7 @@ class MoveLog private constructor(
 
     val enPassantPiece: Piece? = if (type == MoveType.EnPassant) board.pieceAt(move.enPassantSquare()) else null
 
+
     companion object {
         @JvmStatic
         fun enPassant(board: BoardView, move: Move, toPiece: Piece): MoveLog {
@@ -48,4 +50,7 @@ class MoveLog private constructor(
         }
     }
 
+    override fun toString(): String {
+        return "$move"
+    }
 }

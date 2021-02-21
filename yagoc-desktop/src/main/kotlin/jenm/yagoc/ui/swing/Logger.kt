@@ -15,9 +15,7 @@ data class Logger(val textPanel: JTextPane) {
     }
 
     fun debug(message: String) {
-        textPanel.styledDocument.insertString(textPanel.styledDocument.length, message + "\n", debugAttibuteSet)
-        textPanel.caretPosition = textPanel.document.length
-        textPanel.update(textPanel.graphics)
+        println(message)
     }
 
     private fun info(): SimpleAttributeSet {

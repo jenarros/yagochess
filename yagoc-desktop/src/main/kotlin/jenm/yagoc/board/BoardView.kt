@@ -4,6 +4,7 @@ import jenm.yagoc.pieces.Piece
 import jenm.yagoc.pieces.none
 import jenm.yagoc.players.Player
 import java.io.Serializable
+import java.util.*
 import java.util.concurrent.Callable
 
 interface BoardView : Serializable {
@@ -31,4 +32,5 @@ interface BoardView : Serializable {
     fun <T> playAndUndo(move: Move, callable: Callable<T>): T
     fun playAndUndo(from: Square, to: Square): BoardView
     fun toPrettyString(): String
+    fun history(): Stack<MoveLog>
 }

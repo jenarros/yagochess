@@ -5,6 +5,7 @@ import jenm.yagoc.board.Board
 import jenm.yagoc.board.BoardRules.isCorrectMove
 import jenm.yagoc.board.BoardRules.moveDoesNotCreateCheck
 import jenm.yagoc.board.BoardRules.noMoreMovesAllowed
+import jenm.yagoc.board.BoardView
 import jenm.yagoc.board.Move
 import jenm.yagoc.board.Square
 import jenm.yagoc.pieces.blackPawn
@@ -50,7 +51,9 @@ class Controller(private val board: Board, private val uiAdapter: UIAdapter) {
         uiAdapter.invokeLater { nextMove() }
     }
 
-    private fun moveIfPossible(from: Square, to: Square) =
+    fun boardView(): BoardView = board
+
+    fun moveIfPossible(from: Square, to: Square) =
         when {
             finished || paused || !board.isPieceOfCurrentPlayer(board.pieceAt(from)) -> false
             board.currentPlayer().isUser -> {
@@ -99,10 +102,11 @@ class Controller(private val board: Board, private val uiAdapter: UIAdapter) {
     }
 
     private fun breath() {
-        TimeUnit.SECONDS.sleep(COMPUTER_PAUSE_SECONDS.toLong())
+        uiAdapter.invokeLater { TimeUnit.MILLISECONDS.sleep(COMPUTER_PAUSE_MILLISECONDS.toLong()) }
     }
 
     fun newBoard() {
+        checkpoints.clear()
         board.reset(defaultSettings)
     }
 
@@ -142,6 +146,6 @@ class Controller(private val board: Board, private val uiAdapter: UIAdapter) {
     }
 
     companion object {
-        private const val COMPUTER_PAUSE_SECONDS = 1
+        private const val COMPUTER_PAUSE_MILLISECONDS = 1
     }
 }

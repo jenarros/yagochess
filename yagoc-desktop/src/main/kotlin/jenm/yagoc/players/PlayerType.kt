@@ -1,6 +1,8 @@
 package jenm.yagoc.players
 
-enum class PlayerType {
+import java.io.Serializable
+
+enum class PlayerType : Serializable {
     User,
     Computer
 }

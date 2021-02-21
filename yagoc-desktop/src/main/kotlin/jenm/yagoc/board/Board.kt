@@ -8,7 +8,6 @@ import jenm.yagoc.defaultSettings
 import jenm.yagoc.pieces.*
 import jenm.yagoc.players.MinimaxPlayer
 import jenm.yagoc.players.Player
-import jenm.yagoc.players.PlayerStrategy
 import jenm.yagoc.players.UserPlayer
 import java.util.*
 import java.util.concurrent.Callable
@@ -25,7 +24,7 @@ class Board : BoardView {
     private var blackKingMoved = false
     private var drawCounter = 0
     private var moveCounter = 0
-    private var blackPlayer: Player = MinimaxPlayer(PieceColor.BlackSet, 3, PlayerStrategy.F1)
+    private var blackPlayer: Player = MinimaxPlayer(PieceColor.BlackSet)
     private var whitePlayer: Player = UserPlayer(PieceColor.WhiteSet)
     private var currentPlayer: Player = whitePlayer
 
@@ -270,9 +269,11 @@ class Board : BoardView {
                 enPassant[move.to.file] = moveCounter
             }
             // en passant capture
-            if (move.fromPiece
-                    .pieceType == PieceType.Pawn && move.rankDistance() == 1 && move.fileDistanceAbs() == 1 && enPassant[move.to
-                    .file] == moveCounter - 1
+            if (move.fromPiece.pieceType == PieceType.Pawn &&
+                move.rankDistance() == 1 &&
+                move.fileDistanceAbs() == 1 &&
+                pieceAt(move.to) == none &&
+                enPassant[move.to.file] == moveCounter - 1
             ) {
                 // i.e. for whites
                 // turn=1, to.x = 2, to.y = 5, squareC = (3,5)
@@ -296,6 +297,8 @@ class Board : BoardView {
         moves.add(moveLog)
         return this
     }
+
+    override fun history() = moves
 
     override fun hashCode(): Int {
         var result = Objects.hash(

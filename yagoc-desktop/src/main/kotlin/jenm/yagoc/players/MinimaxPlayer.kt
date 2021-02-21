@@ -4,14 +4,15 @@ import jenm.yagoc.Yagoc
 import jenm.yagoc.board.BoardRules.generateMoves
 import jenm.yagoc.board.BoardView
 import jenm.yagoc.board.Move
+import jenm.yagoc.defaultLevel
 import jenm.yagoc.pieces.PieceColor
 import java.io.Serializable
 import java.util.concurrent.atomic.AtomicInteger
 
 class MinimaxPlayer(
     pieceColor: PieceColor,
-    private val level: Int,
-    private val strategy: PlayerStrategy
+    private val level: Int = defaultLevel,
+    private val strategy: DefaultPlayerStrategy = DefaultPlayerStrategy()
 ) : Player(pieceColor, PlayerType.Computer), Serializable {
     val processedMoveCounter = AtomicInteger(0)
 
