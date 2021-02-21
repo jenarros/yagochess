@@ -2,20 +2,12 @@ package jenm.yagoc.ui.swing
 
 import jenm.yagoc.Controller
 import jenm.yagoc.board.*
-import jenm.yagoc.pieces.*
-import org.apache.batik.transcoder.SVGAbstractTranscoder
-import org.apache.batik.transcoder.TranscoderInput
-import org.apache.batik.transcoder.TranscoderOutput
-import org.apache.batik.transcoder.image.PNGTranscoder
+import jenm.yagoc.pieces.Piece
+import jenm.yagoc.pieces.PieceType
+import jenm.yagoc.pieces.none
 import java.awt.*
 import java.awt.event.MouseEvent
-import java.awt.image.BufferedImage
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.net.URL
-import java.util.*
 import java.util.stream.IntStream
-import javax.imageio.ImageIO
 import javax.swing.JPanel
 import javax.swing.Timer
 import javax.swing.event.MouseInputListener
@@ -23,8 +15,9 @@ import kotlin.math.floor
 import kotlin.math.min
 
 class BoardPanel(private val controller: Controller, private val board: BoardView) : JPanel() {
-    private val originalImages = images("/themes/original")
-    private val svgImages = svgImages("/themes/svg")
+    var theme = Themes.Modern
+    var images = theme.loadImages()
+
     private val mouseMotionListener = AccionListener()
 
     public override fun paintComponent(g: Graphics) {
@@ -36,7 +29,7 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
         if (piece.pieceType == PieceType.Pawn) (squareSize - imageSize) / 2 else (squareSize - imageSize) / 4
 
     fun drawPiece(g: Graphics, position: Point, piece: Piece, gap: Int) {
-        svgImages[piece]?.let {
+        images[piece]?.let {
             g.drawImage(
                 it, position.x + gap, position.y + gap,
                 squareSize - gap * 2,
@@ -47,6 +40,11 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
 
     fun toScreenCoordinates(square: Square): Point {
         return Point(square.file * squareSize + borderSize, square.rank * squareSize + borderSize)
+    }
+
+    fun selectTheme(theme: Themes) {
+        this.theme = theme
+        this.images = theme.loadImages()
     }
 
     fun paintBoard(g: Graphics) {
@@ -109,7 +107,7 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
             drawPiece(graphics, toScreenCoordinates(square), piece, gap(piece))
         } else if (square == mouseMotionListener.selectedSquare) {
             mouseMotionListener.mousePosition?.let {
-                drawPiece(graphics, toMouseLocation(it), piece, 0)
+                drawPiece(graphics, toMouseLocation(it), piece, gap(piece))
             }
         }
     }
@@ -142,38 +140,6 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
     val boardAndBorderSize = squareSize * 8 + borderSize * 2
     val boardSize = squareSize * 8
     val boardFontSize = scale(YagocWindow.BOARD_FONT_SIZE)
-
-    private fun images(theme: String): Map<Piece, Image> =
-        HashMap<Piece, Image>().also {
-            it[whitePawn] = toolkit.getImage(this.javaClass.getResource("$theme/white_pawn.gif"))
-            it[whiteKnight] = toolkit.getImage(this.javaClass.getResource("$theme/white_knight.gif"))
-            it[whiteBishop] = toolkit.getImage(this.javaClass.getResource("$theme/white_bishop.gif"))
-            it[whiteRook] = toolkit.getImage(this.javaClass.getResource("$theme/white_rook.gif"))
-            it[whiteQueen] = toolkit.getImage(this.javaClass.getResource("$theme/white_queen.gif"))
-            it[whiteKing] = toolkit.getImage(this.javaClass.getResource("$theme/white_king.gif"))
-            it[blackPawn] = toolkit.getImage(this.javaClass.getResource("$theme/black_pawn.gif"))
-            it[blackKnight] = toolkit.getImage(this.javaClass.getResource("$theme/black_knight.gif"))
-            it[blackBishop] = toolkit.getImage(this.javaClass.getResource("$theme/black_bishop.gif"))
-            it[blackRook] = toolkit.getImage(this.javaClass.getResource("$theme/black_rook.gif"))
-            it[blackQueen] = toolkit.getImage(this.javaClass.getResource("$theme/black_queen.gif"))
-            it[blackKing] = toolkit.getImage(this.javaClass.getResource("$theme/black_king.gif"))
-        }
-
-    private fun svgImages(theme: String): Map<Piece, Image> =
-        HashMap<Piece, Image>().also {
-            it[whitePawn] = createImageFromSVG(this.javaClass.getResource("$theme/white_pawn.svg"))
-            it[whiteKnight] = createImageFromSVG(this.javaClass.getResource("$theme/white_knight.svg"))
-            it[whiteBishop] = createImageFromSVG(this.javaClass.getResource("$theme/white_bishop.svg"))
-            it[whiteRook] = createImageFromSVG(this.javaClass.getResource("$theme/white_rook.svg"))
-            it[whiteQueen] = createImageFromSVG(this.javaClass.getResource("$theme/white_queen.svg"))
-            it[whiteKing] = createImageFromSVG(this.javaClass.getResource("$theme/white_king.svg"))
-            it[blackPawn] = createImageFromSVG(this.javaClass.getResource("$theme/black_pawn.svg"))
-            it[blackKnight] = createImageFromSVG(this.javaClass.getResource("$theme/black_knight.svg"))
-            it[blackBishop] = createImageFromSVG(this.javaClass.getResource("$theme/black_bishop.svg"))
-            it[blackRook] = createImageFromSVG(this.javaClass.getResource("$theme/black_rook.svg"))
-            it[blackQueen] = createImageFromSVG(this.javaClass.getResource("$theme/black_queen.svg"))
-            it[blackKing] = createImageFromSVG(this.javaClass.getResource("$theme/black_king.svg"))
-        }
 
     internal inner class AccionListener : MouseInputListener {
         var selectedSquare: Square? = null
@@ -209,18 +175,6 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
         }
 
         override fun mouseMoved(e: MouseEvent) {}
-    }
-
-    fun createImageFromSVG(url: URL): BufferedImage {
-        val resultByteStream = ByteArrayOutputStream()
-        val transcoderInput = TranscoderInput(url.toExternalForm())
-        val transcoderOutput = TranscoderOutput(resultByteStream)
-        val pngTranscoder = PNGTranscoder()
-        pngTranscoder.addTranscodingHint(SVGAbstractTranscoder.KEY_HEIGHT, 240f)
-        pngTranscoder.addTranscodingHint(SVGAbstractTranscoder.KEY_WIDTH, 240f)
-        pngTranscoder.transcode(transcoderInput, transcoderOutput)
-        resultByteStream.flush()
-        return ImageIO.read(ByteArrayInputStream(resultByteStream.toByteArray()))
     }
 
     init {
