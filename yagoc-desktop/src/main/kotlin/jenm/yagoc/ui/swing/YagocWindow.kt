@@ -33,8 +33,9 @@ class YagocWindow(private val controller: Controller, board: BoardView, textPane
         contentPane.add(scrollPane, BorderLayout.EAST)
         isResizable = false
         addMenuBar(this, controller)
-        iconImage = toolkit.getImage(this.javaClass.getResource("/img/black_pawn.gif"))
-        Taskbar.getTaskbar().iconImage = toolkit.getImage(this.javaClass.getResource("/img/black_pawn.gif"))
+        val iconImagePath = "/themes/original/black_pawn.gif"
+        iconImage = toolkit.getImage(this.javaClass.getResource(iconImagePath))
+        Taskbar.getTaskbar().iconImage = toolkit.getImage(this.javaClass.getResource(iconImagePath))
         pack()
     }
 

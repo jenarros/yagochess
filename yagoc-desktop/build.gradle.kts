@@ -11,6 +11,8 @@ repositories {
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.apache.xmlgraphics:batik-codec:1.14")
+    implementation("org.apache.xmlgraphics:batik-transcoder:1.14")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")

@@ -3,17 +3,28 @@ package jenm.yagoc.ui.swing
 import jenm.yagoc.Controller
 import jenm.yagoc.board.*
 import jenm.yagoc.pieces.*
+import org.apache.batik.transcoder.SVGAbstractTranscoder
+import org.apache.batik.transcoder.TranscoderInput
+import org.apache.batik.transcoder.TranscoderOutput
+import org.apache.batik.transcoder.image.PNGTranscoder
 import java.awt.*
 import java.awt.event.MouseEvent
+import java.awt.image.BufferedImage
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.net.URL
 import java.util.*
 import java.util.stream.IntStream
+import javax.imageio.ImageIO
 import javax.swing.JPanel
 import javax.swing.Timer
 import javax.swing.event.MouseInputListener
 import kotlin.math.floor
 import kotlin.math.min
+
 class BoardPanel(private val controller: Controller, private val board: BoardView) : JPanel() {
-    private val images = images()
+    private val originalImages = images("/themes/original")
+    private val svgImages = svgImages("/themes/svg")
     private val mouseMotionListener = AccionListener()
 
     public override fun paintComponent(g: Graphics) {
@@ -21,12 +32,17 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
         paintBoard(g)
     }
 
-    fun drawPiece(g: Graphics, square: Square, piece: Piece) {
-        drawPiece(g, toScreenCoordinates(square), piece, (squareSize - imageSize) / 2)
-    }
+    fun gap(piece: Piece) =
+        if (piece.pieceType == PieceType.Pawn) (squareSize - imageSize) / 2 else (squareSize - imageSize) / 4
 
     fun drawPiece(g: Graphics, position: Point, piece: Piece, gap: Int) {
-        g.drawImage(images[piece], position.x + gap, position.y + gap, imageSize, imageSize, this)
+        svgImages[piece]?.let {
+            g.drawImage(
+                it, position.x + gap, position.y + gap,
+                squareSize - gap * 2,
+                squareSize - gap * 2, this
+            )
+        }
     }
 
     fun toScreenCoordinates(square: Square): Point {
@@ -90,7 +106,7 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
         coordY[3] = point.y
         graphics.fillPolygon(coordX, coordY, 4)
         if (square != mouseMotionListener.selectedSquare && piece != none) {
-            drawPiece(graphics, square, piece)
+            drawPiece(graphics, toScreenCoordinates(square), piece, gap(piece))
         } else if (square == mouseMotionListener.selectedSquare) {
             mouseMotionListener.mousePosition?.let {
                 drawPiece(graphics, toMouseLocation(it), piece, 0)
@@ -127,22 +143,37 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
     val boardSize = squareSize * 8
     val boardFontSize = scale(YagocWindow.BOARD_FONT_SIZE)
 
-    private fun images(): Map<Piece, Image> =
+    private fun images(theme: String): Map<Piece, Image> =
         HashMap<Piece, Image>().also {
-            it[whitePawn] = toolkit.getImage(this.javaClass.getResource("/img/white_pawn.gif"))
-            it[whiteKnight] = toolkit.getImage(this.javaClass.getResource("/img/white_knight.gif"))
-            it[whiteBishop] = toolkit.getImage(this.javaClass.getResource("/img/white_bishop.gif"))
-            it[whiteRook] = toolkit.getImage(this.javaClass.getResource("/img/white_rook.gif"))
-            it[whiteQueen] = toolkit.getImage(this.javaClass.getResource("/img/white_queen.gif"))
-            it[whiteKing] = toolkit.getImage(this.javaClass.getResource("/img/white_king.gif"))
-            it[blackPawn] = toolkit.getImage(this.javaClass.getResource("/img/black_pawn.gif"))
-            it[blackKnight] = toolkit.getImage(this.javaClass.getResource("/img/black_knight.gif"))
-            it[blackBishop] = toolkit.getImage(this.javaClass.getResource("/img/black_bishop.gif"))
-            it[blackRook] = toolkit.getImage(this.javaClass.getResource("/img/black_rook.gif"))
-            it[blackQueen] = toolkit.getImage(this.javaClass.getResource("/img/black_queen.gif"))
-            it[blackKing] = toolkit.getImage(this.javaClass.getResource("/img/black_king.gif"))
+            it[whitePawn] = toolkit.getImage(this.javaClass.getResource("$theme/white_pawn.gif"))
+            it[whiteKnight] = toolkit.getImage(this.javaClass.getResource("$theme/white_knight.gif"))
+            it[whiteBishop] = toolkit.getImage(this.javaClass.getResource("$theme/white_bishop.gif"))
+            it[whiteRook] = toolkit.getImage(this.javaClass.getResource("$theme/white_rook.gif"))
+            it[whiteQueen] = toolkit.getImage(this.javaClass.getResource("$theme/white_queen.gif"))
+            it[whiteKing] = toolkit.getImage(this.javaClass.getResource("$theme/white_king.gif"))
+            it[blackPawn] = toolkit.getImage(this.javaClass.getResource("$theme/black_pawn.gif"))
+            it[blackKnight] = toolkit.getImage(this.javaClass.getResource("$theme/black_knight.gif"))
+            it[blackBishop] = toolkit.getImage(this.javaClass.getResource("$theme/black_bishop.gif"))
+            it[blackRook] = toolkit.getImage(this.javaClass.getResource("$theme/black_rook.gif"))
+            it[blackQueen] = toolkit.getImage(this.javaClass.getResource("$theme/black_queen.gif"))
+            it[blackKing] = toolkit.getImage(this.javaClass.getResource("$theme/black_king.gif"))
         }
 
+    private fun svgImages(theme: String): Map<Piece, Image> =
+        HashMap<Piece, Image>().also {
+            it[whitePawn] = createImageFromSVG(this.javaClass.getResource("$theme/white_pawn.svg"))
+            it[whiteKnight] = createImageFromSVG(this.javaClass.getResource("$theme/white_knight.svg"))
+            it[whiteBishop] = createImageFromSVG(this.javaClass.getResource("$theme/white_bishop.svg"))
+            it[whiteRook] = createImageFromSVG(this.javaClass.getResource("$theme/white_rook.svg"))
+            it[whiteQueen] = createImageFromSVG(this.javaClass.getResource("$theme/white_queen.svg"))
+            it[whiteKing] = createImageFromSVG(this.javaClass.getResource("$theme/white_king.svg"))
+            it[blackPawn] = createImageFromSVG(this.javaClass.getResource("$theme/black_pawn.svg"))
+            it[blackKnight] = createImageFromSVG(this.javaClass.getResource("$theme/black_knight.svg"))
+            it[blackBishop] = createImageFromSVG(this.javaClass.getResource("$theme/black_bishop.svg"))
+            it[blackRook] = createImageFromSVG(this.javaClass.getResource("$theme/black_rook.svg"))
+            it[blackQueen] = createImageFromSVG(this.javaClass.getResource("$theme/black_queen.svg"))
+            it[blackKing] = createImageFromSVG(this.javaClass.getResource("$theme/black_king.svg"))
+        }
 
     internal inner class AccionListener : MouseInputListener {
         var selectedSquare: Square? = null
@@ -180,10 +211,16 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
         override fun mouseMoved(e: MouseEvent) {}
     }
 
-    companion object {
-        val PLAYER_LEVELS = arrayOf(1, 2, 3, 4, 5)
-        val GAME_OPTIONS = arrayOf(1, 2, 3, 4)
-        const val REFRESH_RATE_MILLISECONDS = 20 // 1000 / rate = fps
+    fun createImageFromSVG(url: URL): BufferedImage {
+        val resultByteStream = ByteArrayOutputStream()
+        val transcoderInput = TranscoderInput(url.toExternalForm())
+        val transcoderOutput = TranscoderOutput(resultByteStream)
+        val pngTranscoder = PNGTranscoder()
+        pngTranscoder.addTranscodingHint(SVGAbstractTranscoder.KEY_HEIGHT, 240f)
+        pngTranscoder.addTranscodingHint(SVGAbstractTranscoder.KEY_WIDTH, 240f)
+        pngTranscoder.transcode(transcoderInput, transcoderOutput)
+        resultByteStream.flush()
+        return ImageIO.read(ByteArrayInputStream(resultByteStream.toByteArray()))
     }
 
     init {
@@ -195,5 +232,9 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
         addMouseListener(mouseMotionListener)
         addMouseMotionListener(mouseMotionListener)
         Timer(REFRESH_RATE_MILLISECONDS) { repaint() }.start()
+    }
+
+    companion object {
+        const val REFRESH_RATE_MILLISECONDS = 20 // 1000 / rate = fps
     }
 }
