@@ -5,3 +5,9 @@ enum class PieceColor {
     WhiteSet,
     None
 }
+
+enum class PieceVariant {
+    Queenside,
+    Kingside,
+    none
+}

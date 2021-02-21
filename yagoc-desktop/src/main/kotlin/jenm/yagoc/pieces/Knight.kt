@@ -5,7 +5,7 @@ import jenm.yagoc.board.Move
 import jenm.yagoc.board.Square
 import java.util.stream.Stream
 
-class Knight(pieceColor: PieceColor) : Piece(PieceType.Knight, pieceColor) {
+class Knight(pieceColor: PieceColor, variant: PieceVariant) : Piece(PieceType.Knight, pieceColor, variant) {
     public override fun isValidForPiece(board: BoardView, move: Move) =
         (move.rankDistanceAbs() == 2 && move.fileDistanceAbs() == 1) ||
                 (move.fileDistanceAbs() == 2 && move.rankDistanceAbs() == 1)

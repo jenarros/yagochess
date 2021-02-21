@@ -53,31 +53,23 @@ class YagocWindow(private val controller: Controller, board: BoardView, textPane
         fDialog.isVisible = true
         if (fDialog.file != null) {
             val absolutePath = fDialog.directory + fDialog.file
-            try {
                 FileInputStream(absolutePath).use { fileStream ->
                     ObjectInputStream(fileStream).use { stream ->
                         val board = stream.readObject() as Board
                         controller.resetBoard(board)
                     }
                 }
-            } catch (exc: Exception) {
-                logger.debug("Could not read file: $exc")
-            }
         }
     }
 
     fun save() {
-        try {
-            val fDialog = FileDialog(this)
-            fDialog.mode = FileDialog.SAVE
-            fDialog.isVisible = true
-            if (fDialog.file != null) {
-                val absolutePath = fDialog.directory + fDialog.file
-                controller.saveBoard(absolutePath)
-                logger.info("Saved game to $absolutePath")
-            }
-        } catch (exc: Exception) {
-            logger.debug("Could not write file:$exc")
+        val fDialog = FileDialog(this)
+        fDialog.mode = FileDialog.SAVE
+        fDialog.isVisible = true
+        if (fDialog.file != null) {
+            val absolutePath = fDialog.directory + fDialog.file
+            controller.saveBoard(absolutePath)
+            logger.info("Saved game to $absolutePath")
         }
     }
 
@@ -141,7 +133,6 @@ class YagocWindow(private val controller: Controller, board: BoardView, textPane
             it.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_L, yagocWindow.toolkit.menuShortcutKeyMaskEx)
             it.addActionListener { yagocWindow.toggleLog() }
         }
-        view.add(showLog)
         val themes = JMenu("Themes")
         val themeGroup = ButtonGroup()
         val modernMenuItem = JRadioButtonMenuItem("Modern", true).also {
@@ -160,6 +151,8 @@ class YagocWindow(private val controller: Controller, board: BoardView, textPane
         themeGroup.add(originalMenuItem)
 
         view.add(themes)
+        view.add(showLog)
+
         menuBar.add(view)
         yagocWindow.jMenuBar = menuBar
     }

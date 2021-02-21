@@ -14,23 +14,23 @@ class SquareBoard(val pieces: Array<Piece> = Array(64) { none }) : Serializable 
     fun reset() {
         Arrays.fill(pieces, none)
         pieces[a8] = blackRook
-        pieces[b8] = blackKnight
+        pieces[b8] = blackKnightQueenside
         pieces[c8] = blackBishop
         pieces[d8] = blackQueen
         pieces[e8] = blackKing
         pieces[f8] = blackBishop
-        pieces[g8] = blackKnight
+        pieces[g8] = blackKnightKingside
         pieces[h8] = blackRook
 
         allSquares.copyOfRange(a7, h7 + 1).forEach { pieces[it.arrayPosition()] = blackPawn }
 
         pieces[a1] = whiteRook
-        pieces[b1] = whiteKnight
+        pieces[b1] = whiteKnightQueenside
         pieces[c1] = whiteBishop
         pieces[d1] = whiteQueen
         pieces[e1] = whiteKing
         pieces[f1] = whiteBishop
-        pieces[g1] = whiteKnight
+        pieces[g1] = whiteKnightKingside
         pieces[h1] = whiteRook
 
         allSquares.copyOfRange(a2, h2 + 1).forEach { set(it.arrayPosition(), whitePawn) }

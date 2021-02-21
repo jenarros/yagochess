@@ -9,7 +9,10 @@ import java.util.stream.Stream
 val blackRook: Piece = Rook(PieceColor.BlackSet)
 
 @JvmField
-val blackKnight: Piece = Knight(PieceColor.BlackSet)
+val blackKnightKingside: Piece = Knight(PieceColor.BlackSet, PieceVariant.Kingside)
+
+@JvmField
+val blackKnightQueenside: Piece = Knight(PieceColor.BlackSet, PieceVariant.Queenside)
 
 @JvmField
 val blackBishop: Piece = Bishop(PieceColor.BlackSet)
@@ -27,7 +30,10 @@ val blackPawn: Piece = Pawn(PieceColor.BlackSet)
 val whiteRook: Piece = Rook(PieceColor.WhiteSet)
 
 @JvmField
-val whiteKnight: Piece = Knight(PieceColor.WhiteSet)
+val whiteKnightKingside: Piece = Knight(PieceColor.WhiteSet, PieceVariant.Kingside)
+
+@JvmField
+val whiteKnightQueenside: Piece = Knight(PieceColor.WhiteSet, PieceVariant.Queenside)
 
 @JvmField
 val whiteBishop: Piece = Bishop(PieceColor.WhiteSet)
@@ -57,13 +63,13 @@ object Pieces {
         return when (c) {
             'p' -> whitePawn
             'r' -> whiteRook
-            'n' -> whiteKnight
+            'n' -> whiteKnightKingside
             'b' -> whiteBishop
             'q' -> whiteQueen
             'k' -> whiteKing
             'P' -> blackPawn
             'R' -> blackRook
-            'N' -> blackKnight
+            'N' -> blackKnightKingside
             'B' -> blackBishop
             'Q' -> blackQueen
             'K' -> blackKing

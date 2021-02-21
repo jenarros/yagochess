@@ -7,17 +7,19 @@ import java.io.Serializable
 import java.util.*
 import java.util.stream.Stream
 
-abstract class Piece(val pieceType: PieceType, val color: PieceColor) : Serializable {
+abstract class Piece(val pieceType: PieceType, val color: PieceColor, val variant: PieceVariant = PieceVariant.none) :
+    Serializable {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || javaClass != other.javaClass) return false
         val piece = other as Piece
         return pieceType == piece.pieceType &&
-                color == piece.color
+                color == piece.color &&
+                variant == piece.variant
     }
 
-    override fun hashCode() = Objects.hash(pieceType, color)
+    override fun hashCode() = Objects.hash(pieceType, color, variant)
 
     override fun toString() = when (pieceType) {
         PieceType.None -> ""

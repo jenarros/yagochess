@@ -21,13 +21,15 @@ enum class Themes(val themePath: String, val toImage: (String) -> Image) {
     fun loadImages(): Map<Piece, Image> =
         HashMap<Piece, Image>().also {
             it[whitePawn] = toImage("$themePath/white_pawn")
-            it[whiteKnight] = toImage("$themePath/white_knight")
+            it[whiteKnightKingside] = toImage("$themePath/white_knight_kingside")
+            it[whiteKnightQueenside] = toImage("$themePath/white_knight_queenside")
             it[whiteBishop] = toImage("$themePath/white_bishop")
             it[whiteRook] = toImage("$themePath/white_rook")
             it[whiteQueen] = toImage("$themePath/white_queen")
             it[whiteKing] = toImage("$themePath/white_king")
             it[blackPawn] = toImage("$themePath/black_pawn")
-            it[blackKnight] = toImage("$themePath/black_knight")
+            it[blackKnightKingside] = toImage("$themePath/black_knight_kingside")
+            it[blackKnightQueenside] = toImage("$themePath/black_knight_queenside")
             it[blackBishop] = toImage("$themePath/black_bishop")
             it[blackRook] = toImage("$themePath/black_rook")
             it[blackQueen] = toImage("$themePath/black_queen")

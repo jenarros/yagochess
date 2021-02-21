@@ -1,31 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="68.513145"
-   height="64.421875"
-   enable-background="new 0 0 532 311.85205"
-   version="1.1"
-   viewBox="0 0 68.513146 64.422298"
-   xml:space="preserve"
-   id="svg286"
-   sodipodi:docname="white_rook.svg"
-   inkscape:version="1.0.1 (c497b03c, 2020-09-10)"><metadata
+		xmlns:dc="http://purl.org/dc/elements/1.1/"
+		xmlns:cc="http://creativecommons.org/ns#"
+		xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+		xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+		xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+		xmlns="http://www.w3.org/2000/svg"
+		width="67.413338"
+		height="63.312553"
+		enable-background="new 0 0 532 311.85205"
+		version="1.1"
+		viewBox="0 0 67.413339 63.312969"
+		xml:space="preserve"
+		id="svg286"
+		sodipodi:docname="white_rook.svg"
+		inkscape:version="1.0.1 (c497b03c, 2020-09-10)"><metadata
    id="metadata292"><rdf:RDF><cc:Work
        rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
-   id="defs290" /><sodipodi:namedview
-   pagecolor="#ffffff"
-   bordercolor="#666666"
-   borderopacity="1"
-   objecttolerance="10"
-   gridtolerance="10"
-   guidetolerance="10"
+		rdf:resource="http://purl.org/dc/dcmitype/StillImage"/><dc:title></dc:title></cc:Work></rdf:RDF></metadata>
+	<defs
+			id="defs290"/>
+	<sodipodi:namedview
+			pagecolor="#ffffff"
+			bordercolor="#666666"
+			borderopacity="1"
+			objecttolerance="10"
+			gridtolerance="10"
+			guidetolerance="10"
    inkscape:pageopacity="0"
    inkscape:pageshadow="2"
    inkscape:window-width="1720"
@@ -33,19 +34,19 @@
    id="namedview288"
    showgrid="false"
    inkscape:zoom="4.067861"
-   inkscape:cx="75.400129"
-   inkscape:cy="52.13698"
+   inkscape:cx="23.179249"
+   inkscape:cy="-37.991165"
    inkscape:window-x="1720"
    inkscape:window-y="25"
    inkscape:window-maximized="0"
-   inkscape:current-layer="g282"
+   inkscape:current-layer="svg286"
    fit-margin-top="0"
    fit-margin-left="0"
    fit-margin-right="0"
    fit-margin-bottom="0" />
 <switch
    id="switch284"
-   transform="translate(-77.929821,-76.498095)">
+   transform="translate(-78.426171,-163.54184)">
 	<foreignObject
    width="1"
    height="1"
@@ -467,7 +468,7 @@
    id="path134" />
 			</g>
 			<polygon
-   points="189.71,182.08 191.02,180.77 188.38,178.13 185.74,180.77 187.06,182.09 187.06,188.02 180.44,188.02 179.13,186.71 176.49,189.35 179.13,191.99 180.46,190.67 187.06,190.67 187.06,197.91 185.74,199.23 188.38,201.87 191.02,199.23 189.71,197.92 189.71,190.67 196.27,190.67 197.59,191.99 200.23,189.35 197.59,186.71 196.29,188.02 189.71,188.02 "
+   points="187.06,182.09 187.06,188.02 180.44,188.02 179.13,186.71 176.49,189.35 179.13,191.99 180.46,190.67 187.06,190.67 187.06,197.91 185.74,199.23 188.38,201.87 191.02,199.23 189.71,197.92 189.71,190.67 196.27,190.67 197.59,191.99 200.23,189.35 197.59,186.71 196.29,188.02 189.71,188.02 189.71,182.08 191.02,180.77 188.38,178.13 185.74,180.77 "
    fill="#fff"
    stroke="#000000"
    stroke-width="0.53287"
@@ -544,7 +545,7 @@
    inkscape:export-xdpi="191.91379"
    inkscape:export-ydpi="191.91379" />
 			<polygon
-   points="188.66,96.226 189.97,94.916 187.33,92.278 184.69,94.916 186.01,96.24 186.01,102.16 179.4,102.16 178.09,100.85 175.45,103.49 178.09,106.13 179.41,104.81 186.01,104.81 186.01,112.06 184.69,113.38 187.33,116.02 189.97,113.38 188.66,112.07 188.66,104.81 195.23,104.81 196.55,106.13 199.19,103.49 196.55,100.85 195.24,102.16 188.66,102.16 "
+   points="186.01,96.24 186.01,102.16 179.4,102.16 178.09,100.85 175.45,103.49 178.09,106.13 179.41,104.81 186.01,104.81 186.01,112.06 184.69,113.38 187.33,116.02 189.97,113.38 188.66,112.07 188.66,104.81 195.23,104.81 196.55,106.13 199.19,103.49 196.55,100.85 195.24,102.16 188.66,102.16 188.66,96.226 189.97,94.916 187.33,92.278 184.69,94.916 "
    fill="#fff"
    stroke="#000"
    stroke-width=".76986"
