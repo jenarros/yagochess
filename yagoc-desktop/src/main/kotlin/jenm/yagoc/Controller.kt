@@ -7,6 +7,7 @@ import jenm.yagoc.board.BoardRules.moveDoesNotCreateCheck
 import jenm.yagoc.board.BoardRules.noMoreMovesAllowed
 import jenm.yagoc.board.BoardView
 import jenm.yagoc.board.Move
+import jenm.yagoc.board.Move.Companion.move
 import jenm.yagoc.board.Square
 import jenm.yagoc.pieces.*
 import jenm.yagoc.ui.UIAdapter
@@ -51,7 +52,7 @@ class Controller(private val board: Board, val uiAdapter: UIAdapter) {
         when {
             finished || paused || !board.isPieceOfCurrentPlayer(board.pieceAt(from)) -> false
             board.currentPlayer().isUser -> {
-                Move(board.pieceAt(from), from, to).let { move ->
+                move(board, from, to).let { move ->
                     if (from != to && isCorrectMove(board, move) && moveDoesNotCreateCheck(board, move)) {
                         playMove(move)
                         true

@@ -7,7 +7,6 @@ import jenm.yagoc.board.d5Square
 import jenm.yagoc.defaultLevel
 import jenm.yagoc.pieces.PieceColor
 import jenm.yagoc.players.MinimaxPlayer
-import jenm.yagoc.players.NodeBoardValue
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
@@ -57,6 +56,6 @@ class GenerationOfComputerMovesTests {
 
         val boardValue = minimaxPlayer.move(board)
 
-        assertThat((boardValue as NodeBoardValue).move.to, equalTo(d5Square))
+        assertThat(boardValue.to, equalTo(d5Square))
     }
 }

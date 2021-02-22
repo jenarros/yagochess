@@ -2,6 +2,7 @@ package jenm.yagoc.pieces
 
 import jenm.yagoc.board.BoardView
 import jenm.yagoc.board.Move
+import jenm.yagoc.board.Move.Companion.move
 import jenm.yagoc.board.Square
 import java.util.stream.Stream
 
@@ -22,6 +23,6 @@ class Knight(pieceColor: PieceColor, variant: PieceVariant) : Piece(PieceType.Kn
                 from.previous2File(piece.color).nextRank(piece.color),
                 from.previous2File(piece.color).previousRank(piece.color)
             ).filter { obj: Square -> obj.exists() }
-                .map { to: Square -> Move(piece, from, to) }
+                .map { to: Square -> move(board, from, to) }
         }
 }

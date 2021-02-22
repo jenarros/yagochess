@@ -1,6 +1,7 @@
 package jenm.yagoc.board
 
 import jenm.yagoc.Yagoc
+import jenm.yagoc.board.Move.Companion.move
 import jenm.yagoc.pieces.PieceColor
 import jenm.yagoc.pieces.PieceType
 import java.util.function.Predicate
@@ -10,7 +11,7 @@ import kotlin.streams.toList
 object BoardRules {
     @JvmStatic
     fun isCorrectMove(board: BoardView, from: Square, to: Square): Boolean {
-        return isCorrectMove(board, Move(board.pieceAt(from), from, to))
+        return isCorrectMove(board, move(board, from, to))
     }
 
     @JvmStatic
@@ -61,7 +62,7 @@ object BoardRules {
 
     @JvmStatic
     fun moveDoesNotCreateCheck(board: BoardView, from: Square, to: Square): Boolean {
-        return moveDoesNotCreateCheck(board, Move(board.pieceAt(from), from, to))
+        return moveDoesNotCreateCheck(board, move(board, from, to))
     }
 
     @JvmStatic

@@ -2,6 +2,7 @@ package jenm.yagoc.pieces
 
 import jenm.yagoc.board.BoardView
 import jenm.yagoc.board.Move
+import jenm.yagoc.board.Move.Companion.move
 import jenm.yagoc.board.Square
 import jenm.yagoc.board.square
 import kotlin.math.max
@@ -42,9 +43,6 @@ class Rook(pieceColor: PieceColor) : Piece(PieceType.Rook, pieceColor) {
 
         @JvmStatic
         fun generateMovesForRook(board: BoardView, from: Square) =
-            board.pieceAt(from).let { piece ->
-                from.straightSquares().stream()
-                    .map { to: Square -> Move(piece, from, to) }
-            }
+            from.straightSquares().stream().map { to: Square -> move(board, from, to) }
     }
 }

@@ -3,6 +3,7 @@ package jenm.yagoc.pieces
 import jenm.yagoc.board.*
 import jenm.yagoc.board.BoardRules.isInCheck
 import jenm.yagoc.board.BoardRules.moveDoesNotCreateCheck
+import jenm.yagoc.board.Move.Companion.move
 import java.util.stream.Stream
 
 class King(pieceColor: PieceColor) : Piece(PieceType.King, pieceColor) {
@@ -23,7 +24,7 @@ class King(pieceColor: PieceColor) : Piece(PieceType.King, pieceColor) {
                 from.nextFile(piece.color),
                 from.previousFile(piece.color)
             ).filter { obj: Square -> obj.exists() }
-                .map { to: Square -> Move(piece, from, to) }
+                .map { to: Square -> move(board, from, to) }
         }
 
     private fun isCorrectCastling(board: BoardView, move: Move): Boolean {

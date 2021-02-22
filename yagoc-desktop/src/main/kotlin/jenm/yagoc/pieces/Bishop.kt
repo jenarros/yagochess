@@ -2,6 +2,7 @@ package jenm.yagoc.pieces
 
 import jenm.yagoc.board.BoardView
 import jenm.yagoc.board.Move
+import jenm.yagoc.board.Move.Companion.move
 import jenm.yagoc.board.Square
 import jenm.yagoc.board.square
 import kotlin.math.max
@@ -16,7 +17,7 @@ class Bishop(pieceColor: PieceColor) : Piece(PieceType.Bishop, pieceColor) {
         @JvmStatic
         fun generateMovesForBishop(board: BoardView, from: Square) =
             board.pieceAt(from).let {
-                from.diagonalSquares().stream().map { to: Square -> Move(it, from, to) }
+                from.diagonalSquares().stream().map { to: Square -> move(board, from, to) }
             }
 
         @JvmStatic

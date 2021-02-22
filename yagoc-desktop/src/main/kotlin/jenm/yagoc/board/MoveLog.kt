@@ -3,13 +3,12 @@ package jenm.yagoc.board
 import jenm.yagoc.pieces.Piece
 import java.io.Serializable
 
-// TODO Converto to data class
 class MoveLog private constructor(
     board: BoardView,
     val move: Move,
     val toPiece: Piece,
     val type: MoveType,
-    val castlingExtraMove: Move?
+    val castlingExtraMove: Move? = null
 ) : Serializable {
 
     val whiteLeftRookMoved = board.hasWhiteLeftRookMoved()
@@ -36,7 +35,7 @@ class MoveLog private constructor(
     companion object {
         @JvmStatic
         fun enPassant(board: BoardView, move: Move, toPiece: Piece): MoveLog {
-            return MoveLog(board, move, toPiece, MoveType.EnPassant, null)
+            return MoveLog(board, move, toPiece, MoveType.EnPassant)
         }
 
         @JvmStatic
@@ -46,7 +45,7 @@ class MoveLog private constructor(
 
         @JvmStatic
         fun normalMove(board: BoardView, move: Move, toPiece: Piece): MoveLog {
-            return MoveLog(board, move, toPiece, MoveType.Normal, null)
+            return MoveLog(board, move, toPiece, MoveType.Normal)
         }
     }
 

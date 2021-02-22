@@ -2,6 +2,7 @@ package jenm.yagoc.pieces
 
 import jenm.yagoc.board.BoardView
 import jenm.yagoc.board.Move
+import jenm.yagoc.board.Move.Companion.move
 import jenm.yagoc.board.Square
 import java.util.stream.Stream
 
@@ -43,6 +44,6 @@ class Pawn(pieceColor: PieceColor) : Piece(PieceType.Pawn, pieceColor) {
                 from.next2Rank(piece.color),  // ahead 2
                 from.nextRankNextFile(piece.color) // right
             ).filter { obj: Square -> obj.exists() }
-                .map { to: Square -> Move(piece, from, to) }
+                .map { to: Square -> move(board, from, to) }
         }
 }

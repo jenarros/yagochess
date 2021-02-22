@@ -1,7 +1,7 @@
 package jenm.yagoc
 
 import jenm.yagoc.board.Board
-import jenm.yagoc.board.Move
+import jenm.yagoc.board.Move.Companion.move
 import jenm.yagoc.board.Square
 import jenm.yagoc.board.allSquares
 import jenm.yagoc.pieces.Piece
@@ -30,7 +30,7 @@ class BoardSpec(stringBoard: String, val fromSquare: Square) {
 
     fun plusMove(piece: Piece, fromSquare: Square, toSquare: Square): BoardSpec {
         board.pieceAt(fromSquare, piece)
-        board.play(Move(board.pieceAt(fromSquare), fromSquare, toSquare))
+        board.play(move(board, fromSquare, toSquare))
         return this
     }
 

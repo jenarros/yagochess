@@ -7,7 +7,7 @@ import jenm.yagoc.pieces.none
 import java.io.Serializable
 import kotlin.math.abs
 
-data class Move(val fromPiece: Piece, val from: Square, val to: Square) : Serializable {
+class Move private constructor(val fromPiece: Piece, val from: Square, val to: Square) : Serializable {
     /**
      * positive if going ahead, negative if going backwards
      */
@@ -56,6 +56,10 @@ data class Move(val fromPiece: Piece, val from: Square, val to: Square) : Serial
 
         @JvmField
         val RANK_NAMES = arrayOf("8", "7", "6", "5", "4", "3", "2", "1")
+
+        fun move(boardView: BoardView, from: Square, to: Square) = Move(boardView.pieceAt(from), from, to)
+
+        fun move(pieceFrom: Piece, from: Square, to: Square) = Move(pieceFrom, from, to)
     }
 
     init {

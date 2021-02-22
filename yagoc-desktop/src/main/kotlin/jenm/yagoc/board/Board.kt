@@ -1,6 +1,7 @@
 package jenm.yagoc.board
 
 import jenm.yagoc.YagocSettings
+import jenm.yagoc.board.Move.Companion.move
 import jenm.yagoc.board.MoveLog.Companion.castling
 import jenm.yagoc.board.MoveLog.Companion.enPassant
 import jenm.yagoc.board.MoveLog.Companion.normalMove
@@ -188,7 +189,7 @@ class Board : BoardView {
     }
 
     fun play(from: Square, to: Square): Board {
-        return play(Move(pieceAt(from), from, to))
+        return play(move(this, from, to))
     }
 
     private fun updateMovedPieces(move: Move) {
@@ -238,20 +239,20 @@ class Board : BoardView {
         val castlingExtraMove: Move
         if (move.isCastlingQueenside) {
             if (move.fromPiece.color == PieceColor.WhiteSet) {
-                castlingExtraMove = Move(whiteRook, a1Square, d1Square)
+                castlingExtraMove = move(whiteRook, a1Square, d1Square)
                 pieceAt(a1Square, none)
                 pieceAt(d1Square, whiteRook)
             } else {
-                castlingExtraMove = Move(blackRook, a8Square, d8Square)
+                castlingExtraMove = move(blackRook, a8Square, d8Square)
                 pieceAt(a8Square, none)
                 pieceAt(d8Square, blackRook)
             }
         } else if (move.fromPiece.color == PieceColor.WhiteSet) {
-            castlingExtraMove = Move(whiteRook, h1Square, f1Square)
+            castlingExtraMove = move(whiteRook, h1Square, f1Square)
             pieceAt(h1Square, none)
             pieceAt(f1Square, whiteRook)
         } else {
-            castlingExtraMove = Move(blackRook, h8Square, f8Square)
+            castlingExtraMove = move(blackRook, h8Square, f8Square)
             pieceAt(h8Square, none)
             pieceAt(f8Square, blackRook)
         }
