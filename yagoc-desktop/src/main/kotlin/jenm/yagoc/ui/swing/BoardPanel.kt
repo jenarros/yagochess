@@ -10,7 +10,6 @@ import java.awt.event.MouseEvent
 import java.util.stream.IntStream
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
-import javax.swing.SwingWorker
 import javax.swing.Timer
 import javax.swing.event.MouseInputListener
 import kotlin.math.floor
@@ -164,11 +163,12 @@ class BoardPanel(private val controller: Controller, private val boardUpdate: ()
             val position = e.point
             if (isInsideTheBoard(position) && boardSquare(position) != selectedSquare) {
                 val from = selectedSquare
-                object : SwingWorker<Unit, Unit>() {
-                    override fun doInBackground() {
-                        from?.let { controller.move(from, boardSquare(position)) }
+                controller.uiAdapter.invokeLater {
+                    from?.let {
+                        controller.userMoves(from, boardSquare(position))
+                        controller.uiAdapter.invokeLater { controller.computerMoves() }
                     }
-                }.execute()
+                }
             }
             mousePosition = null
             selectedSquare = null

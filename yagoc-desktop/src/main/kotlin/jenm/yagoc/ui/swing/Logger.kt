@@ -8,7 +8,7 @@ data class Logger(val textPanel: JTextPane) {
     private val infoAttributeSet = info()
 
     fun info(message: String) {
-        textPanel.styledDocument.insertString(textPanel.styledDocument.length, message + "\n", infoAttributeSet)
+        textPanel.styledDocument.insertString(textPanel.styledDocument.length, message, infoAttributeSet)
         textPanel.caretPosition = textPanel.document.length
         SwingUtilities.invokeLater { textPanel.update(textPanel.graphics) }
     }
