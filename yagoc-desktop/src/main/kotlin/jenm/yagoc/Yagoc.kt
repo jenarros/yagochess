@@ -21,7 +21,7 @@ object Yagoc {
         System.setProperty("apple.laf.useScreenMenuBar", "true")
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
         val board = Board(defaultSettings)
-        val yagocWindow = YagocWindow(Controller(board, SwingUIAdapter()), board, textPane)
+        val yagocWindow = YagocWindow(Controller(board, SwingUIAdapter()), textPane)
         yagocWindow.title = "Yet Another Game Of Chess"
         yagocWindow.isVisible = true
     }

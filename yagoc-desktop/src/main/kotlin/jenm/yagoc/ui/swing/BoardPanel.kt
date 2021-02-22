@@ -10,12 +10,13 @@ import java.awt.event.MouseEvent
 import java.util.stream.IntStream
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
+import javax.swing.SwingWorker
 import javax.swing.Timer
 import javax.swing.event.MouseInputListener
 import kotlin.math.floor
 import kotlin.math.min
 
-class BoardPanel(private val controller: Controller, private val board: BoardView) : JPanel() {
+class BoardPanel(private val controller: Controller, private val boardUpdate: () -> BoardView) : JPanel() {
     var theme = Themes.Modern
     var images = theme.loadImages()
 
@@ -48,33 +49,34 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
         this.images = theme.loadImages()
     }
 
-    fun paintBoard(g: Graphics) {
-        drawBorder(g)
-        allSquares.forEach { square: Square -> drawSquare(g, square) }
-        mouseMotionListener.selectedSquare?.let { drawSquare(g, it) }
+    fun paintBoard(graphics: Graphics) {
+        drawBorder(graphics)
+        val board = boardUpdate()
+        allSquares.forEach { square: Square -> drawSquare(graphics, square, board.pieceAt(square)) }
+        mouseMotionListener.selectedSquare?.let { drawSquare(graphics, it, board.pieceAt(it)) }
     }
 
-    private fun drawBorder(g: Graphics) {
-        g.color = Color.lightGray
+    private fun drawBorder(graphics: Graphics) {
+        graphics.color = Color.lightGray
         IntStream.range(0, 8).forEach { file: Int ->
-            g.drawString(
+            graphics.drawString(
                 Move.FILE_NAMES[file],
                 borderSize + (squareSize * 0.4).toInt() + file * squareSize,
                 boardFontSize
             )
-            g.drawString(
+            graphics.drawString(
                 Move.FILE_NAMES[file],
                 borderSize + (squareSize * 0.4).toInt() + file * squareSize,
                 boardSize + (borderSize * 1.8).toInt()
             )
         }
         IntStream.range(0, 8).forEach { rank: Int ->
-            g.drawString(
+            graphics.drawString(
                 Move.RANK_NAMES[rank],
                 (borderSize * 0.25).toInt(),
                 borderSize + (squareSize * 0.6).toInt() + rank * squareSize
             )
-            g.drawString(
+            graphics.drawString(
                 Move.RANK_NAMES[rank],
                 boardSize + (borderSize * 1.3).toInt(),
                 borderSize + (squareSize * 0.6).toInt() + rank * squareSize
@@ -89,8 +91,7 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
         )
     }
 
-    private fun drawSquare(graphics: Graphics, square: Square) {
-        val piece = board.pieceAt(square)
+    private fun drawSquare(graphics: Graphics, square: Square, piece: Piece) {
         val point = toScreenCoordinates(square)
         val coordX = IntArray(4)
         val coordY = IntArray(4)
@@ -163,9 +164,11 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
             val position = e.point
             if (isInsideTheBoard(position) && boardSquare(position) != selectedSquare) {
                 val from = selectedSquare
-                SwingUtilities.invokeLater {
-                    from?.let { controller.move(from, boardSquare(position)) }
-                }
+                object : SwingWorker<Unit, Unit>() {
+                    override fun doInBackground() {
+                        from?.let { controller.move(from, boardSquare(position)) }
+                    }
+                }.execute()
             }
             mousePosition = null
             selectedSquare = null
@@ -188,10 +191,10 @@ class BoardPanel(private val controller: Controller, private val board: BoardVie
         font = Font(Font.MONOSPACED, Font.BOLD, boardFontSize)
         addMouseListener(mouseMotionListener)
         addMouseMotionListener(mouseMotionListener)
-        Timer(REFRESH_RATE_MILLISECONDS) { repaint() }.start()
+        Timer(REFRESH_RATE_MILLISECONDS) { SwingUtilities.invokeLater { repaint() } }.start()
     }
 
     companion object {
-        const val REFRESH_RATE_MILLISECONDS = 20 // 1000 / rate = fps
+        const val REFRESH_RATE_MILLISECONDS = 40 // 1000 / rate = fps
     }
 }

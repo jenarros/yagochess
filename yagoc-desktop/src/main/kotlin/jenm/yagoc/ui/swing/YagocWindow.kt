@@ -3,7 +3,6 @@ package jenm.yagoc.ui.swing
 import jenm.yagoc.Controller
 import jenm.yagoc.Yagoc.logger
 import jenm.yagoc.board.Board
-import jenm.yagoc.board.BoardView
 import jenm.yagoc.defaultSettings
 import java.awt.*
 import java.awt.event.KeyEvent
@@ -14,9 +13,9 @@ import javax.swing.*
 import kotlin.system.exitProcess
 
 
-class YagocWindow(private val controller: Controller, board: BoardView, textPane: JTextPane) : JFrame() {
+class YagocWindow(private val controller: Controller, textPane: JTextPane) : JFrame() {
     private val iconImagePath = "/themes/original/black_pawn.gif"
-    private val boardPanel: BoardPanel = BoardPanel(controller, board)
+    private val boardPanel: BoardPanel = BoardPanel(controller, controller::currentBoardView)
     private var settings = defaultSettings
     private val scrollPane = JScrollPane(textPane).also {
         it.preferredSize = Dimension(LOG_WIDTH, boardPanel.boardAndBorderSize / 2)

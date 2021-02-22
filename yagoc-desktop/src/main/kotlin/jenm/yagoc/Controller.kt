@@ -22,6 +22,7 @@ class Controller(private val board: Board, private val uiAdapter: UIAdapter) {
     private val checkpoints = ArrayList<Board>()
     private var finished = false
     private var paused = false
+    private var currentBoardView = Board(board)
 
     fun resetBoard(board: Board) {
         checkpoints.clear()
@@ -51,7 +52,11 @@ class Controller(private val board: Board, private val uiAdapter: UIAdapter) {
         uiAdapter.invokeLater { nextMove() }
     }
 
-    fun boardView(): BoardView = board
+    fun currentBoardView(): BoardView = currentBoardView
+
+    private fun updateCurrentBoardView() {
+        currentBoardView = Board(board)
+    }
 
     fun moveIfPossible(from: Square, to: Square) =
         when {
@@ -61,6 +66,7 @@ class Controller(private val board: Board, private val uiAdapter: UIAdapter) {
                     if (from != to && isCorrectMove(board, move) && moveDoesNotCreateCheck(board, move)) {
                         board.play(move)
                         ifPawnHasReachedFinalRankReplaceWithQueen(board, move)
+                        updateCurrentBoardView()
                         finished = noMoreMovesAllowed(board)
                         logger.info(move.toString())
                         true
@@ -73,7 +79,6 @@ class Controller(private val board: Board, private val uiAdapter: UIAdapter) {
         }
 
     private fun ifPawnHasReachedFinalRankReplaceWithQueen(board: Board, move: Move) {
-        //TODO What if there is already a queen?
         if (move.fromPiece == blackPawn && move.to.rank == 7) {
             board.pieceAt(move.to, blackQueen)
         } else if (move.fromPiece == whitePawn && move.to.rank == 0) {
@@ -84,25 +89,24 @@ class Controller(private val board: Board, private val uiAdapter: UIAdapter) {
     private fun nextMove() {
         if (finished || paused) return
         else if (board.currentPlayer().isComputer) {
-            uiAdapter.invokeLater {
-                val checkpoint = Board(board)
-                val move = board.currentPlayer().move(board)
-                board.play(move)
-                logger.info(move.toString())
-                ifPawnHasReachedFinalRankReplaceWithQueen(board, move)
-                finished = noMoreMovesAllowed(board)
-                checkpoints.add(checkpoint)
+            val checkpoint = Board(board)
+            val move = board.currentPlayer().move(board)
+            board.play(move)
+            logger.info(move.toString())
+            ifPawnHasReachedFinalRankReplaceWithQueen(board, move)
+            updateCurrentBoardView()
+            finished = noMoreMovesAllowed(board)
+            checkpoints.add(checkpoint)
 
-                if (board.currentPlayer().isComputer) {
-                    breath()
-                    uiAdapter.invokeLater { nextMove() }
-                }
+            if (board.currentPlayer().isComputer) {
+                breath()
+                uiAdapter.invokeLater { nextMove() }
             }
         }
     }
 
     private fun breath() {
-        uiAdapter.invokeLater { TimeUnit.MILLISECONDS.sleep(COMPUTER_PAUSE_MILLISECONDS.toLong()) }
+        TimeUnit.MILLISECONDS.sleep(COMPUTER_PAUSE_MILLISECONDS.toLong())
     }
 
     fun newBoard() {
@@ -118,8 +122,7 @@ class Controller(private val board: Board, private val uiAdapter: UIAdapter) {
             logger.info("name\ttype")
             logger.info(board.blackPlayer().toString())
             logger.info(board.whitePlayer().toString())
-        }
-        uiAdapter.invokeLater {
+
             if (board.currentPlayer().isComputer) {
                 resume()
             }
@@ -146,6 +149,6 @@ class Controller(private val board: Board, private val uiAdapter: UIAdapter) {
     }
 
     companion object {
-        private const val COMPUTER_PAUSE_MILLISECONDS = 1
+        private const val COMPUTER_PAUSE_MILLISECONDS = 1000
     }
 }
