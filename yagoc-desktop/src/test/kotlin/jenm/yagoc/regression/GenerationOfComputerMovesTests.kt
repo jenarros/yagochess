@@ -37,7 +37,7 @@ class GenerationOfComputerMovesTests {
     }
 
     @Test
-    @Timeout(500, unit = TimeUnit.MILLISECONDS)
+    @Timeout(1000, unit = TimeUnit.MILLISECONDS)
     fun `minimax - pawn to d5 is second move`() {
         val minimaxPlayer = MinimaxPlayer(PieceColor.BlackSet, 3)
 

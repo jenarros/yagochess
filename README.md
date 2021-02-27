@@ -5,6 +5,8 @@ Kotlin.
 
 Design and implementation details are discussed in the [wiki](https://github.com/jenarros/yagochess/wiki).
 
+<img src="docs/screenshot.png" width="320" height="320"/>
+
 ## Binary releases
 
 Binary releases for OSX as well as Java 11+ can be found [here](https://github.com/jenarros/yagochess/releases).
