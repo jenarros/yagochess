@@ -32,7 +32,7 @@ class YagocWindow(private val controller: Controller, textPane: JTextPane) : JFr
         contentPane.layout = BorderLayout()
         contentPane.add(boardPanel, BorderLayout.WEST)
         contentPane.add(scrollPane, BorderLayout.EAST)
-        isResizable = false
+        isResizable = true
         addMenuBar(this, controller)
         iconImage = toolkit.getImage(this.javaClass.getResource(iconImagePath))
         Taskbar.getTaskbar().iconImage = toolkit.getImage(this.javaClass.getResource(iconImagePath))

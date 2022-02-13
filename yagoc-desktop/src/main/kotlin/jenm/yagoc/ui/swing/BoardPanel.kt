@@ -13,6 +13,7 @@ import javax.swing.SwingUtilities
 import javax.swing.Timer
 import javax.swing.event.MouseInputListener
 import kotlin.math.floor
+import kotlin.math.max
 import kotlin.math.min
 
 class BoardPanel(private val controller: Controller, private val boardUpdate: () -> BoardView) : JPanel() {
@@ -133,7 +134,7 @@ class BoardPanel(private val controller: Controller, private val boardUpdate: ()
         val dimension = toolkit.screenSize
         val originalBoardAndBorderSize = YagocWindow.SQUARE_SIZE * 8 + YagocWindow.BORDER_SIZE * 2
         return min(
-            (dimension.height - YagocWindow.LOG_WIDTH) / originalBoardAndBorderSize,
+            max(1,(dimension.height - YagocWindow.LOG_WIDTH) / originalBoardAndBorderSize),
             dimension.width / originalBoardAndBorderSize
         ) * value
     }
