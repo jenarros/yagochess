@@ -1,3 +1,4 @@
+[![CI](https://github.com/jenarros/yagochess/actions/workflows/cd.yml/badge.svg)](https://github.com/jenarros/yagochess/actions/workflows/cd.yml)
 # Yet Another Game of Chess
 
 Simple game of chess I initially wrote in Java as part of a Computer Science course in 2003. Recently rewritten in
