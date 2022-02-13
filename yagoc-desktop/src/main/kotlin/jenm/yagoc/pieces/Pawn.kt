@@ -29,9 +29,7 @@ class Pawn(pieceColor: PieceColor) : Piece(PieceType.Pawn, pieceColor) {
             if (board.pieceAt(move.to).notOfSameColor(move.fromPiece.color)) {
                 true
             } else {
-                board.pieceAt(move.to) == none &&
-                        board.enPassant(move.to.file) == board.moveCounter() - 1 &&
-                        move.from.rank == if (move.fromPiece.color == PieceColor.WhiteSet) 3 else 4
+                enPassantMove(board, move)
             }
         } else false
     }
@@ -46,4 +44,11 @@ class Pawn(pieceColor: PieceColor) : Piece(PieceType.Pawn, pieceColor) {
             ).filter { obj: Square -> obj.exists() }
                 .map { to: Square -> move(board, from, to) }
         }
+
+    companion object {
+        fun enPassantMove(board: BoardView, move: Move) =
+            board.pieceAt(move.to) == none &&
+                    board.enPassant(move.to.file) == board.moveCounter() - 1 &&
+                    move.from.rank == if (move.fromPiece.color == PieceColor.WhiteSet) 3 else 4
+    }
 }
